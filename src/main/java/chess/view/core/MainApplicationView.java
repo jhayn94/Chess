@@ -8,7 +8,7 @@ import javafx.scene.control.SplitPane;
  */
 public class MainApplicationView extends SplitPane {
 
-	private static final String CSS_CLASS = "sudoku-main-app-view";
+	private static final String CSS_CLASS = "chess-main-app-view";
 
 	public MainApplicationView() {
 		super();

@@ -1,150 +1,149 @@
 .root {
-	-sudoku-color-parchment: #e5e2ca;
-	-sudoku-color-pebble: #e0e0e0;
-	-sudoku-color-bark: #2a2922;
-	-sudoku-color-stone-blue: #336b87;
-	-sudoku-color-autumn-foliage: #e7472e;
-	-sudoku-color-leaves: #506d2f;
-	-sudoku-color-rocky-brown: #785a46;
-	-sudoku-color-off-white: #eeeeee;
+	-chess-color-parchment: #e5e2ca;
+	-chess-color-pebble: #e0e0e0;
+	-chess-color-bark: #2a2922;
+	-chess-color-dark-red: #9e2f1e;
+	-chess-color-leaves: #506d2f;
+	-chess-color-rocky-brown: #785a46;
+	-chess-color-off-white: #eeeeee;
 	
-	-sudoku-color-selected: #e5e2ca;
-	-sudoku-color-coloring1a: #f05c79;
-	-sudoku-color-coloring1b: #f8b9c6;
-	-sudoku-color-coloring2a: #4da6ff;
-	-sudoku-color-coloring2b: #b3d9ff;
-	-sudoku-color-coloring3a: #a385e0;
-	-sudoku-color-coloring3b: #d1c2f0;
-	-sudoku-color-coloring4a: #22c3bb;
-	-sudoku-color-coloring4b: #a8f0ec;
-	-sudoku-color-coloring5a: #ffc14d;
-	-sudoku-color-coloring5b: #ffe4b3;
-	-sudoku-color-hint1: #53c685;
-	-sudoku-color-hint2: #1a8cff;
-	-sudoku-color-hint3: #855dd5;
-	-sudoku-color-hint4: #ffaf1a;
-	-sudoku-color-hint5: #ff4dd2;
-	-sudoku-color-hint-deletable: #eb2d53;
-	-sudoku-color-hint-als1: #33cccc;
-	-sudoku-color-hint-als2: #e6e600;
-	-sudoku-color-hint-als3: #ffb3ff;
-	-sudoku-color-hint-als4: #ffc999;
+	-chess-color-selected: #e5e2ca;
+	-chess-color-coloring1a: #f05c79;
+	-chess-color-coloring1b: #f8b9c6;
+	-chess-color-coloring2a: #4da6ff;
+	-chess-color-coloring2b: #b3d9ff;
+	-chess-color-coloring3a: #a385e0;
+	-chess-color-coloring3b: #d1c2f0;
+	-chess-color-coloring4a: #22c3bb;
+	-chess-color-coloring4b: #a8f0ec;
+	-chess-color-coloring5a: #ffc14d;
+	-chess-color-coloring5b: #ffe4b3;
+	-chess-color-hint1: #53c685;
+	-chess-color-hint2: #1a8cff;
+	-chess-color-hint3: #855dd5;
+	-chess-color-hint4: #ffaf1a;
+	-chess-color-hint5: #ff4dd2;
+	-chess-color-hint-deletable: #eb2d53;
+	-chess-color-hint-als1: #33cccc;
+	-chess-color-hint-als2: #e6e600;
+	-chess-color-hint-als3: #ffb3ff;
+	-chess-color-hint-als4: #ffc999;
 
 	-fx-font-family: "Quicksand";
 	-fx-font-size: 12pt;
 	-fx-font-weight: bold;
-	-fx-font-color: -sudoku-color-bark;
+	-fx-font-color: -chess-color-bark;
 	-fx-box-border: transparent;
-	-fx-color: -sudoku-color-parchment;
-	-fx-background-color: -sudoku-color-parchment;
-	-fx-control-inner-background: -sudoku-color-pebble;
-	-fx-outer-border: -sudoku-color-bark;
+	-fx-color: -chess-color-parchment;
+	-fx-background-color: -chess-color-parchment;
+	-fx-control-inner-background: -chess-color-pebble;
+	-fx-outer-border: -chess-color-bark;
 	-fx-inner-border: transparent;
 	-fx-inner-border-horizontal: transparent;
-	-fx-body-color: -sudoku-color-parchment;
+	-fx-body-color: -chess-color-parchment;
 	-fx-body-color-bottomup: transparent;
-	-fx-mark-color: -sudoku-color-stone-blue;
-	-fx-mark-highlight-color: -sudoku-color-stone-blue;
-	-fx-accent: -sudoku-color-stone-blue;
-	-fx-focus-color: -sudoku-color-stone-blue;
-	-fx-cell-focus-inner-border: -sudoku-color-stone-blue;
+	-fx-mark-color: -chess-color-dark-red;
+	-fx-mark-highlight-color: -chess-color-dark-red;
+	-fx-accent: -chess-color-dark-red;
+	-fx-focus-color: -chess-color-dark-red;
+	-fx-cell-focus-inner-border: -chess-color-dark-red;
 }
 
-.sudoku-main-app-view {
-	-fx-background-color: -sudoku-color-pebble;
+.chess-main-app-view {
+	-fx-background-color: -chess-color-pebble;
 }
 
-.sudoku-transparent-pane {
+.chess-transparent-pane {
 	-fx-background-color: transparent;
 }
 
-.sudoku-side-bar {
+.chess-side-bar {
 	-fx-background-color: transparent;
 }
 
-.sudoku-cell-candidate-label {
+.chess-cell-candidate-label {
 	-fx-font-size: 11pt;
-	-fx-text-fill: derive(-sudoku-color-bark, 30%);
+	-fx-text-fill: derive(-chess-color-bark, 30%);
 }
 
-.sudoku-puzzle-cell {
-	-fx-background-color: -sudoku-color-off-white;
-	-fx-text-fill: -sudoku-color-bark;
-	-fx-border-color: -sudoku-color-bark;
+.chess-puzzle-cell {
+	-fx-background-color: -chess-color-off-white;
+	-fx-text-fill: -chess-color-bark;
+	-fx-border-color: -chess-color-bark;
 	-fx-border-width: 1;
 }
 
-.sudoku-unfixed-cell {
-	-fx-border-color: -sudoku-color-bark;
-	-fx-background-color: -sudoku-color-off-white;
-	-fx-text-background-color: -sudoku-color-bark;
+.chess-unfixed-cell {
+	-fx-border-color: -chess-color-bark;
+	-fx-background-color: -chess-color-off-white;
+	-fx-text-background-color: -chess-color-bark;
 }
 
-.sudoku-given-cell {
-	-fx-border-color: -sudoku-color-bark;
-	-fx-background-color: -sudoku-color-off-white;
+.chess-given-cell {
+	-fx-border-color: -chess-color-bark;
+	-fx-background-color: -chess-color-off-white;
 	-fx-font-size: 30pt;
-	-fx-text-background-color: -sudoku-color-bark;
+	-fx-text-background-color: -chess-color-bark;
 }
 
-.sudoku-fixed-cell {
-	-fx-border-color: -sudoku-color-bark;
-	-fx-background-color: -sudoku-color-off-white;
-	-fx-text-background-color: -sudoku-color-stone-blue;
+.chess-fixed-cell {
+	-fx-border-color: -chess-color-bark;
+	-fx-background-color: -chess-color-off-white;
+	-fx-text-background-color: -chess-color-dark-red;
 	-fx-font-size: 30pt;
 }
 
-.sudoku-selected-cell {
-	-fx-border-color: -sudoku-color-bark;
+.chess-selected-cell {
+	-fx-border-color: -chess-color-bark;
 	-fx-border-width: 3;
 	-fx-background-color: rgba(0, 0, 0, .1);
 }
 
-.sudoku-active-filter-cell {
-	-fx-border-color: -sudoku-color-bark;
-	-fx-background-color: -sudoku-color-selected;
+.chess-active-filter-cell {
+	-fx-border-color: -chess-color-bark;
+	-fx-background-color: -chess-color-selected;
 }
 
-/* These are used to set extra borders on the cells that are on the edges of blocks. 
+/* These are used to set extra borders on the cells that are on the edges of blocks.
    It would be nice to be able to re-use them, but I can't figure out how to override only
    one of the border sizes, and inherit the rest. */
-.sudoku-puzzle-cell-extra-top-border {
+.chess-puzzle-cell-extra-top-border {
 	-fx-border-width: 2 1 1 1;
 }
 
-.sudoku-puzzle-cell-extra-right-border {
+.chess-puzzle-cell-extra-right-border {
 	-fx-border-width: 1 2 1 1;
 }
 
-.sudoku-puzzle-cell-extra-bottom-border {
+.chess-puzzle-cell-extra-bottom-border {
 	-fx-border-width: 1 1 2 1;
 }
 
-.sudoku-puzzle-cell-extra-left-border {
+.chess-puzzle-cell-extra-left-border {
 	-fx-border-width: 1 1 1 2;
 }
 
-.sudoku-puzzle-cell-extra-top-right-border {
+.chess-puzzle-cell-extra-top-right-border {
 	-fx-border-width: 2 2 1 1;
 }
 
-.sudoku-puzzle-cell-extra-top-left-border {
+.chess-puzzle-cell-extra-top-left-border {
 	-fx-border-width: 2 1 1 2;
 }
 
-.sudoku-puzzle-cell-extra-bottom-right-border {
+.chess-puzzle-cell-extra-bottom-right-border {
 	-fx-border-width: 1 2 2 1;
 }
 
-.sudoku-puzzle-cell-extra-bottom-left-border {
+.chess-puzzle-cell-extra-bottom-left-border {
 	-fx-border-width: 1 1 2 2;
 }
 
 .button {
-	-fx-background-color: -sudoku-color-parchment;
-	-fx-text-fill: -sudoku-color-bark;
+	-fx-background-color: -chess-color-parchment;
+	-fx-text-fill: -chess-color-bark;
 	-fx-font-size: 14pt;
-	-fx-border-color: -sudoku-color-bark;
+	-fx-border-color: -chess-color-bark;
 	-fx-border-width: 2;
 	-fx-background-radius: 5;
 	-fx-border-radius: 3;
@@ -153,22 +152,22 @@
 }
 
 /** Used for when a filter button is pressed and needs to retain a state. This must be after .button to override it. */
-.sudoku-combo-button-selected {
-	-fx-background-color: -sudoku-color-stone-blue;
-	-fx-text-fill: -sudoku-color-parchment;
+.chess-combo-button-selected {
+	-fx-background-color: -chess-color-dark-red;
+	-fx-text-fill: -chess-color-parchment;
 }
 
-.sudoku-combo-button-unselected {
-	-fx-background-color: -sudoku-color-parchment;
-	-fx-text-fill: -sudoku-color-bark;
+.chess-combo-button-unselected {
+	-fx-background-color: -chess-color-parchment;
+	-fx-text-fill: -chess-color-bark;
 }
 
 .button:armed {
-	-fx-background-color: -sudoku-color-stone-blue;
+	-fx-background-color: -chess-color-dark-red;
 }
 
 /* Application system menu buttons (in the top corners of the screen). This must be after .button to override those configurations. */
-.sudoku-system-menu-button {
+.chess-system-menu-button {
 	-fx-background-color: transparent;
 	-fx-border-color: transparent;
 	-fx-border-width : 0;
@@ -178,48 +177,46 @@
 }
 
 /* Application system menu buttons (in the top corners of the screen). This must be after .button to override those configurations. */
-.sudoku-system-menu-button:hover {
-	-fx-background-color: derive(-sudoku-color-pebble,-30%);
+.chess-system-menu-button:hover {
+	-fx-background-color: derive(-chess-color-pebble,-30%);
 }
 
 .menu-bar {
-	-fx-background-color: transparent;
+	-fx-background-color: -chess-color-pebble;
 	-fx-font-size: 14pt;
 }
 
 .text-area {
-	-fx-border-color: -sudoku-color-bark;
+	-fx-border-color: -chess-color-bark;
 	-fx-background-radius: 3;
 	-fx-border-radius: 3;
 	-fx-border-width: 2;
 }
 
-.sudoku-coloring-display-label {
+.chess-coloring-display-label {
 	-fx-background-radius: 2;
 	-fx-border-radius: 2;
 	-fx-border-width: 2;
-	-fx-border-color: -sudoku-color-bark;
+	-fx-border-color: -chess-color-bark;
 }
 
-.sudoku-coloring-candidate-display-label {
+.chess-coloring-candidate-display-label {
     -fx-background-color: -fx-shadow-highlight-color, -fx-text-box-border, -fx-control-inner-background;
 	-fx-font-size: 30 pt;
 	-fx-background-radius: 2;
 	-fx-border-radius: 2;
 	-fx-border-width: 2;
-	-fx-border-color: -sudoku-color-bark;
+	-fx-border-color: -chess-color-bark;
 }
 
-.sudoku-candidate-increment-decrement-button {
+.chess-candidate-increment-decrement-button {
 	-fx-padding: 0;
 }
 
 /* Defines the rectangle responsible for the shadow. */
 .decoration-shadow {
-    -fx-fill: -sudoku-color-pebble;
+    -fx-fill: -chess-color-pebble;
     -fx-stroke-width: 0;
-	-fx-arc-width: 20px;
-	-fx-arc-height: 20px;
 }
 
 /* Somehow the menu separator CSS got overwritten, this fixes that problem. */
@@ -234,24 +231,24 @@
 }
 
 .text-field {
-	-fx-border-width: 2;	
+	-fx-border-width: 2;
 	-fx-border-radius: 3;
-	-fx-border-color: -sudoku-color-bark;
-	-fx-background-color: -sudoku-color-off-white;
+	-fx-border-color: -chess-color-bark;
+	-fx-background-color: -chess-color-off-white;
 }
 
-.sudoku-uneditable-text-field {
-	-fx-background-color: -sudoku-color-pebble;
+.chess-uneditable-text-field {
+	-fx-background-color: -chess-color-pebble;
 }
 
 .combo-box-base {
-	-fx-background-color: -sudoku-color-off-white;
+	-fx-background-color: -chess-color-off-white;
 }
 
 .combo-box-base:editable > .text-field,
 .color-picker-label {
-	-fx-border-color: -sudoku-color-bark;
-	-fx-background-color: -sudoku-color-off-white;
+	-fx-border-color: -chess-color-bark;
+	-fx-background-color: -chess-color-off-white;
 	-fx-border-width: 2 0 2 2;
 	-fx-border-radius: 3 0 0 3;
 }
@@ -261,18 +258,18 @@
 }
 
 .combo-box-base > .arrow-button {
-	-fx-background-color: -sudoku-color-parchment;
+	-fx-background-color: -chess-color-parchment;
 	-fx-background-insets: 0, 1, 2;
 	-fx-background-radius: 0 5 5 0, 0 4 4 0, 0 3 3 0;
 	-fx-padding: 0 0.667em 0 0.667em; /* 6 8 6 8 */
 	-fx-border-width: 2;
 	-fx-border-radius: 0 3 3 0;
-	-fx-border-color: -sudoku-color-bark;
+	-fx-border-color: -chess-color-bark;
 }
 
 .check-box > .box {
-	-fx-background-color: -sudoku-color-off-white;
-	-fx-border-color: -sudoku-color-bark;
+	-fx-background-color: -chess-color-off-white;
+	-fx-border-color: -chess-color-bark;
 	-fx-border-width: 2;
 	-fx-background-radius: 3;
 	-fx-border-radius: 3;
@@ -287,114 +284,114 @@
 
 .scroll-bar>.increment-button>.increment-arrow, .scroll-bar>.decrement-button>.decrement-arrow,
 	.scroll-bar:horizontal>.thumb, .scroll-bar:vertical>.thumb {
-	-fx-background-color: -sudoku-color-stone-blue;
+	-fx-background-color: -chess-color-dark-red;
 }
 
 .list-view {
-	-fx-border-color: -sudoku-color-bark;
+	-fx-border-color: -chess-color-bark;
 	-fx-border-width: 2;
 }
 
 .list-cell:selected,
 .list-cell:filled:selected:hover {
-	-fx-background-color: -sudoku-color-stone-blue;
-	-fx-text-fill: -sudoku-color-off-white;
+	-fx-background-color: -chess-color-dark-red;
+	-fx-text-fill: -chess-color-off-white;
 }
 
 .scroll-pane,
 .scroll-pane > .corner {
-    -fx-background-color: -sudoku-color-pebble;
+    -fx-background-color: -chess-color-pebble;
 }
 
 
 /* These define colors used for the cell / candidate coloring. */
-.sudoku-puzzle-color1a-entity {
-	-fx-background-color: -sudoku-color-coloring1a
+.chess-puzzle-color1a-entity {
+	-fx-background-color: -chess-color-coloring1a
 }
 
-.sudoku-puzzle-color1b-entity {
-	-fx-background-color: -sudoku-color-coloring1b;
+.chess-puzzle-color1b-entity {
+	-fx-background-color: -chess-color-coloring1b;
 }
 
-.sudoku-puzzle-color2a-entity {
-	-fx-background-color: -sudoku-color-coloring2a;
+.chess-puzzle-color2a-entity {
+	-fx-background-color: -chess-color-coloring2a;
 }
 
-.sudoku-puzzle-color2b-entity {
-	-fx-background-color: -sudoku-color-coloring2b;
+.chess-puzzle-color2b-entity {
+	-fx-background-color: -chess-color-coloring2b;
 }
 
-.sudoku-puzzle-color3a-entity {
-	-fx-background-color: -sudoku-color-coloring3a;
+.chess-puzzle-color3a-entity {
+	-fx-background-color: -chess-color-coloring3a;
 }
 
-.sudoku-puzzle-color3b-entity {
-	-fx-background-color: -sudoku-color-coloring3b;
+.chess-puzzle-color3b-entity {
+	-fx-background-color: -chess-color-coloring3b;
 }
 
-.sudoku-puzzle-color4a-entity {
-	-fx-background-color: -sudoku-color-coloring4a;
+.chess-puzzle-color4a-entity {
+	-fx-background-color: -chess-color-coloring4a;
 }
 
-.sudoku-puzzle-color4b-entity {
-	-fx-background-color: -sudoku-color-coloring4b;
+.chess-puzzle-color4b-entity {
+	-fx-background-color: -chess-color-coloring4b;
 }
 
-.sudoku-puzzle-color5a-entity {
-	-fx-background-color: -sudoku-color-coloring5a;
+.chess-puzzle-color5a-entity {
+	-fx-background-color: -chess-color-coloring5a;
 }
 
-.sudoku-puzzle-color5b-entity {
-	-fx-background-color: -sudoku-color-coloring5b;
+.chess-puzzle-color5b-entity {
+	-fx-background-color: -chess-color-coloring5b;
 }
 
-.sudoku-puzzle-color-hint1{
-	-fx-background-color: -sudoku-color-hint1;
+.chess-puzzle-color-hint1{
+	-fx-background-color: -chess-color-hint1;
 }
 
-.sudoku-puzzle-color-hint2 {
-	-fx-background-color: -sudoku-color-hint2;
+.chess-puzzle-color-hint2 {
+	-fx-background-color: -chess-color-hint2;
 }
 
-.sudoku-puzzle-color-hint3 {
-	-fx-background-color: -sudoku-color-hint3;
+.chess-puzzle-color-hint3 {
+	-fx-background-color: -chess-color-hint3;
 }
 
-.sudoku-puzzle-color-hint4 {
-	-fx-stroke: -sudoku-color-hint4;
+.chess-puzzle-color-hint4 {
+	-fx-stroke: -chess-color-hint4;
 }
 
 /** Arrow needs the fill, but this causes the cubic curve to also have a fill. 
 	So, they must have different CSS classes. */
-.sudoku-puzzle-color-hint4-arrow {
-	-fx-stroke: -sudoku-color-hint4;
-	-fx-fill: -sudoku-color-hint4;
+.chess-puzzle-color-hint4-arrow {
+	-fx-stroke: -chess-color-hint4;
+	-fx-fill: -chess-color-hint4;
 }
 
-.sudoku-puzzle-color-hint5 {
-	-fx-background-color: -sudoku-color-hint5;
+.chess-puzzle-color-hint5 {
+	-fx-background-color: -chess-color-hint5;
 }
 
-.sudoku-puzzle-color-deletable-hint-candidate {
-	-fx-background-color: -sudoku-color-hint-deletable;
+.chess-puzzle-color-deletable-hint-candidate {
+	-fx-background-color: -chess-color-hint-deletable;
 }
 
-.-sudoku-puzzle-color-hint-als1 {
-	-fx-background-color: -sudoku-color-hint-als1;
+.-chess-puzzle-color-hint-als1 {
+	-fx-background-color: -chess-color-hint-als1;
 }
 
-.-sudoku-puzzle-color-hint-als2 {
-	-fx-background-color: -sudoku-color-hint-als2;
+.-chess-puzzle-color-hint-als2 {
+	-fx-background-color: -chess-color-hint-als2;
 }
 
-.-sudoku-puzzle-color-hint-als3 {
-	-fx-background-color: -sudoku-color-hint-als3;
+.-chess-puzzle-color-hint-als3 {
+	-fx-background-color: -chess-color-hint-als3;
 }
 
-.-sudoku-puzzle-color-hint-als4 {
-	-fx-background-color: -sudoku-color-hint-als4;
+.-chess-puzzle-color-hint-als4 {
+	-fx-background-color: -chess-color-hint-als4;
 }
 
-.sudoku-color-button-selected {
+.chess-color-button-selected {
 	-fx-border-width: 0;
 }

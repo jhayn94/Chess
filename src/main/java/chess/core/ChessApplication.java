@@ -2,6 +2,7 @@ package chess.core;
 
 import chess.config.LayoutFactory;
 import chess.view.core.ApplicationRootPane;
+import chess.view.core.RootStackPane;
 import chess.view.util.ResourceConstants;
 import chess.view.util.WindowHelper;
 import javafx.application.Application;
@@ -53,7 +54,8 @@ public class ChessApplication extends Application {
 	public void start(final Stage stage) {
 		this.stage = stage;
 		final ApplicationRootPane appRootPane = this.layoutFactory().createApplicationRootPane();
-		final Scene scene = this.createScene( appRootPane);
+		final RootStackPane rootStackPane = new RootStackPane(appRootPane);
+		final Scene scene = this.createScene( rootStackPane);
 		this.configureStage(stage, scene,  appRootPane);
 		// These messages are just to separate executions if a log file gets re-used.
 		LOGGER.info("==============================================");

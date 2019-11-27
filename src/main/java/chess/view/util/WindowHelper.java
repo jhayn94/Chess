@@ -1,6 +1,6 @@
 package chess.view.util;
 
-import chess.core.ChessApplication;
+import chess.core.JavaFXLauncher;
 import javafx.event.EventHandler;
 import javafx.event.EventType;
 import javafx.scene.Cursor;
@@ -182,12 +182,12 @@ public class WindowHelper {
 		}
 
 		private boolean cursorOnMenuButtons() {
-			final Stage mainStage = ChessApplication.getMainStage();
+			final Stage mainStage = JavaFXLauncher.getMainStage();
 
 			final Scene scene = this.stage.getScene();
 			final double sceneWidth = scene.getWidth();
 			if (mainStage.equals(this.stage)) {
-				return ((MENU_BUTTON_WIDTH * 3) - RIGHT_MENU_BUTTON_TO_EDGE_OF_WINDOW_SPACING > this.startX
+				return ((MENU_BUTTON_WIDTH * 2) - RIGHT_MENU_BUTTON_TO_EDGE_OF_WINDOW_SPACING > this.startX
 						|| sceneWidth - MENU_BUTTON_WIDTH - LEFT_MENU_BUTTON_TO_EDGE_OF_WINDOW_SPACING < this.startX);
 			} else {
 				return MENU_BUTTON_WIDTH - RIGHT_MENU_BUTTON_TO_EDGE_OF_WINDOW_SPACING > this.startX;
@@ -197,7 +197,7 @@ public class WindowHelper {
 		private boolean cursorOnTitleBar() {
 			final Scene scene = this.stage.getScene();
 			final double sceneHeight = scene.getHeight();
-			return this.startY > sceneHeight - TITLE_BAR_MAX_HEIGHT;
+			return this.startY > sceneHeight - WindowHelper.TITLE_BAR_MAX_HEIGHT;
 		}
 	}
 

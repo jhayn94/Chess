@@ -10,7 +10,7 @@ public class MinimizeMenuButton extends AbstractMenuButton {
 	}
 
 	@Override
-	protected void configure() {
+	public void configure() {
 		super.configure();
 //		this.addEventHandler(MouseEvent.MOUSE_CLICKED, this.onClickMinimize());
 	}

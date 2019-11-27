@@ -2,7 +2,6 @@ package chess.view.menu;
 
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 import org.springframework.stereotype.Component;
 
@@ -13,29 +12,28 @@ import org.springframework.stereotype.Component;
 @Component
 public class ApplicationTitleBar extends HBox {
 
-	public ApplicationTitleBar() {
-		this.configure();
-	}
+    private final ApplicationMenu applicationMenunu;
 
-	private Stage stage;
+    private final ApplicationMenuSpacer spacer;
 
-	public Stage getStage() {
-		return this.stage;
-	}
+    private final SystemMenu systemMenu;
 
-	private void configure() {
-		this.createChildElements();
-	}
+    public ApplicationTitleBar(final ApplicationMenu applicationMenu, final ApplicationMenuSpacer spacer,
+                               final SystemMenu systemMenu) {
+        this.applicationMenunu = applicationMenu;
+        this.spacer = spacer;
+        this.systemMenu = systemMenu;
+    }
 
-	private void createChildElements() {
-		final ApplicationMenu leftBar = new ApplicationMenu();
-//				MenuFactory.getInstance().createApplicationMenu();
-		final Region spacer = new ApplicationMenuSpacer();
-//				MenuFactory.getInstance().createApplicationMenuSpacer();
-		HBox.setHgrow(spacer, Priority.SOMETIMES);
-		final SystemMenu rightBar = new SystemMenu();
-				//MenuFactory.getInstance().createSystemMenu();
-		this.getChildren().addAll(leftBar, spacer, rightBar);
-	}
+    private Stage stage;
+
+    public Stage getStage() {
+        return this.stage;
+    }
+
+    public void configure() {
+        HBox.setHgrow(this.spacer, Priority.SOMETIMES);
+        this.getChildren().addAll(this.applicationMenunu, this.spacer, this.systemMenu);
+    }
 
 }

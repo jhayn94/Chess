@@ -7,10 +7,9 @@ public class SettingsMenu extends Menu {
 
 	public SettingsMenu() {
 		super();
-		this.configure();
 	}
 
-	private void configure() {
+	public void configure() {
 		this.setText(LabelConstants.SETTINGS);
 		this.createChildElements();
 	}

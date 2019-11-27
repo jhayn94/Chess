@@ -1,7 +1,6 @@
 package chess.view.menu;
 
 import chess.view.menu.button.ContextMenuButton;
-import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
 
 /**
@@ -12,20 +11,17 @@ public class ApplicationMenu extends HBox {
 
 	private static final String MENU_BAR_CSS_CLASS = "menu-bar";
 
-	public ApplicationMenu() {
-		this.configure();
+	private static final int MAX_HEIGHT = 50;
+
+	private final ContextMenuButton contextMenuButton;
+
+	public ApplicationMenu(final ContextMenuButton contextMenuButton) {
+		this.contextMenuButton = contextMenuButton;
 	}
 
-	private void configure() {
+	public void configure() {
 		this.getStyleClass().add(MENU_BAR_CSS_CLASS);
-		this.setMaxHeight(50);
-		this.createChildElements();
-	}
-
-	private void createChildElements() {
-		final Button contextButton = new ContextMenuButton();
-//				MenuFactory.getInstance()
-//				.createApplicationMenuButton(ApplicationMenuButtonType.CONTEXT);
-		this.getChildren().addAll(contextButton);
+		this.setMaxHeight(MAX_HEIGHT);
+		this.getChildren().addAll(this.contextMenuButton);
 	}
 }

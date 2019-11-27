@@ -14,11 +14,11 @@ public abstract class AbstractMenuButton extends Button {
 
 	protected ImageView iconView;
 
-	public AbstractMenuButton(final String resourcePath) {
+	AbstractMenuButton(final String resourcePath) {
 		this.resourcePath = resourcePath;
 	}
 
-	protected void configure() {
+	public void configure() {
 		this.setFocusTraversable(false);
 		this.getStyleClass().add(MENU_BUTTON_CSS_CLASS);
 		final Image icon = new Image(this.getClass().getResourceAsStream(this.resourcePath));

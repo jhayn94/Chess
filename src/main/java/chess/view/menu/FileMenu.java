@@ -10,13 +10,9 @@ public class FileMenu extends Menu {
 		this.configure();
 	}
 
-	private void configure() {
+	public void configure() {
 		this.setText(LabelConstants.FILE);
-		this.createChildElements();
 	}
 
-	private void createChildElements() {
-
-	}
 
 }

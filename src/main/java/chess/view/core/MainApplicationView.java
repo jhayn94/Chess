@@ -10,22 +10,19 @@ public class MainApplicationView extends SplitPane {
 
 	private static final String CSS_CLASS = "chess-main-app-view";
 
-	public MainApplicationView() {
+	private final ApplicationSideBar applicationSideBar;
+
+	public MainApplicationView(final ApplicationSideBar applicationSideBar) {
 		super();
-		this.configure();
+		this.applicationSideBar = applicationSideBar;
 	}
 
-	private void configure() {
+	public void configure() {
 		this.getStyleClass().add(CSS_CLASS);
 		this.setOrientation(Orientation.HORIZONTAL);
-		this.createChildElements();
+		this.getItems().addAll(this.applicationSideBar);
+		// CHESS BOARD VIEW HERE
 	}
 
-	private void createChildElements() {
-		// TODO - factory!
-		// CHESS BOARD VIEW HERE
-		final ApplicationSideBar sideBarView = new ApplicationSideBar();
-		this.getItems().addAll(sideBarView);
-	}
 
 }

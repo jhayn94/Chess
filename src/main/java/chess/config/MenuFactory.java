@@ -1,63 +1,105 @@
 package chess.config;
 
 import chess.core.ChessApplication;
-import chess.view.menu.*;
-import chess.view.menu.button.AbstractMenuButton;
-import chess.view.menu.button.ApplicationMenuButtonType;
+import chess.view.menu.ApplicationMenu;
+import chess.view.menu.ApplicationMenuSpacer;
+import chess.view.menu.ContextMenu;
+import chess.view.menu.EditMenu;
+import chess.view.menu.FileMenu;
+import chess.view.menu.HelpMenu;
+import chess.view.menu.SettingsMenu;
+import chess.view.menu.SystemMenu;
+import chess.view.menu.button.CloseMenuButton;
+import chess.view.menu.button.ContextMenuButton;
+import chess.view.menu.button.MinimizeMenuButton;
 import javafx.scene.control.Menu;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Service;
 
-import java.lang.reflect.InvocationTargetException;
-
 @Service
+@Configuration
 public class MenuFactory {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ChessApplication.class);
 
-    public SystemMenu createSystemMenu() {
-        return new SystemMenu();
+    @Bean
+    public SystemMenu systemMenu() {
+        final SystemMenu systemMenu = new SystemMenu(this.minimizeMenuButton(), this.closeMenuButton());
+        systemMenu.configure();
+        return systemMenu;
     }
 
-
-    public ApplicationMenu createApplicationMenu() {
-        return new ApplicationMenu();
+    @Bean
+    public ApplicationMenu applicationMenu() {
+        final ApplicationMenu applicationMenu = new ApplicationMenu(this.contextMenuButton());
+        applicationMenu.configure();
+        return applicationMenu;
     }
 
-    public ActionMenu createActionMenu() {
-        return new ActionMenu();
+    @Bean
+    public ContextMenu contextMenu() {
+        final ContextMenu contextMenu = new ContextMenu(this.fileMenu(), this.editMenu());
+        contextMenu.configure();
+        return contextMenu;
     }
 
-
-    public FileMenu createFileMenu() {
-        return new FileMenu();
+    @Bean
+    public FileMenu fileMenu() {
+        final FileMenu fileMenu = new FileMenu();
+        fileMenu.configure();
+        return fileMenu;
     }
 
-
-    public EditMenu createEditMenu() {
-        return new EditMenu();
+    @Bean
+    public EditMenu editMenu() {
+        final EditMenu editMenu = new EditMenu();
+        editMenu.configure();
+        return editMenu;
     }
 
-    public Menu createSettingsMenu() {
-        return new SettingsMenu();
+    @Bean
+    public Menu settingsMenu() {
+        final SettingsMenu settingsMenu = new SettingsMenu();
+        settingsMenu.configure();
+        return settingsMenu;
     }
 
-    public Menu createHelpMenu() {
-        return new HelpMenu();
+    @Bean
+    public Menu helpMenu() {
+        final HelpMenu helpMenu = new HelpMenu();
+        helpMenu.configure();
+        return helpMenu;
     }
 
-    public ApplicationMenuSpacer createApplicationMenuSpacer() {
-        return new ApplicationMenuSpacer();
+    @Bean
+    public ApplicationMenuSpacer applicationMenuSpacer() {
+        final ApplicationMenuSpacer applicationMenuSpacer = new ApplicationMenuSpacer();
+        applicationMenuSpacer.configure();
+        return applicationMenuSpacer;
     }
 
-    public AbstractMenuButton createApplicationMenuButton(final ApplicationMenuButtonType type) {
-        try {
-            return (AbstractMenuButton) type.getClassType().getDeclaredConstructor().newInstance();
-        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
-                | NoSuchMethodException | SecurityException e) {
-            LOGGER.error(e.getMessage());
-        }
-        return null;
+    @Bean
+    public MinimizeMenuButton minimizeMenuButton() {
+        final MinimizeMenuButton minimizeMenuButton = new MinimizeMenuButton();
+        minimizeMenuButton.configure();
+        return minimizeMenuButton;
     }
+
+    @Bean
+    public CloseMenuButton closeMenuButton() {
+        final CloseMenuButton closeMenuButton = new CloseMenuButton();
+        closeMenuButton.configure();
+        return closeMenuButton;
+    }
+
+    @Bean
+    public ContextMenuButton contextMenuButton() {
+        final ContextMenuButton contextMenuButton = new ContextMenuButton(this.contextMenu());
+        contextMenuButton.configure();
+        return contextMenuButton;
+    }
+
 }

@@ -17,11 +17,7 @@ public class ApplicationMenuSpacer extends Region {
 
 	private Label title;
 
-	public ApplicationMenuSpacer() {
-		this.configure();
-	}
-
-	private void configure() {
+	public void configure() {
 		this.setMaxHeight(MAX_HEIGHT);
 		this.getStyleClass().add(MENU_BAR_CSS_CLASS);
 		this.title = new Label(LabelConstants.APPLICATION_TITLE);

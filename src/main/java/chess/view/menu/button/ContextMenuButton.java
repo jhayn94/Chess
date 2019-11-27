@@ -1,6 +1,6 @@
 package chess.view.menu.button;
 
-import chess.view.menu.ActionMenu;
+import chess.view.menu.ContextMenu;
 import chess.view.util.ResourceConstants;
 import javafx.event.EventHandler;
 import javafx.geometry.Side;
@@ -8,33 +8,30 @@ import javafx.scene.input.MouseEvent;
 
 public class ContextMenuButton extends AbstractMenuButton {
 
-	private ActionMenu contextMenu;
+    private final ContextMenu contextMenu;
 
-	public ContextMenuButton() {
-		super(ResourceConstants.CONTEXT_MENU_ICON);
-		this.configure();
-	}
+    public ContextMenuButton(final ContextMenu contextMenu) {
+        super(ResourceConstants.CONTEXT_MENU_ICON);
+        this.contextMenu = contextMenu;
+    }
 
-	public void toggleContextMenu() {
-		if (this.contextMenu.isShowing()) {
-			this.contextMenu.hide();
-		} else {
-			this.contextMenu.show(this, Side.BOTTOM, 0, 0);
-		}
-	}
+    public void toggleContextMenu() {
+        if (this.contextMenu.isShowing()) {
+            this.contextMenu.hide();
+        } else {
+            this.contextMenu.show(this, Side.BOTTOM, 0, 0);
+        }
+    }
 
-	@Override
-	protected void configure() {
-		super.configure();
-//		this.contextMenu = MenuFactory.getInstance().createActionMenu();
-//		this.setOnMousePressed(this.onMousePressed());
+    @Override
+    public void configure() {
+        super.configure();
+        this.setOnMousePressed(this.onMousePressed());
 //		ViewController.getInstance().setContextMenuButton(this);
-//		this.setContextMenu(this.contextMenu);
-	}
+        this.setContextMenu(this.contextMenu);
+    }
 
-	private EventHandler<? super MouseEvent> onMousePressed() {
-		return event -> {
-			this.toggleContextMenu();
-		};
-	}
+    private EventHandler<? super MouseEvent> onMousePressed() {
+        return event -> this.toggleContextMenu();
+    }
 }

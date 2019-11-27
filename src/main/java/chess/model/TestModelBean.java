@@ -3,15 +3,15 @@ package chess.model;
 import org.springframework.stereotype.Component;
 
 @Component
-public class TestBean {
+public class TestModelBean {
 
     private final int x;
 
-    public TestBean() {
+    public TestModelBean() {
         this.x = 15;
     }
 
     public int getX() {
-        return x;
+        return this.x;
     }
 }

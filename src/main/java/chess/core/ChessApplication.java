@@ -3,7 +3,8 @@ package chess.core;
 import chess.config.LayoutFactory;
 import chess.config.MenuFactory;
 import chess.config.StateFactory;
-import chess.controller.ApplicationWindowStateContext;
+import chess.controller.ApplicationModelStateContext;
+import chess.controller.ApplicationViewStateContext;
 import chess.view.core.ApplicationRootPane;
 import chess.view.core.ApplicationWindow;
 import chess.view.util.ResourceConstants;
@@ -57,9 +58,9 @@ public class ChessApplication extends Application {
     }
 
     private void registerStageInContext(final Stage stage) {
-        final ApplicationWindowStateContext windowStateContext =
-                this.context.getBean(ApplicationWindowStateContext.class);
-        windowStateContext.setPrimaryStage(stage);
+        final ApplicationViewStateContext viewStateContext =
+                this.context.getBean(ApplicationViewStateContext.class);
+        viewStateContext.setPrimaryStage(stage);
     }
 
     /**
@@ -89,10 +90,11 @@ public class ChessApplication extends Application {
         return applicationContext -> {
             // Note - be careful with order here - some beans depend on others being defined.
             applicationContext.registerBean(Application.class, () -> ChessApplication.this);
-            applicationContext.registerBean(ApplicationWindowStateContext.class);
+            applicationContext.registerBean(ApplicationViewStateContext.class);
+            applicationContext.registerBean(ApplicationModelStateContext.class);
+            applicationContext.registerBean(StateFactory.class);
             applicationContext.registerBean(MenuFactory.class);
             applicationContext.registerBean(LayoutFactory.class);
-            applicationContext.registerBean(StateFactory.class);
         };
     }
 

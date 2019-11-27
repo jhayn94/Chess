@@ -1,15 +1,15 @@
 package chess.view.menu.button;
 
 import chess.config.StateFactory;
-import chess.controller.ApplicationWindowStateContext;
+import chess.controller.ApplicationViewStateContext;
 import chess.view.util.ResourceConstants;
 import javafx.event.EventHandler;
 import javafx.scene.input.MouseEvent;
 
 public class MinimizeMenuButton extends ContextAwareMenuButton {
 
-    public MinimizeMenuButton(final ApplicationWindowStateContext windowStateContext, final StateFactory stateFactory) {
-        super(ResourceConstants.MINIMIZE_ICON, windowStateContext, stateFactory);
+    public MinimizeMenuButton(final ApplicationViewStateContext viewStateContext, final StateFactory stateFactory) {
+        super(ResourceConstants.MINIMIZE_ICON, viewStateContext, stateFactory);
     }
 
     @Override
@@ -19,7 +19,7 @@ public class MinimizeMenuButton extends ContextAwareMenuButton {
     }
 
     private EventHandler<MouseEvent> onClickMinimize() {
-        return event -> this.windowStateContext.changeState(this.stateFactory.minimizedState());
+        return event -> this.viewStateContext.changeState(this.stateFactory.minimizedState());
     }
 
 }

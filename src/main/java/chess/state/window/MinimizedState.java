@@ -1,12 +1,12 @@
 package chess.state.window;
 
-import chess.controller.ApplicationWindowStateContext;
+import chess.controller.ApplicationViewStateContext;
 import javafx.application.Platform;
 
 public class MinimizedState extends ApplicationWindowState {
 
 
-    public MinimizedState(final ApplicationWindowStateContext context) {
+    public MinimizedState(final ApplicationViewStateContext context) {
         super(context);
     }
 
@@ -20,7 +20,7 @@ public class MinimizedState extends ApplicationWindowState {
     }
 
     private void doMinimize() {
-        this.context.minimizeStage();
+        this.context.getPrimaryStage().setIconified(true);
     }
 
 }

@@ -1,6 +1,6 @@
 package chess.state.window;
 
-import chess.controller.ApplicationWindowStateContext;
+import chess.controller.ApplicationViewStateContext;
 import javafx.application.Platform;
 
 /**
@@ -8,7 +8,7 @@ import javafx.application.Platform;
  */
 public class ClosedState extends ApplicationWindowState {
 
-    public ClosedState(final ApplicationWindowStateContext context) {
+    public ClosedState(final ApplicationViewStateContext context) {
         super(context);
     }
 

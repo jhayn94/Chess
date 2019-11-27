@@ -1,12 +1,12 @@
 package chess.state.window;
 
-import chess.controller.ApplicationWindowStateContext;
+import chess.controller.ApplicationViewStateContext;
 
 public abstract class ApplicationWindowState {
 
-    protected final ApplicationWindowStateContext context;
+    protected final ApplicationViewStateContext context;
 
-    protected ApplicationWindowState(final ApplicationWindowStateContext context) {
+    protected ApplicationWindowState(final ApplicationViewStateContext context) {
         this.context = context;
     }
 

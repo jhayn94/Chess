@@ -1,6 +1,7 @@
 package chess.config;
 
-import chess.controller.ApplicationWindowStateContext;
+import chess.controller.ApplicationModelStateContext;
+import chess.controller.ApplicationViewStateContext;
 import chess.view.menu.ApplicationMenu;
 import chess.view.menu.ApplicationMenuSpacer;
 import chess.view.menu.ContextMenu;
@@ -23,12 +24,16 @@ public class MenuFactory {
 
     private final StateFactory stateFactory;
 
-    private final ApplicationWindowStateContext windowStateContext;
+    private final ApplicationViewStateContext viewStateContext;
+
+    private final ApplicationModelStateContext modelStateContext;
 
     public MenuFactory(final StateFactory stateFactory,
-                       final ApplicationWindowStateContext windowStateContext) {
+                       final ApplicationViewStateContext viewStateContext,
+                       final ApplicationModelStateContext modelStateContext) {
         this.stateFactory = stateFactory;
-        this.windowStateContext = windowStateContext;
+        this.viewStateContext = viewStateContext;
+        this.modelStateContext = modelStateContext;
     }
 
     @Bean
@@ -54,14 +59,15 @@ public class MenuFactory {
 
     @Bean
     public FileMenu fileMenu() {
-        final FileMenu fileMenu = new FileMenu();
+        final FileMenu fileMenu = new FileMenu(this.viewStateContext, this.modelStateContext,
+                this.stateFactory);
         fileMenu.configure();
         return fileMenu;
     }
 
     @Bean
     public EditMenu editMenu() {
-        final EditMenu editMenu = new EditMenu();
+        final EditMenu editMenu = new EditMenu(this.modelStateContext, this.stateFactory);
         editMenu.configure();
         return editMenu;
     }
@@ -90,14 +96,14 @@ public class MenuFactory {
     @Bean
     public MinimizeMenuButton minimizeMenuButton() {
         final MinimizeMenuButton minimizeMenuButton =
-                new MinimizeMenuButton(this.windowStateContext, this.stateFactory);
+                new MinimizeMenuButton(this.viewStateContext, this.stateFactory);
         minimizeMenuButton.configure();
         return minimizeMenuButton;
     }
 
     @Bean
     public CloseMenuButton closeMenuButton() {
-        final CloseMenuButton closeMenuButton = new CloseMenuButton(this.windowStateContext, this.stateFactory);
+        final CloseMenuButton closeMenuButton = new CloseMenuButton(this.viewStateContext, this.stateFactory);
         closeMenuButton.configure();
         return closeMenuButton;
     }

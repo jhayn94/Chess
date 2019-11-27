@@ -4,7 +4,8 @@ import chess.view.menu.ApplicationTitleBar;
 import javafx.scene.layout.BorderPane;
 
 /**
- * This class represents the root element of the application. It extends {@link BorderPane}, for designating top, bottom, middle (etc.) elements.
+ * This class represents the root element of the application. It extends {@link BorderPane}, for
+ * designating top, bottom, middle (etc.) elements.
  */
 public class ApplicationRootPane extends BorderPane {
 
@@ -13,9 +14,9 @@ public class ApplicationRootPane extends BorderPane {
     private final MainApplicationView mainApplicationView;
 
     public ApplicationRootPane(final ApplicationTitleBar applicationTitleBar,
-							   final MainApplicationView mainAppView) {
+                               final MainApplicationView mainAppView) {
         this.applicationTitleBar = applicationTitleBar;
-		this.mainApplicationView = mainAppView;
+        this.mainApplicationView = mainAppView;
     }
 
     public void configure() {

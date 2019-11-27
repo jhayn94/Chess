@@ -2,8 +2,10 @@ package chess.config;
 
 import chess.view.core.ApplicationRootPane;
 import chess.view.core.ApplicationSideBar;
+import chess.view.core.ApplicationWindow;
 import chess.view.core.MainApplicationView;
 import chess.view.menu.ApplicationTitleBar;
+import chess.view.util.ShadowRectangle;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Service;
@@ -26,6 +28,14 @@ public class LayoutFactory {
     }
 
     @Bean
+    public ApplicationWindow applicationWindow(final ApplicationRootPane applicationRootPane) {
+        final ApplicationWindow rootStackPane = new ApplicationWindow(this.shadowRectangle(),
+                applicationRootPane);
+        rootStackPane.configure();
+        return rootStackPane;
+    }
+
+    @Bean
     public ApplicationTitleBar applicationTitleBar() {
         final ApplicationTitleBar applicationTitleBar = new ApplicationTitleBar(this.menuFactory.applicationMenu(), this.menuFactory.applicationMenuSpacer(), this.menuFactory.systemMenu());
         applicationTitleBar.configure();
@@ -44,5 +54,12 @@ public class LayoutFactory {
         final ApplicationSideBar applicationSideBar = new ApplicationSideBar();
         applicationSideBar.configure();
         return applicationSideBar;
+    }
+
+    @Bean
+    public ShadowRectangle shadowRectangle() {
+        final ShadowRectangle shadowRectangle = new ShadowRectangle();
+        shadowRectangle.configure();
+        return shadowRectangle;
     }
 }

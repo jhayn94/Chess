@@ -15,10 +15,9 @@ public class ShadowRectangle extends Rectangle {
 
 	public ShadowRectangle() {
 		super();
-		this.configure();
 	}
 
-	private void configure() {
+	public void configure() {
 		this.layoutBoundsProperty().addListener(
 				(ChangeListener<Bounds>) (observable, oldBounds, newBounds) -> {
 					ShadowRectangle.this.setVisible(true);

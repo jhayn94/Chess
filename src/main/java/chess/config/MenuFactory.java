@@ -1,6 +1,6 @@
 package chess.config;
 
-import chess.core.ChessApplication;
+import chess.controller.ApplicationWindowStateContext;
 import chess.view.menu.ApplicationMenu;
 import chess.view.menu.ApplicationMenuSpacer;
 import chess.view.menu.ContextMenu;
@@ -13,8 +13,6 @@ import chess.view.menu.button.CloseMenuButton;
 import chess.view.menu.button.ContextMenuButton;
 import chess.view.menu.button.MinimizeMenuButton;
 import javafx.scene.control.Menu;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Service;
@@ -23,7 +21,15 @@ import org.springframework.stereotype.Service;
 @Configuration
 public class MenuFactory {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ChessApplication.class);
+    private final StateFactory stateFactory;
+
+    private final ApplicationWindowStateContext windowStateContext;
+
+    public MenuFactory(final StateFactory stateFactory,
+                       final ApplicationWindowStateContext windowStateContext) {
+        this.stateFactory = stateFactory;
+        this.windowStateContext = windowStateContext;
+    }
 
     @Bean
     public SystemMenu systemMenu() {
@@ -83,14 +89,15 @@ public class MenuFactory {
 
     @Bean
     public MinimizeMenuButton minimizeMenuButton() {
-        final MinimizeMenuButton minimizeMenuButton = new MinimizeMenuButton();
+        final MinimizeMenuButton minimizeMenuButton =
+                new MinimizeMenuButton(this.windowStateContext, this.stateFactory);
         minimizeMenuButton.configure();
         return minimizeMenuButton;
     }
 
     @Bean
     public CloseMenuButton closeMenuButton() {
-        final CloseMenuButton closeMenuButton = new CloseMenuButton();
+        final CloseMenuButton closeMenuButton = new CloseMenuButton(this.windowStateContext, this.stateFactory);
         closeMenuButton.configure();
         return closeMenuButton;
     }

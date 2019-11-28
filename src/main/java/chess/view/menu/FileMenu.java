@@ -1,8 +1,7 @@
 package chess.view.menu;
 
 import chess.config.StateFactory;
-import chess.controller.ApplicationModelStateContext;
-import chess.controller.ApplicationViewStateContext;
+import chess.controller.ApplicationStateContext;
 import chess.view.util.LabelConstants;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
@@ -13,18 +12,14 @@ import javafx.scene.input.KeyCombination;
 
 public class FileMenu extends Menu {
 
-    private final ApplicationViewStateContext viewStateContext;
-
-    private final ApplicationModelStateContext modelStateContext;
+    private final ApplicationStateContext stateContext;
 
     private final StateFactory stateFactory;
 
-    public FileMenu(final ApplicationViewStateContext viewStateContext,
-                    final ApplicationModelStateContext modelStateContext,
+    public FileMenu(final ApplicationStateContext stateContext,
                     final StateFactory stateFactory) {
         super();
-        this.viewStateContext = viewStateContext;
-        this.modelStateContext = modelStateContext;
+        this.stateContext = stateContext;
         this.stateFactory = stateFactory;
     }
 
@@ -36,11 +31,11 @@ public class FileMenu extends Menu {
     private void createChildElements() {
         final MenuItem newGameMenuItem = new MenuItem(LabelConstants.NEW_GAME);
         newGameMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.N, KeyCombination.CONTROL_DOWN));
-        newGameMenuItem.setOnAction(event -> this.modelStateContext.changeState(this.stateFactory.newGameState()));
+        newGameMenuItem.setOnAction(event -> this.stateContext.changeState(this.stateFactory.newGameState()));
 
         final MenuItem closeMenuItem = new MenuItem(LabelConstants.CLOSE);
         closeMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.F4, KeyCombination.ALT_DOWN));
-        closeMenuItem.setOnAction(event -> this.viewStateContext.changeState(this.stateFactory.closedState()));
+        closeMenuItem.setOnAction(event -> this.stateContext.changeState(this.stateFactory.closedState()));
 
         this.getItems().addAll(newGameMenuItem, new SeparatorMenuItem(), closeMenuItem);
     }

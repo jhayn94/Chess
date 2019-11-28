@@ -1,7 +1,6 @@
 package chess.config;
 
-import chess.controller.ApplicationModelStateContext;
-import chess.controller.ApplicationViewStateContext;
+import chess.controller.ApplicationStateContext;
 import chess.view.menu.ApplicationMenu;
 import chess.view.menu.ApplicationMenuSpacer;
 import chess.view.menu.ContextMenu;
@@ -24,16 +23,12 @@ public class MenuFactory {
 
     private final StateFactory stateFactory;
 
-    private final ApplicationViewStateContext viewStateContext;
-
-    private final ApplicationModelStateContext modelStateContext;
+    private final ApplicationStateContext stateContext;
 
     public MenuFactory(final StateFactory stateFactory,
-                       final ApplicationViewStateContext viewStateContext,
-                       final ApplicationModelStateContext modelStateContext) {
+                       final ApplicationStateContext stateContext) {
         this.stateFactory = stateFactory;
-        this.viewStateContext = viewStateContext;
-        this.modelStateContext = modelStateContext;
+        this.stateContext = stateContext;
     }
 
     @Bean
@@ -52,14 +47,15 @@ public class MenuFactory {
 
     @Bean
     public ContextMenu contextMenu() {
-        final ContextMenu contextMenu = new ContextMenu(this.fileMenu(), this.editMenu());
+        final ContextMenu contextMenu = new ContextMenu(this.fileMenu(), this.editMenu(),
+                this.settingsMenu(), this.helpMenu());
         contextMenu.configure();
         return contextMenu;
     }
 
     @Bean
     public FileMenu fileMenu() {
-        final FileMenu fileMenu = new FileMenu(this.viewStateContext, this.modelStateContext,
+        final FileMenu fileMenu = new FileMenu(this.stateContext,
                 this.stateFactory);
         fileMenu.configure();
         return fileMenu;
@@ -67,7 +63,7 @@ public class MenuFactory {
 
     @Bean
     public EditMenu editMenu() {
-        final EditMenu editMenu = new EditMenu(this.modelStateContext, this.stateFactory);
+        final EditMenu editMenu = new EditMenu(this.stateContext, this.stateFactory);
         editMenu.configure();
         return editMenu;
     }
@@ -96,21 +92,22 @@ public class MenuFactory {
     @Bean
     public MinimizeMenuButton minimizeMenuButton() {
         final MinimizeMenuButton minimizeMenuButton =
-                new MinimizeMenuButton(this.viewStateContext, this.stateFactory);
+                new MinimizeMenuButton(this.stateContext, this.stateFactory);
         minimizeMenuButton.configure();
         return minimizeMenuButton;
     }
 
     @Bean
     public CloseMenuButton closeMenuButton() {
-        final CloseMenuButton closeMenuButton = new CloseMenuButton(this.viewStateContext, this.stateFactory);
+        final CloseMenuButton closeMenuButton = new CloseMenuButton(this.stateContext, this.stateFactory);
         closeMenuButton.configure();
         return closeMenuButton;
     }
 
     @Bean
     public ContextMenuButton contextMenuButton() {
-        final ContextMenuButton contextMenuButton = new ContextMenuButton(this.contextMenu());
+        final ContextMenuButton contextMenuButton = new ContextMenuButton(this.contextMenu(),
+                this.stateContext);
         contextMenuButton.configure();
         return contextMenuButton;
     }

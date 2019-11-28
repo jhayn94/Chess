@@ -1,14 +1,14 @@
 package chess.state.model;
 
-import chess.controller.ApplicationModelStateContext;
+import chess.controller.ApplicationStateContext;
 
 /**
  * This class updates the state of the application when the user invokes an
  * "undo", either through the keyboard or a button press in the UI.
  */
-public class UndoActionState extends ApplicationModelState {
+public class UndoActionState extends ModelState {
 
-    public UndoActionState(final ApplicationModelStateContext context) {
+    public UndoActionState(final ApplicationStateContext context) {
         super(context);
     }
 

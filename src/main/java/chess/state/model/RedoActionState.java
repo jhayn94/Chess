@@ -1,14 +1,14 @@
 package chess.state.model;
 
-import chess.controller.ApplicationModelStateContext;
+import chess.controller.ApplicationStateContext;
 
 /**
  * This class updates the state of the application when the user invokes a
  * "redo", either through the keyboard or a button press in the UI.
  */
-public class RedoActionState extends ApplicationModelState {
+public class RedoActionState extends ModelState {
 
-	public RedoActionState(final ApplicationModelStateContext context) {
+	public RedoActionState(final ApplicationStateContext context) {
 		super(context);
 	}
 

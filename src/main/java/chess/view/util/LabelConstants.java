@@ -28,6 +28,10 @@ public final class LabelConstants {
 
     public static final String REDO_LONG = "Redo";
 
+    public static final String HOTKEYS = "Hotkeys";
+
+    public static final String AI = "AI";
+
     private LabelConstants() {
         // Private constructor to prevent instantiation.
     }

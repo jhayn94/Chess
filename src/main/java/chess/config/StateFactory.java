@@ -1,7 +1,6 @@
 package chess.config;
 
-import chess.controller.ApplicationModelStateContext;
-import chess.controller.ApplicationViewStateContext;
+import chess.controller.ApplicationStateContext;
 import chess.state.model.NewGameState;
 import chess.state.model.RedoActionState;
 import chess.state.model.UndoActionState;
@@ -15,14 +14,10 @@ import org.springframework.stereotype.Service;
 @Configuration
 public class StateFactory {
 
-    private final ApplicationViewStateContext viewStateContext;
+    private final ApplicationStateContext stateContext;
 
-    private final ApplicationModelStateContext modelStateContext;
-
-    public StateFactory(final ApplicationModelStateContext modelStateContext,
-                        final ApplicationViewStateContext viewStateContext) {
-        this.modelStateContext = modelStateContext;
-        this.viewStateContext = viewStateContext;
+    public StateFactory(final ApplicationStateContext stateContext) {
+        this.stateContext = stateContext;
     }
 
     // TODO - in the future, does a factory method make more sense?
@@ -30,27 +25,27 @@ public class StateFactory {
 
     @Bean
     public MinimizedState minimizedState() {
-        return new MinimizedState(this.viewStateContext);
+        return new MinimizedState(this.stateContext);
     }
 
     @Bean
     public ClosedState closedState() {
-        return new ClosedState(this.viewStateContext);
+        return new ClosedState(this.stateContext);
     }
 
     @Bean
     public NewGameState newGameState() {
-        return new NewGameState(this.modelStateContext);
+        return new NewGameState(this.stateContext);
     }
 
     @Bean
     public UndoActionState undoState() {
-        return new UndoActionState(this.modelStateContext);
+        return new UndoActionState(this.stateContext);
     }
 
     @Bean
     public RedoActionState redoState() {
-        return new RedoActionState(this.modelStateContext);
+        return new RedoActionState(this.stateContext);
     }
 
 }

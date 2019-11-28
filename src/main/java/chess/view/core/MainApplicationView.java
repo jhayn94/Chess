@@ -18,6 +18,7 @@ public class MainApplicationView extends SplitPane {
 	}
 
 	public void configure() {
+		// TODO - can we delete this and use the app root pane's .setLeft method for sidebar?
 		this.getStyleClass().add(CSS_CLASS);
 		this.setOrientation(Orientation.HORIZONTAL);
 		this.getItems().addAll(this.applicationSideBar);

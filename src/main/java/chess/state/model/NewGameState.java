@@ -1,14 +1,14 @@
 package chess.state.model;
 
-import chess.controller.ApplicationModelStateContext;
+import chess.controller.ApplicationStateContext;
 
 /**
  * This class updates the state of the application when the user starts a new game, either with
  * CTRL + N, or via the context menu.
  */
-public class NewGameState extends ApplicationModelState {
+public class NewGameState extends ModelState {
 
-	public NewGameState(final ApplicationModelStateContext context) {
+	public NewGameState(final ApplicationStateContext context) {
 		super(context);
 	}
 

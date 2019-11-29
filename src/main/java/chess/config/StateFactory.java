@@ -1,6 +1,7 @@
 package chess.config;
 
 import chess.controller.ApplicationStateContext;
+import chess.state.action.ToggleContextMenuState;
 import chess.state.model.NewGameState;
 import chess.state.model.RedoActionState;
 import chess.state.model.UndoActionState;
@@ -46,6 +47,11 @@ public class StateFactory {
     @Bean
     public RedoActionState redoState() {
         return new RedoActionState(this.stateContext);
+    }
+
+    @Bean
+    public ToggleContextMenuState toggleContextMenuState() {
+        return new ToggleContextMenuState(this.stateContext);
     }
 
 }

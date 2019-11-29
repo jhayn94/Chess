@@ -2,6 +2,7 @@ package chess.core;
 
 import chess.config.LayoutFactory;
 import chess.config.MenuFactory;
+import chess.config.ModelFactory;
 import chess.config.StateFactory;
 import chess.controller.ApplicationStateContext;
 import chess.view.core.ApplicationRootPane;
@@ -92,6 +93,7 @@ public class ChessApplication extends Application {
             applicationContext.registerBean(ApplicationStateContext.class);
             applicationContext.registerBean(StateFactory.class);
             applicationContext.registerBean(MenuFactory.class);
+            applicationContext.registerBean(ModelFactory.class);
             applicationContext.registerBean(LayoutFactory.class);
         };
     }

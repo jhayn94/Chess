@@ -12,16 +12,19 @@ public class MainApplicationView extends SplitPane {
 
 	private final ApplicationSideBar applicationSideBar;
 
-	public MainApplicationView(final ApplicationSideBar applicationSideBar) {
+	private final ChessBoardView chessBoardView;
+
+	public MainApplicationView(final ApplicationSideBar applicationSideBar, final ChessBoardView chessBoardView) {
 		super();
 		this.applicationSideBar = applicationSideBar;
+		this.chessBoardView = chessBoardView;
 	}
 
 	public void configure() {
 		// TODO - can we delete this and use the app root pane's .setLeft method for sidebar?
 		this.getStyleClass().add(CSS_CLASS);
 		this.setOrientation(Orientation.HORIZONTAL);
-		this.getItems().addAll(this.applicationSideBar);
+		this.getItems().addAll(this.applicationSideBar, this.chessBoardView);
 		// CHESS BOARD VIEW HERE
 	}
 

@@ -3,6 +3,7 @@ package chess.controller;
 import chess.state.action.ActionState;
 import chess.state.model.ModelState;
 import chess.state.window.WindowState;
+import chess.view.core.ChessBoardView;
 import chess.view.menu.EditMenu;
 import chess.view.menu.button.ContextMenuButton;
 import javafx.stage.Stage;
@@ -12,6 +13,8 @@ import org.springframework.stereotype.Service;
 public class ApplicationStateContext {
 
     private Stage primaryStage;
+
+    private ChessBoardView chessBoardView;
 
     private ModelState currentModelState;
 
@@ -70,5 +73,13 @@ public class ApplicationStateContext {
 
     public EditMenu getEditMenu() {
         return this.editMenu;
+    }
+
+    public ChessBoardView getChessBoardView() {
+        return this.chessBoardView;
+    }
+
+    public void setChessBoardView(final ChessBoardView chessBoardView) {
+        this.chessBoardView = chessBoardView;
     }
 }

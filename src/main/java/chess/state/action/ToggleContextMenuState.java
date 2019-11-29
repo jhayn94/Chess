@@ -7,7 +7,7 @@ import chess.controller.ApplicationStateContext;
  */
 public class ToggleContextMenuState extends ActionState {
 
-    protected ToggleContextMenuState(final ApplicationStateContext context) {
+    public ToggleContextMenuState(final ApplicationStateContext context) {
         super(context);
     }
 

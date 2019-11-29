@@ -46,21 +46,26 @@ public class ChessApplication extends Application {
 
     @Override
     public void start(final Stage stage) {
-        this.registerStageInContext(stage);
         final LayoutFactory layoutFactory = this.context.getBean(LayoutFactory.class);
         final ApplicationRootPane appRootPane = layoutFactory.applicationRootPane();
         final ApplicationWindow rootStackPane = layoutFactory.applicationWindow(appRootPane);
         final Scene scene = this.createScene(rootStackPane);
         this.configureStage(stage, scene, appRootPane);
+        this.updateStateContext(stage);
         // These messages are just to separate executions if a log file gets re-used.
         LOGGER.info("==============================================");
         LOGGER.info("Application started successfully.");
     }
 
-    private void registerStageInContext(final Stage stage) {
-        final ApplicationStateContext viewStateContext =
+    /**
+     * Does various minor actions on the state context to finish configuration.
+     * @param stage - primary stage of the application.
+     */
+    private void updateStateContext(final Stage stage) {
+        final ApplicationStateContext stateContext =
                 this.context.getBean(ApplicationStateContext.class);
-        viewStateContext.setPrimaryStage(stage);
+        stateContext.setPrimaryStage(stage);
+        stateContext.getChessBoardView().requestFocus();
     }
 
     /**

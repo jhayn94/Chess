@@ -1,5 +1,7 @@
 package chess.view.core;
 
+import chess.model.ChessBoardModel;
+import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -10,13 +12,33 @@ import javafx.scene.layout.StackPane;
 
 public class ChessBoardCell extends StackPane {
 
-    private static final String SELECTED_CELL_CSS_CLASS = "chess-selected-cell";
-
     public enum ReasonForChange {
         CLICKED_TO_SELECT, CLICKED_TO_UNSELECT, ARROWED_OFF_OF_CELL, NEW_SELECTION_CLICKED, ARROWED_ON_TO_CELL, NONE;
     }
 
-    private static final String CSS_CLASS = "chess-puzzle-cell";
+    private static final String SELECTED_CELL_CSS_CLASS = "chess-selected-cell";
+
+    private static final String CSS_CLASS = "chess-board-cell";
+
+    private static final String CSS_CLASS_ALTERNATE = "chess-board-cell-alternate";
+
+    private static final String CSS_CLASS_BORDER_TOP = "chess-board-cell-border-top";
+
+    private static final String CSS_CLASS_BORDER_BOTTOM = "chess-board-cell-border-bottom";
+
+    private static final String CSS_CLASS_BORDER_LEFT = "chess-board-cell-border-left";
+
+    private static final String CSS_CLASS_BORDER_RIGHT = "chess-board-cell-border-right";
+
+    private static final String CSS_CLASS_BORDER_TOP_RIGHT = "chess-board-cell-border-top-right";
+
+    private static final String CSS_CLASS_BORDER_BOTTOM_RIGHT = "chess-board-cell-border-bottom" +
+            "-right";
+
+    private static final String CSS_CLASS_BORDER_TOP_LEFT = "chess-board-cell-border-top-left";
+
+    private static final String CSS_CLASS_BORDER_BOTTOM_LEFT = "chess-board-cell-border-bottom" +
+            "-left";
 
     private static final int CELL_HEIGHT = 62;
 
@@ -56,8 +78,37 @@ public class ChessBoardCell extends StackPane {
         this.setMaxWidth(CELL_WIDTH);
         this.setMinHeight(CELL_HEIGHT);
         this.setMaxHeight(CELL_HEIGHT);
-        this.getStyleClass().add(CSS_CLASS);
         this.createChildElements();
+    }
+
+    public void updateCellStyle() {
+        final ObservableList<String> styleClass = this.getStyleClass();
+        if ((this.row + this.col) % 2 == 1) {
+            styleClass.add(CSS_CLASS);
+        } else {
+            styleClass.add(CSS_CLASS_ALTERNATE);
+        }
+        if (this.row == 0) {
+            if (this.col == 0) {
+                styleClass.add(CSS_CLASS_BORDER_TOP_LEFT);
+            } else if (this.col == ChessBoardModel.BOARD_SIZE - 1) {
+                styleClass.add(CSS_CLASS_BORDER_TOP_RIGHT);
+            } else {
+                styleClass.add(CSS_CLASS_BORDER_TOP);
+            }
+        } else if (this.row == ChessBoardModel.BOARD_SIZE - 1) {
+            if (this.col == 0) {
+                styleClass.add(CSS_CLASS_BORDER_BOTTOM_LEFT);
+            } else if (this.col == ChessBoardModel.BOARD_SIZE - 1) {
+                styleClass.add(CSS_CLASS_BORDER_BOTTOM_RIGHT);
+            } else {
+                styleClass.add(CSS_CLASS_BORDER_BOTTOM);
+            }
+        } else if (this.col == 0) {
+            styleClass.add(CSS_CLASS_BORDER_LEFT);
+        } else if (this.col == ChessBoardModel.BOARD_SIZE - 1) {
+            styleClass.add(CSS_CLASS_BORDER_RIGHT);
+        }
     }
 
     private void createChildElements() {

@@ -44,7 +44,6 @@ public class ChessBoardView extends GridPane {
         this.setOnKeyPressed(this.onKeyPressed());
         this.createChildElements();
         this.stateContext.setChessBoardView(this);
-        this.requestFocus();
     }
 
     private void createChildElements() {
@@ -54,9 +53,9 @@ public class ChessBoardView extends GridPane {
             final int colIndex = (index - 1) % ChessBoardModel.BOARD_SIZE;
             final ChessBoardCell chessBoardCell =
                     this.layoutFactory.chessBoardCell();
-            // TODO - if something is wrong, try flipping these?
             chessBoardCell.setRow(rowIndex);
             chessBoardCell.setCol(colIndex);
+            chessBoardCell.updateCellStyle();
             this.add(chessBoardCell, colIndex, rowIndex);
         }
     }

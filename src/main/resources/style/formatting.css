@@ -1,43 +1,23 @@
 .root {
-	-chess-color-parchment: #e5e2ca;
 	-chess-color-pebble: #e0e0e0;
-	-chess-color-bark: #2a2922;
-	-chess-color-dark-red: #9e2f1e;
+	-chess-color-parchment: #e5e2ca;
 	-chess-color-leaves: #506d2f;
-	-chess-color-rocky-brown: #785a46;
+	-chess-color-dark-red: #9e2f1e;
 	-chess-color-off-white: #eeeeee;
-	
+	-chess-color-black: #000000;
+	-chess-color-rocky-brown: #785a46;
+
 	-chess-color-selected: #e5e2ca;
-	-chess-color-coloring1a: #f05c79;
-	-chess-color-coloring1b: #f8b9c6;
-	-chess-color-coloring2a: #4da6ff;
-	-chess-color-coloring2b: #b3d9ff;
-	-chess-color-coloring3a: #a385e0;
-	-chess-color-coloring3b: #d1c2f0;
-	-chess-color-coloring4a: #22c3bb;
-	-chess-color-coloring4b: #a8f0ec;
-	-chess-color-coloring5a: #ffc14d;
-	-chess-color-coloring5b: #ffe4b3;
-	-chess-color-hint1: #53c685;
-	-chess-color-hint2: #1a8cff;
-	-chess-color-hint3: #855dd5;
-	-chess-color-hint4: #ffaf1a;
-	-chess-color-hint5: #ff4dd2;
-	-chess-color-hint-deletable: #eb2d53;
-	-chess-color-hint-als1: #33cccc;
-	-chess-color-hint-als2: #e6e600;
-	-chess-color-hint-als3: #ffb3ff;
-	-chess-color-hint-als4: #ffc999;
 
 	-fx-font-family: "Quicksand";
 	-fx-font-size: 12pt;
 	-fx-font-weight: bold;
-	-fx-font-color: -chess-color-bark;
+	-fx-font-color: -chess-color-black;
 	-fx-box-border: transparent;
 	-fx-color: -chess-color-parchment;
 	-fx-background-color: -chess-color-parchment;
 	-fx-control-inner-background: -chess-color-pebble;
-	-fx-outer-border: -chess-color-bark;
+	-fx-outer-border: -chess-color-black;
 	-fx-inner-border: transparent;
 	-fx-inner-border-horizontal: transparent;
 	-fx-body-color: -chess-color-parchment;
@@ -61,89 +41,69 @@
 	-fx-background-color: transparent;
 }
 
-.chess-cell-candidate-label {
-	-fx-font-size: 11pt;
-	-fx-text-fill: derive(-chess-color-bark, 30%);
+.chess-board-cell {
+	-fx-background-color: -chess-color-leaves;
+	-fx-text-fill: -chess-color-black;
+ 	-fx-border-color: -chess-color-black;
+    -fx-border-width: 0 1 1 0;
 }
 
-.chess-puzzle-cell {
-	-fx-background-color: -chess-color-off-white;
-	-fx-text-fill: -chess-color-bark;
-	-fx-border-color: -chess-color-bark;
-	-fx-border-width: 1;
+.chess-board-cell-alternate {
+	-fx-background-color: -chess-color-parchment;
+	-fx-text-fill: -chess-color-black;
+ 	-fx-border-color: -chess-color-black;
+    -fx-border-width: 0 1 1 0;
 }
 
-.chess-unfixed-cell {
-	-fx-border-color: -chess-color-bark;
-	-fx-background-color: -chess-color-off-white;
-	-fx-text-background-color: -chess-color-bark;
+.chess-board-cell-border-top {
+ 	-fx-border-width: 2 1 1 0;
 }
 
-.chess-given-cell {
-	-fx-border-color: -chess-color-bark;
-	-fx-background-color: -chess-color-off-white;
-	-fx-font-size: 30pt;
-	-fx-text-background-color: -chess-color-bark;
+.chess-board-cell-border-bottom {
+ 	-fx-border-width: 0 1 2 0;
 }
 
-.chess-fixed-cell {
-	-fx-border-color: -chess-color-bark;
-	-fx-background-color: -chess-color-off-white;
-	-fx-text-background-color: -chess-color-dark-red;
-	-fx-font-size: 30pt;
+.chess-board-cell-border-left {
+ 	-fx-border-width: 0 1 1 2;
+}
+
+.chess-board-cell-border-right {
+ 	-fx-border-width: 0 2 1 0;
+}
+
+.chess-board-cell-border-top-right {
+ 	-fx-border-width: 2 2 1 0;
+}
+
+.chess-board-cell-border-bottom-right {
+ 	-fx-border-width: 0 2 2 0;
+}
+
+.chess-board-cell-border-top-left {
+ 	-fx-border-width: 2 1 1 2;
+}
+
+.chess-board-cell-border-bottom-left {
+ 	-fx-border-width: 0 1 2 2;
 }
 
 .chess-selected-cell {
-	-fx-border-color: -chess-color-bark;
-	-fx-border-width: 3;
-	-fx-background-color: rgba(0, 0, 0, .1);
-}
+ 	-fx-border-color: -chess-color-black;
+ 	-fx-border-width: 3;
+ 	-fx-background-color: rgba(0, 0, 0, .1);
+ }
 
+/* TODO - ??? */
 .chess-active-filter-cell {
-	-fx-border-color: -chess-color-bark;
+	-fx-border-color: -chess-color-black;
 	-fx-background-color: -chess-color-selected;
-}
-
-/* These are used to set extra borders on the cells that are on the edges of blocks.
-   It would be nice to be able to re-use them, but I can't figure out how to override only
-   one of the border sizes, and inherit the rest. */
-.chess-puzzle-cell-extra-top-border {
-	-fx-border-width: 2 1 1 1;
-}
-
-.chess-puzzle-cell-extra-right-border {
-	-fx-border-width: 1 2 1 1;
-}
-
-.chess-puzzle-cell-extra-bottom-border {
-	-fx-border-width: 1 1 2 1;
-}
-
-.chess-puzzle-cell-extra-left-border {
-	-fx-border-width: 1 1 1 2;
-}
-
-.chess-puzzle-cell-extra-top-right-border {
-	-fx-border-width: 2 2 1 1;
-}
-
-.chess-puzzle-cell-extra-top-left-border {
-	-fx-border-width: 2 1 1 2;
-}
-
-.chess-puzzle-cell-extra-bottom-right-border {
-	-fx-border-width: 1 2 2 1;
-}
-
-.chess-puzzle-cell-extra-bottom-left-border {
-	-fx-border-width: 1 1 2 2;
 }
 
 .button {
 	-fx-background-color: -chess-color-parchment;
-	-fx-text-fill: -chess-color-bark;
+	-fx-text-fill: -chess-color-black;
 	-fx-font-size: 14pt;
-	-fx-border-color: -chess-color-bark;
+	-fx-border-color: -chess-color-black;
 	-fx-border-width: 2;
 	-fx-background-radius: 5;
 	-fx-border-radius: 3;
@@ -159,7 +119,7 @@
 
 .chess-combo-button-unselected {
 	-fx-background-color: -chess-color-parchment;
-	-fx-text-fill: -chess-color-bark;
+	-fx-text-fill: -chess-color-black;
 }
 
 .button:armed {
@@ -187,30 +147,10 @@
 }
 
 .text-area {
-	-fx-border-color: -chess-color-bark;
+	-fx-border-color: -chess-color-black;
 	-fx-background-radius: 3;
 	-fx-border-radius: 3;
 	-fx-border-width: 2;
-}
-
-.chess-coloring-display-label {
-	-fx-background-radius: 2;
-	-fx-border-radius: 2;
-	-fx-border-width: 2;
-	-fx-border-color: -chess-color-bark;
-}
-
-.chess-coloring-candidate-display-label {
-    -fx-background-color: -fx-shadow-highlight-color, -fx-text-box-border, -fx-control-inner-background;
-	-fx-font-size: 30 pt;
-	-fx-background-radius: 2;
-	-fx-border-radius: 2;
-	-fx-border-width: 2;
-	-fx-border-color: -chess-color-bark;
-}
-
-.chess-candidate-increment-decrement-button {
-	-fx-padding: 0;
 }
 
 /* Defines the rectangle responsible for the shadow. */
@@ -233,7 +173,7 @@
 .text-field {
 	-fx-border-width: 2;
 	-fx-border-radius: 3;
-	-fx-border-color: -chess-color-bark;
+	-fx-border-color: -chess-color-black;
 	-fx-background-color: -chess-color-off-white;
 }
 
@@ -247,7 +187,7 @@
 
 .combo-box-base:editable > .text-field,
 .color-picker-label {
-	-fx-border-color: -chess-color-bark;
+	-fx-border-color: -chess-color-black;
 	-fx-background-color: -chess-color-off-white;
 	-fx-border-width: 2 0 2 2;
 	-fx-border-radius: 3 0 0 3;
@@ -264,17 +204,16 @@
 	-fx-padding: 0 0.667em 0 0.667em; /* 6 8 6 8 */
 	-fx-border-width: 2;
 	-fx-border-radius: 0 3 3 0;
-	-fx-border-color: -chess-color-bark;
+	-fx-border-color: -chess-color-black;
 }
 
 .check-box > .box {
 	-fx-background-color: -chess-color-off-white;
-	-fx-border-color: -chess-color-bark;
+	-fx-border-color: -chess-color-black;
 	-fx-border-width: 2;
 	-fx-background-radius: 3;
 	-fx-border-radius: 3;
 }
-
 
 .virtual-flow, .scroll-bar, .scroll-bar, .scroll-bar>.track, .scroll-bar>.track,
 	.scroll-bar>.track-background, .scroll-bar>.track-background,
@@ -288,7 +227,7 @@
 }
 
 .list-view {
-	-fx-border-color: -chess-color-bark;
+	-fx-border-color: -chess-color-black;
 	-fx-border-width: 2;
 }
 
@@ -301,95 +240,6 @@
 .scroll-pane,
 .scroll-pane > .corner {
     -fx-background-color: -chess-color-pebble;
-}
-
-
-/* These define colors used for the cell / candidate coloring. */
-.chess-puzzle-color1a-entity {
-	-fx-background-color: -chess-color-coloring1a
-}
-
-.chess-puzzle-color1b-entity {
-	-fx-background-color: -chess-color-coloring1b;
-}
-
-.chess-puzzle-color2a-entity {
-	-fx-background-color: -chess-color-coloring2a;
-}
-
-.chess-puzzle-color2b-entity {
-	-fx-background-color: -chess-color-coloring2b;
-}
-
-.chess-puzzle-color3a-entity {
-	-fx-background-color: -chess-color-coloring3a;
-}
-
-.chess-puzzle-color3b-entity {
-	-fx-background-color: -chess-color-coloring3b;
-}
-
-.chess-puzzle-color4a-entity {
-	-fx-background-color: -chess-color-coloring4a;
-}
-
-.chess-puzzle-color4b-entity {
-	-fx-background-color: -chess-color-coloring4b;
-}
-
-.chess-puzzle-color5a-entity {
-	-fx-background-color: -chess-color-coloring5a;
-}
-
-.chess-puzzle-color5b-entity {
-	-fx-background-color: -chess-color-coloring5b;
-}
-
-.chess-puzzle-color-hint1{
-	-fx-background-color: -chess-color-hint1;
-}
-
-.chess-puzzle-color-hint2 {
-	-fx-background-color: -chess-color-hint2;
-}
-
-.chess-puzzle-color-hint3 {
-	-fx-background-color: -chess-color-hint3;
-}
-
-.chess-puzzle-color-hint4 {
-	-fx-stroke: -chess-color-hint4;
-}
-
-/** Arrow needs the fill, but this causes the cubic curve to also have a fill. 
-	So, they must have different CSS classes. */
-.chess-puzzle-color-hint4-arrow {
-	-fx-stroke: -chess-color-hint4;
-	-fx-fill: -chess-color-hint4;
-}
-
-.chess-puzzle-color-hint5 {
-	-fx-background-color: -chess-color-hint5;
-}
-
-.chess-puzzle-color-deletable-hint-candidate {
-	-fx-background-color: -chess-color-hint-deletable;
-}
-
-.-chess-puzzle-color-hint-als1 {
-	-fx-background-color: -chess-color-hint-als1;
-}
-
-.-chess-puzzle-color-hint-als2 {
-	-fx-background-color: -chess-color-hint-als2;
-}
-
-.-chess-puzzle-color-hint-als3 {
-	-fx-background-color: -chess-color-hint-als3;
-}
-
-.-chess-puzzle-color-hint-als4 {
-	-fx-background-color: -chess-color-hint-als4;
 }
 
 .chess-color-button-selected {

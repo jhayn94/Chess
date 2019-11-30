@@ -14,7 +14,7 @@ public class Pawn extends ChessPiece {
     private static final int PAWN_START_ROW_TOP = 1;
 
     public Pawn(final Color color, final ChessBoardModel board) {
-        super(color, board);
+        super(color, board, PieceType.PAWN);
     }
 
     @Override

@@ -2,9 +2,6 @@ package chess.model;
 
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 @Component
 public class ChessBoardModel {
 
@@ -17,31 +14,27 @@ public class ChessBoardModel {
     public ChessBoardModel(final boolean isPlayerOneWhite) {
         this.isPlayerOneWhite = isPlayerOneWhite;
         this.board = new int[BOARD_SIZE][BOARD_SIZE];
+        for (int row = 0; row < BOARD_SIZE; row++) {
+            for (int col = 0; col < BOARD_SIZE; col++) {
+                this.board[col][row] = 0;
+            }
+        }
     }
 
-    /**
-     * Filters a list of given moves to ignore moves where the source and destination cells have
-     * a piece of the same color.
-     *
-     * @param moves               - initial list of moves
-     * @param filterByBlockedPath - if true, also filters out moves where the path between source
-     *                            and destination is blocked.
-     */
-    public List<Move> filterCellsOccupiedBySameColor(final int sourceRow,
-                                                     final int sourceCol, final List<Move> moves,
-                                                     final boolean filterByBlockedPath) {
-        final int sourcePiece = this.board[sourceCol][sourceRow];
-        final boolean isSourcePieceWhite = sourcePiece < 0;
+    public int getPieceForCell(final int row, final int col) {
+        return this.board[col][row];
+    }
 
-        return moves.stream().filter(move -> {
-            final int destPiece = this.board[move.getDestCol()][move.getDestRow()];
-            final boolean isDestPieceWhite = destPiece < 0;
-            return isSourcePieceWhite == isDestPieceWhite;
-        }).collect(Collectors.toList());
+    public void setPieceForCell(final int row, final int col, final int piece, final Color color) {
+        this.board[col][row] = piece;
+        if (color == Color.BLACK) {
+            this.board[col][row] *= -1;
+        }
     }
 
     /**
      * Returns the color of piece in this cell.
+     *
      * @param row - row to check.
      * @param col - column to check.
      * @return - color of piece in this cell, Color.NONE if nothing is there.

@@ -1,8 +1,10 @@
 package chess.view.core;
 
 import chess.model.ChessBoardModel;
+import chess.model.Color;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
+import javafx.scene.effect.ColorAdjust;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
@@ -67,9 +69,18 @@ public class ChessBoardCell extends StackPane {
     /**
      * Sets the image of this cell.
      */
-    public void setImage(final String iconUrl) {
+    public void setImage(final String iconUrl, final Color color) {
         final Image image = new Image(this.getClass().getResourceAsStream(iconUrl));
         this.imageView.setImage(image);
+        final ColorAdjust monochrome = new ColorAdjust();
+        if (Color.BLACK == color) {
+            monochrome.setBrightness(-.7);
+        } else {
+//            monochrome.setHue(-.5);
+            monochrome.setSaturation(-.5);
+            monochrome.setBrightness(-.2);
+        }
+        this.imageView.setEffect(monochrome);
     }
 
     public void configure() {
@@ -113,8 +124,10 @@ public class ChessBoardCell extends StackPane {
 
     private void createChildElements() {
         this.imageView = new ImageView();
+        this.imageView.setFitHeight(CELL_HEIGHT - 14);
+        this.imageView.setFitWidth(CELL_WIDTH - 14);
         this.cellIsSelectedIndicator = new Pane();
-        this.getChildren().add(this.cellIsSelectedIndicator);
+        this.getChildren().addAll(this.imageView);
     }
 
     private EventHandler<MouseEvent> onClick() {

@@ -45,34 +45,34 @@
 	-fx-background-color: -chess-color-leaves;
 	-fx-text-fill: -chess-color-black;
  	-fx-border-color: -chess-color-black;
-    -fx-border-width: 0 1 1 0;
+    -fx-border-width: 0 0 0 0;
 }
 
 .chess-board-cell-alternate {
 	-fx-background-color: -chess-color-parchment;
 	-fx-text-fill: -chess-color-black;
  	-fx-border-color: -chess-color-black;
-    -fx-border-width: 0 1 1 0;
+    -fx-border-width: 0 0 0 0;
 }
 
 .chess-board-cell-border-top {
- 	-fx-border-width: 2 1 1 0;
+ 	-fx-border-width: 2 0 0 0;
 }
 
 .chess-board-cell-border-bottom {
- 	-fx-border-width: 0 1 2 0;
+ 	-fx-border-width: 0 0 2 0;
 }
 
 .chess-board-cell-border-left {
- 	-fx-border-width: 0 1 1 2;
+ 	-fx-border-width: 0 0 0 2;
 }
 
 .chess-board-cell-border-right {
- 	-fx-border-width: 0 2 1 0;
+ 	-fx-border-width: 0 2 0 0;
 }
 
 .chess-board-cell-border-top-right {
- 	-fx-border-width: 2 2 1 0;
+ 	-fx-border-width: 2 2 0 0;
 }
 
 .chess-board-cell-border-bottom-right {
@@ -80,11 +80,11 @@
 }
 
 .chess-board-cell-border-top-left {
- 	-fx-border-width: 2 1 1 2;
+ 	-fx-border-width: 2 0 0 2;
 }
 
 .chess-board-cell-border-bottom-left {
- 	-fx-border-width: 0 1 2 2;
+ 	-fx-border-width: 0 0 2 2;
 }
 
 .chess-selected-cell {
@@ -93,10 +93,8 @@
  	-fx-background-color: rgba(0, 0, 0, .1);
  }
 
-/* TODO - ??? */
-.chess-active-filter-cell {
-	-fx-border-color: -chess-color-black;
-	-fx-background-color: -chess-color-selected;
+.chess-move-option-cell {
+	-fx-background-color: -chess-color-rocky-brown;
 }
 
 .button {

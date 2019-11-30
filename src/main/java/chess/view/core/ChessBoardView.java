@@ -29,11 +29,14 @@ public class ChessBoardView extends GridPane {
 
     private final LayoutFactory layoutFactory;
 
+    private final ChessBoardCell[][] cells;
+
     public ChessBoardView(final ApplicationStateContext stateContext, final StateFactory stateFactory,
                           final LayoutFactory layoutFactory) {
         this.stateContext = stateContext;
         this.stateFactory = stateFactory;
         this.layoutFactory = layoutFactory;
+        this.cells = new ChessBoardCell[ChessBoardModel.BOARD_SIZE][ChessBoardModel.BOARD_SIZE];
     }
 
     public void configure() {
@@ -56,6 +59,7 @@ public class ChessBoardView extends GridPane {
             chessBoardCell.setRow(rowIndex);
             chessBoardCell.setCol(colIndex);
             chessBoardCell.updateCellStyle();
+            this.cells[colIndex][rowIndex] = chessBoardCell;
             this.add(chessBoardCell, colIndex, rowIndex);
         }
     }
@@ -75,4 +79,7 @@ public class ChessBoardView extends GridPane {
         };
     }
 
+    public ChessBoardCell getCell(final int row, final int col) {
+        return this.cells[col][row];
+    }
 }

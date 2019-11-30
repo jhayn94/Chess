@@ -1,5 +1,6 @@
 package chess.controller;
 
+import chess.model.ChessBoardModel;
 import chess.state.action.ActionState;
 import chess.state.model.ModelState;
 import chess.state.window.WindowState;
@@ -12,21 +13,29 @@ import org.springframework.stereotype.Service;
 @Service
 public class ApplicationStateContext {
 
-    private Stage primaryStage;
+    // TODO - could split this into subcomponents - view and model context?
 
-    private ChessBoardView chessBoardView;
-
-    private ModelState currentModelState;
-
+    // States.
     private ModelState previousModelState;
 
     private WindowState currentViewState;
 
     private ActionState currentActionState;
 
+    // View components.
+    private Stage primaryStage;
+
+    private ChessBoardView chessBoardView;
+
+    private ModelState currentModelState;
+
     private EditMenu editMenu;
 
     private ContextMenuButton contextMenuButton;
+
+    // Model Components.
+
+    private ChessBoardModel chessBoardModel;
 
     public ApplicationStateContext() {
         this.currentModelState = null;
@@ -81,5 +90,13 @@ public class ApplicationStateContext {
 
     public void setChessBoardView(final ChessBoardView chessBoardView) {
         this.chessBoardView = chessBoardView;
+    }
+
+    public ChessBoardModel getChessBoardModel() {
+        return this.chessBoardModel;
+    }
+
+    public void setChessBoardModel(final ChessBoardModel chessBoardModel) {
+        this.chessBoardModel = chessBoardModel;
     }
 }

@@ -1,6 +1,9 @@
 package chess.state.model;
 
 import chess.controller.ApplicationStateContext;
+import chess.model.ChessBoardModel;
+import chess.model.Color;
+import chess.model.piece.ChessPiece;
 import chess.view.core.ChessBoardView;
 
 public abstract class ModelState {
@@ -19,4 +22,13 @@ public abstract class ModelState {
     }
 
     public abstract void onEnter();
+
+    protected void updateBoardWithPiece(final int row, final int col,
+                                        final ChessPiece.PieceType pieceType, final Color color) {
+        final ChessBoardModel chessBoardModel = this.context.getChessBoardModel();
+        chessBoardModel.setPieceForCell(row, col, pieceType.getPieceCode(), color);
+        final ChessBoardView chessBoardView = this.context.getChessBoardView();
+        chessBoardView.getCell(row, col).setImage(pieceType.getResourcePath(), color);
+    }
+
 }

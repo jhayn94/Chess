@@ -24,8 +24,13 @@ public class MainApplicationView extends SplitPane {
 		// TODO - can we delete this and use the app root pane's .setLeft method for sidebar?
 		this.getStyleClass().add(CSS_CLASS);
 		this.setOrientation(Orientation.HORIZONTAL);
+//		final InputStream resourceAsStream = this.getClass().getResourceAsStream(ResourceConstants.ROOK_ICON);
+//		final Image image =
+//				new Image(resourceAsStream);
+//		final ImageView testImgView = new ImageView(image);
+//		testImgView.setCache(true);
+//		testImgView.setCacheHint(CacheHint.SPEED);
 		this.getItems().addAll(this.applicationSideBar, this.chessBoardView);
-		// CHESS BOARD VIEW HERE
 	}
 
 

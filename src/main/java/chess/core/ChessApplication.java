@@ -100,9 +100,9 @@ public class ChessApplication extends Application {
             // Note - be careful with order here - some beans depend on others being defined.
             applicationContext.registerBean(Application.class, () -> ChessApplication.this);
             applicationContext.registerBean(ApplicationStateContext.class);
+            applicationContext.registerBean(ModelFactory.class);
             applicationContext.registerBean(StateFactory.class);
             applicationContext.registerBean(MenuFactory.class);
-            applicationContext.registerBean(ModelFactory.class);
             applicationContext.registerBean(LayoutFactory.class);
         };
     }

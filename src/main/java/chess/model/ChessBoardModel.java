@@ -44,7 +44,7 @@ public class ChessBoardModel {
         if (piece == 0) {
             return Color.NONE;
         }
-        return piece < 0 ? Color.WHITE : Color.BLACK;
+        return piece < 0 ? Color.BLACK : Color.WHITE;
     }
 
     public boolean isCellEmpty(final int row, final int col) {

@@ -1,7 +1,7 @@
 package chess.model;
 
 public enum Color {
-    BLACK, WHITE, NONE;
+    WHITE, BLACK, NONE;
 
     /**
      * Returns true iff the two given colors are any combination of black and white.

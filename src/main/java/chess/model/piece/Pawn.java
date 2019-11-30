@@ -18,7 +18,7 @@ public class Pawn extends ChessPiece {
     }
 
     @Override
-    public List<Move> getLegalMoves(final int sourceRow, final int sourceCol) {
+    public List<Move> getMoves(final int sourceRow, final int sourceCol) {
         final List<Move> moves = new ArrayList<>();
         // TODO - this could be merged into one method; only changes are the sign of the offsets
         //  to source cells , and the start row.
@@ -92,8 +92,4 @@ public class Pawn extends ChessPiece {
         // TODO - enpassant
     }
 
-    @Override
-    public String getIconResourcePath() {
-        return "";
-    }
 }

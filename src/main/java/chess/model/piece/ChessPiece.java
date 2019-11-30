@@ -4,10 +4,14 @@ import chess.model.ChessBoardModel;
 import chess.model.Color;
 import chess.model.Move;
 import chess.view.util.ResourceConstants;
+import org.apache.logging.log4j.util.Strings;
 
+import java.util.Arrays;
 import java.util.List;
 
 public abstract class ChessPiece {
+
+    public static final int NO_PIECE_CODE = 0;
 
     public static final int PAWN_CODE = 1;
 
@@ -34,11 +38,11 @@ public abstract class ChessPiece {
         this.pieceType = pieceType;
     }
 
-    public abstract List<Move> getLegalMoves(final int sourceRow, final int sourceCol);
-
-    public abstract String getIconResourcePath();
+    public abstract List<Move> getMoves(final int sourceRow, final int sourceCol);
 
     public enum PieceType {
+
+        NONE(ChessPiece.NO_PIECE_CODE, Strings.EMPTY),
 
         PAWN(ChessPiece.PAWN_CODE, ResourceConstants.PAWN_ICON), ROOK(ChessPiece.ROOK_CODE, ResourceConstants.ROOK_ICON),
 
@@ -61,6 +65,11 @@ public abstract class ChessPiece {
 
         public int getPieceCode() {
             return this.pieceCode;
+        }
+
+        public static PieceType fromCode(final int code) {
+            return Arrays.stream(PieceType.values()).filter(type -> Math.abs(code) == type.pieceCode)
+                    .findFirst().orElseThrow(NullPointerException::new);
         }
     }
 }

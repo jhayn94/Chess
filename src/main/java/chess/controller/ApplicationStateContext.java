@@ -1,9 +1,7 @@
 package chess.controller;
 
 import chess.model.ChessBoardModel;
-import chess.state.action.ActionState;
-import chess.state.model.ModelState;
-import chess.state.window.WindowState;
+import chess.state.GameState;
 import chess.view.core.ChessBoardView;
 import chess.view.menu.EditMenu;
 import chess.view.menu.button.ContextMenuButton;
@@ -16,18 +14,14 @@ public class ApplicationStateContext {
     // TODO - could split this into subcomponents - view and model context?
 
     // States.
-    private ModelState previousModelState;
+    private GameState previousState;
 
-    private WindowState currentViewState;
-
-    private ActionState currentActionState;
+    private GameState currentState;
 
     // View components.
     private Stage primaryStage;
 
     private ChessBoardView chessBoardView;
-
-    private ModelState currentModelState;
 
     private EditMenu editMenu;
 
@@ -37,27 +31,20 @@ public class ApplicationStateContext {
 
     private ChessBoardModel chessBoardModel;
 
+    private int selectedCellRow;
+    private int selectedCellCol;
+
     public ApplicationStateContext() {
-        this.currentModelState = null;
-        this.previousModelState = null;
-        this.currentViewState = null;
-        this.currentActionState = null;
+        this.currentState = null;
+        this.previousState = null;
+        this.selectedCellRow = -1;
+        this.selectedCellCol = -1;
     }
 
-    public void changeState(final ModelState newState) {
-        this.previousModelState = this.currentModelState;
-        this.currentModelState = newState;
-        this.currentModelState.onEnter();
-    }
-
-    public void changeState(final WindowState newState) {
-        this.currentViewState = newState;
-        this.currentViewState.onEnter();
-    }
-
-    public void changeState(final ActionState newState) {
-        this.currentActionState = newState;
-        this.currentActionState.onEnter();
+    public void changeState(final GameState newState) {
+        this.previousState = this.currentState;
+        this.currentState = newState;
+        this.currentState.onEnter();
     }
 
     public void setPrimaryStage(final Stage primaryStage) {
@@ -98,5 +85,21 @@ public class ApplicationStateContext {
 
     public void setChessBoardModel(final ChessBoardModel chessBoardModel) {
         this.chessBoardModel = chessBoardModel;
+    }
+
+    public void setSelectedRow(final int selectedCellRow) {
+        this.selectedCellRow = selectedCellRow;
+    }
+
+    public void setSelectedCol(final int selectedCellCol) {
+        this.selectedCellCol = selectedCellCol;
+    }
+
+    public int getSelectedCellRow() {
+        return this.selectedCellRow;
+    }
+
+    public int getSelectedCellCol() {
+        return this.selectedCellCol;
     }
 }

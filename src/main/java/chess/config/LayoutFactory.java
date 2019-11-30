@@ -41,7 +41,7 @@ public class LayoutFactory {
     @Bean
     @Scope("prototype")
     public ChessBoardCell chessBoardCell() {
-        final ChessBoardCell chessBoardCell = new ChessBoardCell();
+        final ChessBoardCell chessBoardCell = new ChessBoardCell(this.stateContext, this.stateFactory);
         chessBoardCell.configure();
         return chessBoardCell;
     }

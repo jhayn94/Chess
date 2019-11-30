@@ -1,7 +1,10 @@
 package chess.view.core;
 
+import chess.config.StateFactory;
+import chess.controller.ApplicationStateContext;
 import chess.model.ChessBoardModel;
 import chess.model.Color;
+import chess.state.action.ClickedCellState;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.scene.effect.ColorAdjust;
@@ -9,14 +12,9 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 
 public class ChessBoardCell extends StackPane {
-
-    public enum ReasonForChange {
-        CLICKED_TO_SELECT, CLICKED_TO_UNSELECT, ARROWED_OFF_OF_CELL, NEW_SELECTION_CLICKED, ARROWED_ON_TO_CELL, NONE;
-    }
 
     private static final String SELECTED_CELL_CSS_CLASS = "chess-selected-cell";
 
@@ -50,33 +48,33 @@ public class ChessBoardCell extends StackPane {
 
     private int col;
 
-    private Pane cellIsSelectedIndicator;
-
     private ImageView imageView;
 
-    /**
-     * Sets a pane on top of all other elements to have or not have a special CSS
-     * class that denotes the cell as selected by the user.
-     */
-    public void setIsSelected(final boolean isSelected) {
-        if (isSelected) {
-            this.cellIsSelectedIndicator.getStyleClass().add(SELECTED_CELL_CSS_CLASS);
-        } else {
-            this.cellIsSelectedIndicator.getStyleClass().remove(SELECTED_CELL_CSS_CLASS);
-        }
+    private final ApplicationStateContext stateContext;
+
+    private final StateFactory stateFactory;
+
+    public ChessBoardCell(final ApplicationStateContext stateContext,
+                          final StateFactory stateFactory) {
+        this.stateContext = stateContext;
+        this.stateFactory = stateFactory;
     }
 
     /**
      * Sets the image of this cell.
      */
     public void setImage(final String iconUrl, final Color color) {
+        // For clearing the image.
+        if (iconUrl.isEmpty()) {
+            this.imageView.setImage(null);
+            return;
+        }
         final Image image = new Image(this.getClass().getResourceAsStream(iconUrl));
         this.imageView.setImage(image);
         final ColorAdjust monochrome = new ColorAdjust();
         if (Color.BLACK == color) {
             monochrome.setBrightness(-.7);
         } else {
-//            monochrome.setHue(-.5);
             monochrome.setSaturation(-.5);
             monochrome.setBrightness(-.2);
         }
@@ -126,15 +124,16 @@ public class ChessBoardCell extends StackPane {
         this.imageView = new ImageView();
         this.imageView.setFitHeight(CELL_HEIGHT - 14);
         this.imageView.setFitWidth(CELL_WIDTH - 14);
-        this.cellIsSelectedIndicator = new Pane();
         this.getChildren().addAll(this.imageView);
     }
 
     private EventHandler<MouseEvent> onClick() {
         return event -> {
             if (MouseButton.PRIMARY == event.getButton()) {
-                System.out.println("CLICKED CELL " + this.row + " " + this.col);
-//                ModelController.getInstance().transitionToClickedCellState(this.row, this.col, event);
+                final ClickedCellState clickedCellState = this.stateFactory.clickedCellState();
+                clickedCellState.setRow(this.row);
+                clickedCellState.setCol(this.col);
+                ChessBoardCell.this.stateContext.changeState(clickedCellState);
             }
         };
     }

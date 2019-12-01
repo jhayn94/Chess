@@ -12,6 +12,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.input.TouchEvent;
 import javafx.scene.layout.StackPane;
 
 public class ChessBoardCell extends StackPane {
@@ -84,7 +85,8 @@ public class ChessBoardCell extends StackPane {
     }
 
     public void configure() {
-        this.addEventHandlers();
+        this.setEventHandler(MouseEvent.MOUSE_CLICKED, this.onClick());
+        this.setEventHandler(TouchEvent.ANY, this.onUseTouchScreen());
         this.setMinWidth(CELL_WIDTH);
         this.setMaxWidth(CELL_WIDTH);
         this.setMinHeight(CELL_HEIGHT);
@@ -144,15 +146,15 @@ public class ChessBoardCell extends StackPane {
         };
     }
 
-    /**
-     * This method resets the cell's event handlers to the current state's handler.
-     * When the cell's state changes, event handlers have to be re-registered for
-     * the new state to be used.
-     */
-    // TODO what does this mean? Does it apply?
-    private void addEventHandlers() {
-        this.setEventHandler(MouseEvent.MOUSE_CLICKED, this.onClick());
+    private EventHandler<TouchEvent> onUseTouchScreen() {
+        return event -> {
+            final ClickedCellState clickedCellState = this.stateFactory.clickedCellState();
+            clickedCellState.setRow(this.row);
+            clickedCellState.setCol(this.col);
+            ChessBoardCell.this.stateContext.changeState(clickedCellState);
+        };
     }
+
 
     public int getRow() {
         return this.row;

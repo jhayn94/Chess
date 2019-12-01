@@ -21,6 +21,8 @@ public class ChessBoardCell extends StackPane {
 
     public static final String HIGHLIGHTED_CELL_CSS_CLASS = "chess-highlighted-cell";
 
+    public static final String STALEMATE_CELL_CSS_CLASS = "chess-stalemate-cell";
+
     private static final String CSS_CLASS = "chess-board-cell";
 
     private static final String CSS_CLASS_ALTERNATE = "chess-board-cell-alternate";

@@ -168,7 +168,9 @@ public class ClickedCellState extends GameState {
         if (this.utils.isColorInCheckMate(tempBoard, opposingColor)) {
             this.setKingInCheckmateStyle(board, opposingColor);
         } else if (this.utils.isColorInCheck(tempBoard, opposingColor)) {
-            this.setKingInCheckStyle(board, opposingColor);
+            this.setKingCellStyle(board, opposingColor, ChessBoardCell.IN_CHECK_CELL_CSS_CLASS);
+        } else if (this.utils.isColorInStalemate(board, opposingColor)) {
+            this.setKingInStalemateStyle(board, opposingColor);
         }
     }
 

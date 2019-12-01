@@ -92,6 +92,9 @@
  .chess-in-check-cell {
   	-fx-background-color: -chess-color-dark-red;
  }
+ .chess-stalemate-cell {
+  	-fx-background-color: -chess-color-light-gray;
+ }
 
 .button {
 	-fx-background-color: -chess-color-parchment;

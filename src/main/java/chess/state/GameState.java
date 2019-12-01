@@ -55,6 +55,7 @@ public abstract class GameState {
             for (int col = 0; col < ChessBoardModel.BOARD_SIZE; col++) {
                 if (clearInCheckStyle) {
                     this.updateCellStyle(row, col, ChessBoardCell.IN_CHECK_CELL_CSS_CLASS, false);
+                    this.updateCellStyle(row, col, ChessBoardCell.STALEMATE_CELL_CSS_CLASS, false);
                 }
                 this.updateCellStyle(row, col, ChessBoardCell.HIGHLIGHTED_CELL_CSS_CLASS, false);
             }
@@ -63,6 +64,7 @@ public abstract class GameState {
 
     /**
      * Clears a single cell of its piece.
+     *
      * @param row - row to clear.
      * @param col - column to clear.
      */
@@ -75,11 +77,12 @@ public abstract class GameState {
     }
 
     /**
-     *  Places a piece at the given location.
-     * @param row - row to use when placing piece.
-     * @param col - column to use when placing piece.
+     * Places a piece at the given location.
+     *
+     * @param row       - row to use when placing piece.
+     * @param col       - column to use when placing piece.
      * @param pieceType - type of piece to place (see ChessPiece.PieceType).
-     * @param color - color of piece to place.
+     * @param color     - color of piece to place.
      */
     protected void updateBoardWithPiece(final int row, final int col,
                                         final ChessPiece.PieceType pieceType, final Color color) {
@@ -91,10 +94,11 @@ public abstract class GameState {
 
     /**
      * Updates the style of the given cell on the board.
-     * @param row - row to modify style of.
-     * @param col - column to modify style of.
+     *
+     * @param row      - row to modify style of.
+     * @param col      - column to modify style of.
      * @param cssClass - CSS selector to add or remove.
-     * @param add - if true, adds the given selector. Otherwise, removes the selector.
+     * @param add      - if true, adds the given selector. Otherwise, removes the selector.
      */
     protected void updateCellStyle(final int row, final int col, final String cssClass, final boolean add) {
         final ChessBoardView chessBoardView = this.context.getChessBoardView();
@@ -109,31 +113,58 @@ public abstract class GameState {
 
     /**
      * Sets the style on the king cell to indicate he is in check.
-     * @param board - chess board object.
+     *
+     * @param board        - chess board object.
      * @param colorInCheck - color of king to use.
+     * @param cssClass     - CSS class to apply to king cell.
      */
-    protected void setKingInCheckStyle(final ChessBoardModel board, final Color colorInCheck) {
+    protected void setKingCellStyle(final ChessBoardModel board, final Color colorInCheck, final String cssClass) {
         final Pair<Integer, Integer> kingPosition = this.utils.getKingPosition(board, colorInCheck);
         this.updateCellStyle(kingPosition.getKey(), kingPosition.getValue(),
-                ChessBoardCell.IN_CHECK_CELL_CSS_CLASS, true);
+                cssClass, true);
     }
 
     /**
      * Sets the style on the king cell to indicate he is in check. Adds style to the king and any piece
      * threatening a cell adjacent to him.
-     * @param board - chess board object.
+     *
+     * @param board            - chess board object.
      * @param colorInCheckmate - color of king to use.
      */
     protected void setKingInCheckmateStyle(final ChessBoardModel board, final Color colorInCheckmate) {
-        this.setKingInCheckStyle(board, colorInCheckmate);
-        final Pair<Integer, Integer> kingPosition = this.utils.getKingPosition(board, colorInCheckmate);
-        final ChessPiece king = this.modelFactory.chessPiece(board, ChessPiece.PieceType.KING, colorInCheckmate);
+        this.setKingCellStyle(board, colorInCheckmate, ChessBoardCell.IN_CHECK_CELL_CSS_CLASS);
+        this.applyEndGameStyle(board, colorInCheckmate, ChessBoardCell.IN_CHECK_CELL_CSS_CLASS);
+    }
+
+    /**
+     * Sets the style on the king cell to indicate he is in check. Adds style to the king and any piece
+     * threatening a cell adjacent to him.
+     *
+     * @param board            - chess board object.
+     * @param colorInCheckmate - color of king to use.
+     */
+    protected void setKingInStalemateStyle(final ChessBoardModel board, final Color colorInCheckmate) {
+        this.setKingCellStyle(board, colorInCheckmate, ChessBoardCell.STALEMATE_CELL_CSS_CLASS);
+        this.applyEndGameStyle(board, colorInCheckmate, ChessBoardCell.STALEMATE_CELL_CSS_CLASS);
+    }
+
+    /**
+     * Applies the given CSS class to cells which participate in creating an end game condition.
+     *
+     * @param board    - chess board object.
+     * @param color    - color causing end game conditions (i.e. who is in checkmate or stalemate).
+     * @param cssClass - CSS class to apply to relevant cells
+     */
+    private void applyEndGameStyle(final ChessBoardModel board, final Color color,
+                                   final String cssClass) {
+        final Pair<Integer, Integer> kingPosition = this.utils.getKingPosition(board, color);
+        final ChessPiece king = this.modelFactory.chessPiece(board, ChessPiece.PieceType.KING, color);
         final List<Move> moves = king.getMoves(kingPosition.getKey(), kingPosition.getValue(), true);
         for (int row = 0; row < ChessBoardModel.BOARD_SIZE; row++) {
             for (int col = 0; col < ChessBoardModel.BOARD_SIZE; col++) {
                 for (final Move move : moves) {
-                    final boolean styleApplied = this.applyCheckmateStyleIfBlockingMove(board, colorInCheckmate,
-                            kingPosition, move, row, col);
+                    final boolean styleApplied = this.applyStyleIfBlockingMove(board, color,
+                            kingPosition, move, row, col, cssClass);
                     if (styleApplied) {
                         break;
                     }
@@ -142,15 +173,28 @@ public abstract class GameState {
         }
     }
 
-    private boolean applyCheckmateStyleIfBlockingMove(final ChessBoardModel board, final Color colorInCheckmate,
-                                                      final Pair<Integer, Integer> kingPosition, final Move move,
-                                                      final int row, final int col) {
+    /**
+     * Applies CSS styling to a cell if it threatens the opposing king or blocks at least one of his potential
+     * moves.
+     *
+     * @param board        - chess board object.
+     * @param color        - color of king to examine move viability.
+     * @param kingPosition - position of king on board.
+     * @param move         - move to determine if a given piece can block.
+     * @param row          - source row of piece to check.
+     * @param col          - source column of piece to check.
+     * @param cssClass     - CSS class to apply if piece meets described conditions.
+     * @return - true iff styling is applied.
+     */
+    private boolean applyStyleIfBlockingMove(final ChessBoardModel board, final Color color,
+                                             final Pair<Integer, Integer> kingPosition, final Move move,
+                                             final int row, final int col, final String cssClass) {
         final Color pieceColorForCell = board.getPieceColorForCell(row, col);
-        if (pieceColorForCell == Color.getOpposingColor(colorInCheckmate)) {
+        if (pieceColorForCell == Color.getOpposingColor(color)) {
             if (this.utils.isPieceThreateningCell(board, move.getDestRow(),
                     move.getDestCol(), row, col) || this.utils.isPieceThreateningCell(board,
                     kingPosition.getKey(), kingPosition.getValue(), row, col)) {
-                this.updateCellStyle(row, col, ChessBoardCell.IN_CHECK_CELL_CSS_CLASS, true);
+                this.updateCellStyle(row, col, cssClass, true);
                 return true;
             }
         }

@@ -39,6 +39,7 @@ public class ChessModelUtils {
         tempChessBoard.setPieceForCell(rowToClear, colToClear, ChessPiece.PieceType.NONE.getPieceCode(), Color.NONE);
         return tempChessBoard;
     }
+
     /**
      * Returns true iff the given color is in checkmate.
      *
@@ -47,22 +48,18 @@ public class ChessModelUtils {
      * @return - true iff the given color is in checkmate.
      */
     public boolean isColorInCheckMate(final ChessBoardModel board, final Color color) {
-        final boolean colorInCheck = this.isColorInCheck(board, color);
-        if (!colorInCheck) {
-            return false;
-        }
+        return this.isColorInCheck(board, color) && !this.playerHasLegalMove(board, color);
+    }
 
-        for (int row = 0; row < ChessBoardModel.BOARD_SIZE; row++) {
-            for (int col = 0; col < ChessBoardModel.BOARD_SIZE; col++) {
-                final Color pieceColorForCell = board.getPieceColorForCell(row, col);
-                if (pieceColorForCell == color) {
-                    if (this.canPiecePreventCheckmate(board, color, row, col)) {
-                        return false;
-                    }
-                }
-            }
-        }
-        return true;
+    /**
+     * Returns true iff the given color is in stalemate.
+     *
+     * @param board - chess board model.
+     * @param color - the color to check.
+     * @return - true iff the given color is in stalemate.
+     */
+    public boolean isColorInStalemate(final ChessBoardModel board, final Color color) {
+        return !this.isColorInCheck(board, color) && !this.playerHasLegalMove(board, color);
     }
 
     /**
@@ -74,7 +71,6 @@ public class ChessModelUtils {
      */
     public boolean isColorInCheck(final ChessBoardModel board, final Color color) {
         final Pair<Integer, Integer> kingPosition = this.getKingPosition(board, color);
-
         for (int row = 0; row < ChessBoardModel.BOARD_SIZE; row++) {
             for (int col = 0; col < ChessBoardModel.BOARD_SIZE; col++) {
                 final Color pieceColorForCell = board.getPieceColorForCell(row, col);
@@ -91,6 +87,7 @@ public class ChessModelUtils {
 
     /**
      * Returns the position on the board of the king of the given color.
+     *
      * @param board - chess board object.
      * @param color - color to find.
      * @return - the position on the board of the king of the given color.
@@ -112,6 +109,16 @@ public class ChessModelUtils {
         return new Pair<>(kingRow, kingCol);
     }
 
+    /**
+     * Returns true iff the piece at the given cell is threatening the target cell.
+     *
+     * @param board     - chess board object.
+     * @param targetRow - row to check if piece can threaten.
+     * @param targetCol - column to check if piece can threaten.
+     * @param row       - row of piece.
+     * @param col       - column of piece.
+     * @return true iff the piece at the given cell is threatening the target cell.
+     */
     public boolean isPieceThreateningCell(final ChessBoardModel board, final int targetRow,
                                           final int targetCol, final int row, final int col) {
         final int pieceForCell = board.getPieceForCell(row, col);
@@ -129,15 +136,37 @@ public class ChessModelUtils {
     }
 
     /**
-     * Returns true iff the piece at the given position can prevent a checkmate from occurring.
+     * Returns true iff the given color has at least 1 move.
+     *
+     * @param board - chess board object.
+     * @param color - color to check.
+     * @return true iff the given color has at least 1 move.
+     */
+    protected boolean playerHasLegalMove(final ChessBoardModel board, final Color color) {
+        for (int row = 0; row < ChessBoardModel.BOARD_SIZE; row++) {
+            for (int col = 0; col < ChessBoardModel.BOARD_SIZE; col++) {
+                final Color pieceColorForCell = board.getPieceColorForCell(row, col);
+                if (pieceColorForCell == color) {
+                    if (this.canPieceMove(board, color, row, col)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Returns true iff the piece at the given position has any legal moves (check and stalemate considered).
+     *
      * @param board - chess board object.
      * @param color - color of piece to check.
-     * @param row - row to check.
-     * @param col - column to check.
-     * @return - true iff the piece at the given position can prevent a checkmate from occurring.
+     * @param row   - row to check.
+     * @param col   - column to check.
+     * @return - true iff the piece at the given position has any legal moves.
      */
-    private boolean canPiecePreventCheckmate(final ChessBoardModel board, final Color color,
-                                             final int row, final int col) {
+    private boolean canPieceMove(final ChessBoardModel board, final Color color,
+                                 final int row, final int col) {
         final int pieceForCell = board.getPieceForCell(row, col);
         final ChessPiece.PieceType pieceType = ChessPiece.PieceType.fromCode(pieceForCell);
         final ChessPiece chessPiece = this.modelFactory.chessPiece(board, pieceType,
@@ -152,4 +181,5 @@ public class ChessModelUtils {
         }
         return false;
     }
+
 }

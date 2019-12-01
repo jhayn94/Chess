@@ -29,6 +29,7 @@ public abstract class GameState {
     protected void clearHighlightedCells() {
         for (int row = 0; row < ChessBoardModel.BOARD_SIZE; row++) {
             for (int col = 0; col < ChessBoardModel.BOARD_SIZE; col++) {
+                this.updateCellStyle(row, col, ChessBoardCell.IN_CHECK_CELL_CSS_CLASS, false);
                 this.updateCellStyle(row, col, ChessBoardCell.HIGHLIGHTED_CELL_CSS_CLASS, false);
             }
         }
@@ -61,14 +62,13 @@ public abstract class GameState {
         }
     }
 
-    protected ChessBoardModel applyMoveToCopiedBoard(final int rowToSet, final int colToSet,
-                                                     final int rowToClear, final int colToClear,
-                                                     final ChessBoardModel chessBoardModel,
-                                                     final Color selectedPieceColor,
-                                                     final ChessPiece.PieceType pieceType) {
-        final ChessBoardModel tempChessBoard = chessBoardModel.createCopy();
-        tempChessBoard.setPieceForCell(rowToSet, colToSet, pieceType.getPieceCode(), selectedPieceColor);
-        tempChessBoard.setPieceForCell(rowToClear, colToClear, ChessPiece.PieceType.NONE.getPieceCode(), Color.NONE);
-        return tempChessBoard;
+    protected void setCheckmateStyle() {
+        for (int row = 0; row < ChessBoardModel.BOARD_SIZE; row++) {
+            for (int col = 0; col < ChessBoardModel.BOARD_SIZE; col++) {
+                if ((row + col) % 2 == 1) {
+                    this.updateCellStyle(row, col, ChessBoardCell.IN_CHECK_CELL_CSS_CLASS, true);
+                }
+            }
+        }
     }
 }

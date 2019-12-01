@@ -47,6 +47,9 @@ public class NewGameState extends GameState {
             this.updateBoardWithPiece(6, col, ChessPiece.PieceType.PAWN, playerOneColor);
         }
 
+        this.context.setIsPlayer1sTurn(true);
+        this.context.setSelectedRow(-1);
+        this.context.setSelectedCol(-1);
     }
 
 }

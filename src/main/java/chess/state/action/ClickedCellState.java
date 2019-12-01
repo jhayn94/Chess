@@ -75,7 +75,7 @@ public class ClickedCellState extends GameState {
         final ChessPiece chessPiece = this.modelFactory.chessPiece(chessBoardModel, pieceType, newSelectedPieceColor);
         final List<Move> moves = chessPiece.getMoves(selectedCellRow, selectedCellCol);
         moves.forEach(move -> {
-            final ChessBoardModel tempChessBoard = this.applyMoveToCopiedBoard(move.getDestRow(),
+            final ChessBoardModel tempChessBoard = this.utils.applyMoveToCopiedBoard(move.getDestRow(),
                     move.getDestCol(), selectedCellRow, selectedCellCol,
                     chessBoardModel, newSelectedPieceColor, pieceType);
             if (!this.utils.isColorInCheck(tempChessBoard, newSelectedPieceColor)) {
@@ -119,24 +119,25 @@ public class ClickedCellState extends GameState {
         final boolean isLegalMove = moves.stream()
                 .filter(move -> move.getDestRow() == this.row && move.getDestCol() == this.col).count() == 1;
 
-        final ChessBoardModel tempChessBoard = this.applyMoveToCopiedBoard(this.row, this.col,
+        final ChessBoardModel tempChessBoard = this.utils.applyMoveToCopiedBoard(this.row, this.col,
                 selectedRow, selectedCol, chessBoardModel, selectedPieceColor, pieceType);
 
         if (isLegalMove && !this.utils.isColorInCheck(tempChessBoard, selectedPieceColor)) {
-            this.updateStateAfterMove(selectedRow, selectedCol, selectedPieceColor, pieceType);
+            this.updateAfterMove(selectedRow, selectedCol, selectedPieceColor, pieceType);
         }
 
         final Color opposingColor = Color.getOpposingColor(selectedPieceColor);
-        if (this.utils.isColorInCheck(tempChessBoard, opposingColor)) {
-            this.setKingInCheckStyle(chessBoardModel, opposingColor, true);
+        if (this.utils.isColorInCheckMate(tempChessBoard, opposingColor)) {
+            this.setCheckmateStyle();
+        } else if (this.utils.isColorInCheck(tempChessBoard, opposingColor)) {
+            this.setKingInCheckStyle(chessBoardModel, opposingColor);
         }
 
-        // Player can never be in check after their move.
-        this.setKingInCheckStyle(chessBoardModel, selectedPieceColor, false);
+
     }
 
-
-    private void updateStateAfterMove(final int selectedRow, final int selectedCol, final Color selectedPieceColor, final ChessPiece.PieceType pieceType) {
+    private void updateAfterMove(final int selectedRow, final int selectedCol,
+                                 final Color selectedPieceColor, final ChessPiece.PieceType pieceType) {
         this.clearHighlightedCells();
         this.clearCell(selectedRow, selectedCol);
         this.updateBoardWithPiece(this.row, this.col, pieceType, selectedPieceColor);
@@ -146,7 +147,7 @@ public class ClickedCellState extends GameState {
     }
 
     private void setKingInCheckStyle(final ChessBoardModel chessBoardModel,
-                                     final Color opposingColor, final boolean add) {
+                                     final Color opposingColor) {
         int kingRow = -1;
         int kingCol = -1;
         for (int row = 0; row < ChessBoardModel.BOARD_SIZE; row++) {
@@ -160,7 +161,7 @@ public class ClickedCellState extends GameState {
                 }
             }
         }
-        this.updateCellStyle(kingRow, kingCol, ChessBoardCell.IN_CHECK_CELL_CSS_CLASS, add);
+        this.updateCellStyle(kingRow, kingCol, ChessBoardCell.IN_CHECK_CELL_CSS_CLASS, true);
     }
 
     private void updateSelectedCell() {

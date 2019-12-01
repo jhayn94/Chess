@@ -14,6 +14,49 @@ public class ChessModelUtils {
     }
 
     /**
+     * Creates a copy of the given board, applies a move, then returns the new board.
+     *
+     * @param rowToSet           - row to move the piece to.
+     * @param colToSet           - column to move the piece to.
+     * @param rowToClear         - row to make empty after the move.
+     * @param colToClear         - column to make empty after the move.
+     * @param chessBoardModel    - source board to use in copy.
+     * @param selectedPieceColor - color of piece which will be moved.
+     * @param pieceType          - type of piece that will be moved.
+     * @return copy of the board with the given move applied.
+     */
+    public ChessBoardModel applyMoveToCopiedBoard(final int rowToSet, final int colToSet,
+                                                  final int rowToClear, final int colToClear,
+                                                  final ChessBoardModel chessBoardModel,
+                                                  final Color selectedPieceColor,
+                                                  final ChessPiece.PieceType pieceType) {
+        final ChessBoardModel tempChessBoard = chessBoardModel.createCopy();
+        tempChessBoard.setPieceForCell(rowToSet, colToSet, pieceType.getPieceCode(), selectedPieceColor);
+        tempChessBoard.setPieceForCell(rowToClear, colToClear, ChessPiece.PieceType.NONE.getPieceCode(), Color.NONE);
+        return tempChessBoard;
+    }
+
+    public boolean isColorInCheckMate(final ChessBoardModel board, final Color color) {
+        final boolean colorInCheck = this.isColorInCheck(board, color);
+        if (!colorInCheck) {
+            return false;
+        }
+
+        for (int row = 0; row < ChessBoardModel.BOARD_SIZE; row++) {
+            for (int col = 0; col < ChessBoardModel.BOARD_SIZE; col++) {
+                final Color pieceColorForCell = board.getPieceColorForCell(row, col);
+                if (pieceColorForCell == color) {
+                    if (this.canPiecePreventCheckmate(board, color, row, col, pieceColorForCell)) {
+                        return false;
+                    }
+                }
+            }
+        }
+
+        return true;
+    }
+
+    /**
      * Returns true iff the given color is in check.
      *
      * @param board - chess board model.
@@ -38,11 +81,29 @@ public class ChessModelUtils {
         for (int row = 0; row < ChessBoardModel.BOARD_SIZE; row++) {
             for (int col = 0; col < ChessBoardModel.BOARD_SIZE; col++) {
                 final Color pieceColorForCell = board.getPieceColorForCell(row, col);
-                if (pieceColorForCell != Color.NONE && pieceColorForCell != color) {
+                if (pieceColorForCell == Color.getOpposingColor(color)) {
                     if (this.isPieceThreateningOpposingKing(board, kingRow, kingCol, row, col)) {
                         return true;
                     }
                 }
+            }
+        }
+        return false;
+    }
+
+    private boolean canPiecePreventCheckmate(final ChessBoardModel board, final Color color,
+                                             final int row, final int col,
+                                             final Color pieceColorForCell) {
+        final int pieceForCell = board.getPieceForCell(row, col);
+        final ChessPiece.PieceType pieceType = ChessPiece.PieceType.fromCode(pieceForCell);
+        final ChessPiece chessPiece = this.modelFactory.chessPiece(board, pieceType,
+                pieceColorForCell);
+        final List<Move> moves = chessPiece.getMoves(row, col);
+        for (final Move move : moves) {
+            final ChessBoardModel boardWithNextMove = this.applyMoveToCopiedBoard(move.getDestRow(),
+                    move.getDestCol(), row, col, board, color, pieceType);
+            if (!this.isColorInCheck(boardWithNextMove, color)) {
+                return true;
             }
         }
         return false;

@@ -3,6 +3,7 @@ package chess.state.action;
 import chess.config.ModelFactory;
 import chess.controller.ApplicationStateContext;
 import chess.model.ChessBoardModel;
+import chess.model.ChessModelUtils;
 import chess.model.Color;
 import chess.model.Move;
 import chess.model.piece.ChessPiece;
@@ -18,13 +19,17 @@ public class ClickedCellState extends GameState {
 
     private final ModelFactory modelFactory;
 
+    private final ChessModelUtils utils;
+
     private int row;
 
     private int col;
 
-    public ClickedCellState(final ApplicationStateContext context, final ModelFactory modelFactory) {
+    public ClickedCellState(final ApplicationStateContext context,
+                            final ModelFactory modelFactory, final ChessModelUtils utils) {
         super(context);
         this.modelFactory = modelFactory;
+        this.utils = utils;
         this.row = -1;
         this.col = -1;
     }
@@ -69,8 +74,15 @@ public class ClickedCellState extends GameState {
         final ChessPiece.PieceType pieceType = ChessPiece.PieceType.fromCode(selectedPiece);
         final ChessPiece chessPiece = this.modelFactory.chessPiece(chessBoardModel, pieceType, newSelectedPieceColor);
         final List<Move> moves = chessPiece.getMoves(selectedCellRow, selectedCellCol);
-        moves.forEach(move -> this.updateCellStyle(move.getDestRow(), move.getDestCol(),
-                ChessBoardCell.HIGHLIGHTED_CELL_CSS_CLASS, true));
+        moves.forEach(move -> {
+            final ChessBoardModel tempChessBoard = this.applyMoveToCopiedBoard(move.getDestRow(),
+                    move.getDestCol(), selectedCellRow, selectedCellCol,
+                    chessBoardModel, newSelectedPieceColor, pieceType);
+            if (!this.utils.isColorInCheck(tempChessBoard, newSelectedPieceColor)) {
+                this.updateCellStyle(move.getDestRow(), move.getDestCol(),
+                        ChessBoardCell.HIGHLIGHTED_CELL_CSS_CLASS, true);
+            }
+        });
     }
 
     /**
@@ -107,10 +119,12 @@ public class ClickedCellState extends GameState {
         final boolean isLegalMove = moves.stream()
                 .filter(move -> move.getDestRow() == this.row && move.getDestCol() == this.col).count() == 1;
 
-        if (isLegalMove) {
+        final ChessBoardModel tempChessBoard = this.applyMoveToCopiedBoard(this.row, this.col,
+                selectedRow, selectedCol, chessBoardModel, selectedPieceColor, pieceType);
+
+        if (isLegalMove && !this.utils.isColorInCheck(tempChessBoard, selectedPieceColor)) {
             this.updateStateAfterMove(selectedRow, selectedCol, selectedPieceColor, pieceType);
         }
-
     }
 
     private void updateStateAfterMove(final int selectedRow, final int selectedCol, final Color selectedPieceColor, final ChessPiece.PieceType pieceType) {

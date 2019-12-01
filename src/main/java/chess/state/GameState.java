@@ -60,4 +60,15 @@ public abstract class GameState {
             styleClass.remove(cssClass);
         }
     }
+
+    protected ChessBoardModel applyMoveToCopiedBoard(final int rowToSet, final int colToSet,
+                                                     final int rowToClear, final int colToClear,
+                                                     final ChessBoardModel chessBoardModel,
+                                                     final Color selectedPieceColor,
+                                                     final ChessPiece.PieceType pieceType) {
+        final ChessBoardModel tempChessBoard = chessBoardModel.createCopy();
+        tempChessBoard.setPieceForCell(rowToSet, colToSet, pieceType.getPieceCode(), selectedPieceColor);
+        tempChessBoard.setPieceForCell(rowToClear, colToClear, ChessPiece.PieceType.NONE.getPieceCode(), Color.NONE);
+        return tempChessBoard;
+    }
 }

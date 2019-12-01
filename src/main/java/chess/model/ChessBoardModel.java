@@ -66,6 +66,17 @@ public class ChessBoardModel {
         return this.board[col][row] == 0;
     }
 
+    public ChessBoardModel createCopy() {
+        final ChessBoardModel other = new ChessBoardModel(this.isPlayerOneWhite);
+        other.board = new int[BOARD_SIZE][BOARD_SIZE];
+        for (int row = 0; row < BOARD_SIZE; row++) {
+            for (int col = 0; col < BOARD_SIZE; col++) {
+                other.board[col][row] = this.board[col][row];
+            }
+        }
+        return other;
+    }
+
     public boolean isPlayerOneWhite() {
         return this.isPlayerOneWhite;
     }

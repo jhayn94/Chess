@@ -25,9 +25,6 @@ public class StateFactory {
         this.modelFactory = modelFactory;
     }
 
-    // TODO - in the future, does a factory method make more sense?
-    // e.g. ApplicationWindowState createState(Class<T>...)
-
     @Bean
     public MinimizedState minimizedState() {
         return new MinimizedState(this.stateContext);
@@ -60,6 +57,6 @@ public class StateFactory {
 
     @Bean
     public ClickedCellState clickedCellState() {
-        return new ClickedCellState(this.stateContext, this.modelFactory);
+        return new ClickedCellState(this.stateContext, this.modelFactory, this.modelFactory.chessModelUtils());
     }
 }

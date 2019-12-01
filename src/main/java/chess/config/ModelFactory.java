@@ -1,6 +1,7 @@
 package chess.config;
 
 import chess.model.ChessBoardModel;
+import chess.model.ChessModelUtils;
 import chess.model.Color;
 import chess.model.piece.Bishop;
 import chess.model.piece.ChessPiece;
@@ -24,9 +25,9 @@ public class ModelFactory {
         return new ChessBoardModel(isP1White);
     }
 
-//    public Move move(final ChessPiece piece) {
-//        return new Move(piece, this.board());
-//    }
+    public ChessModelUtils chessModelUtils() {
+        return new ChessModelUtils(this);
+    }
 
     public ChessPiece chessPiece(final ChessBoardModel board, final ChessPiece.PieceType type,
                                  final Color color) {

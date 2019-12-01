@@ -30,6 +30,7 @@ public class ClickedCellState extends GameState {
 
     @Override
     public void onEnter() {
+        // Check some basic preconditions: require fields to be set.
         if (this.row == -1 || this.col == -1) {
             throw new IllegalStateException("Must set row and column index first.");
         }
@@ -38,30 +39,37 @@ public class ClickedCellState extends GameState {
                 this.col);
         final int selectedRow = this.context.getSelectedCellRow();
         final int selectedCol = this.context.getSelectedCellCol();
-
+        // If the player tries to move the other color.
         if (this.triedToSelectWrongColorPiece(chessBoardModel, newSelectedPieceColor, selectedRow, selectedCol)) {
             return;
         }
 
+        // If a piece is already selected.
         if (selectedRow > -1 && selectedCol > -1) {
             final Color oldSelectedPieceColor =
                     chessBoardModel.getPieceColorForCell(selectedRow, selectedCol);
-            if (oldSelectedPieceColor != newSelectedPieceColor) {
-                this.doMove(selectedRow, selectedCol, chessBoardModel, oldSelectedPieceColor);
-            } else {
+            // If new selected cell color is the same as the current selected piece color.
+            if (oldSelectedPieceColor == newSelectedPieceColor) {
                 this.updateSelectedCell();
                 this.clearHighlightedCells(false);
-                this.updateCellHighlightedForSelectedCell(chessBoardModel, newSelectedPieceColor);
+                this.updateCellHighlightingForSelectedCell(chessBoardModel, newSelectedPieceColor);
+            } else {
+                this.doMove(selectedRow, selectedCol, chessBoardModel, oldSelectedPieceColor);
             }
-
         } else if (Color.NONE != newSelectedPieceColor) {
             this.updateSelectedCell();
-            this.updateCellHighlightedForSelectedCell(chessBoardModel, newSelectedPieceColor);
+            this.updateCellHighlightingForSelectedCell(chessBoardModel, newSelectedPieceColor);
         }
     }
 
-    private void updateCellHighlightedForSelectedCell(final ChessBoardModel chessBoardModel,
-                                                      final Color newSelectedPieceColor) {
+    /**
+     * Adds cell highlighting to every move where the selected piece could move. Note that this filters out
+     * moves for check and other special cases (whereas simply calling ChessPiece::getMoves does not).
+     * @param chessBoardModel - chess board object.
+     * @param newSelectedPieceColor - piece color to determine moves for.
+     */
+    private void updateCellHighlightingForSelectedCell(final ChessBoardModel chessBoardModel,
+                                                       final Color newSelectedPieceColor) {
         final int selectedCellRow = this.context.getSelectedCellRow();
         final int selectedCellCol = this.context.getSelectedCellCol();
         final int selectedPiece = chessBoardModel.getPieceForCell(selectedCellRow, selectedCellCol);
@@ -88,7 +96,7 @@ public class ClickedCellState extends GameState {
      * @param selectedCellRow       - selected row.
      * @param selectedCellCol       - selected column.
      * @return true iff a player tries to select the wrong color piece (i.e. to show available
-     * * moves)
+     *   moves)
      */
     private boolean triedToSelectWrongColorPiece(final ChessBoardModel board, final Color newSelectedPieceColor,
                                                  final int selectedCellRow, final int selectedCellCol) {
@@ -103,6 +111,14 @@ public class ClickedCellState extends GameState {
                                 && Color.BLACK == newSelectedPieceColor));
     }
 
+    /**
+     * Validates the legality of a move, and applies it if it passes such checks.
+     *
+     * @param selectedRow - source row of proposed move.
+     * @param selectedCol - source column of proposed move.
+     * @param board - chess board object.
+     * @param selectedPieceColor - piece color of proposed move.
+     */
     private void doMove(final int selectedRow, final int selectedCol, final ChessBoardModel board,
                         final Color selectedPieceColor) {
         final int selectedPiece = board.getPieceForCell(selectedRow, selectedCol);
@@ -117,19 +133,22 @@ public class ClickedCellState extends GameState {
                 selectedRow, selectedCol, board, selectedPieceColor, pieceType);
 
         if (isLegalMove && !this.utils.isColorInCheck(tempBoard, selectedPieceColor)) {
-            this.updateAfterMove(selectedRow, selectedCol, selectedPieceColor, pieceType);
+            this.applyMove(selectedRow, selectedCol, selectedPieceColor, pieceType);
+            this.doAfterMoveChecks(board, selectedPieceColor, tempBoard);
         }
 
-        final Color opposingColor = Color.getOpposingColor(selectedPieceColor);
-        if (this.utils.isColorInCheckMate(tempBoard, opposingColor)) {
-            this.setKingInCheckmateStyle(board, opposingColor);
-        } else if (this.utils.isColorInCheck(tempBoard, opposingColor)) {
-            this.setKingInCheckStyle(board, opposingColor);
-        }
     }
 
-    private void updateAfterMove(final int selectedRow, final int selectedCol,
-                                 final Color selectedPieceColor, final ChessPiece.PieceType pieceType) {
+    /**
+     * Updates the view and model to apply a move to the board.
+     *
+     * @param selectedRow        - source row of move.
+     * @param selectedCol        - source column of move.
+     * @param selectedPieceColor - color of piece to move.
+     * @param pieceType          - type of piece to move.
+     */
+    private void applyMove(final int selectedRow, final int selectedCol,
+                           final Color selectedPieceColor, final ChessPiece.PieceType pieceType) {
         this.clearHighlightedCells(true);
         this.clearCell(selectedRow, selectedCol);
         this.updateBoardWithPiece(this.row, this.col, pieceType, selectedPieceColor);
@@ -138,6 +157,25 @@ public class ClickedCellState extends GameState {
         this.context.setIsPlayer1sTurn(!this.context.isPlayer1sTurn());
     }
 
+    /**
+     * Does various after move checks, such as looking for check, checkmate and stalemate.
+     * @param board - chess board object.
+     * @param selectedPieceColor - color whose turn it will be.
+     * @param tempBoard - new state of the board after a move.
+     */
+    private void doAfterMoveChecks(final ChessBoardModel board, final Color selectedPieceColor, final ChessBoardModel tempBoard) {
+        final Color opposingColor = Color.getOpposingColor(selectedPieceColor);
+        if (this.utils.isColorInCheckMate(tempBoard, opposingColor)) {
+            this.setKingInCheckmateStyle(board, opposingColor);
+        } else if (this.utils.isColorInCheck(tempBoard, opposingColor)) {
+            this.setKingInCheckStyle(board, opposingColor);
+        }
+    }
+
+
+    /**
+     * Updates the selected cell with the newly clicked cell in this event / state.
+     */
     private void updateSelectedCell() {
         this.context.setSelectedRow(this.row);
         this.context.setSelectedCol(this.col);

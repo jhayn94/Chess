@@ -10,6 +10,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Represents a chess piece on a board.
+ */
 public abstract class ChessPiece {
 
     public static final int NO_PIECE_CODE = 0;
@@ -51,17 +54,29 @@ public abstract class ChessPiece {
      */
     public abstract List<Move> getMoves(final int sourceRow, final int sourceCol, boolean filterFriendlyPieces);
 
+    /**
+     * Filters out moves which exceed the bounds of the chess board.
+     * @param moves - unfiltered list of moves.
+     * @return - a filtered list of moves.
+     */
     protected List<Move> filterOutOfBoundsMoves(final List<Move> moves) {
         return moves.stream().filter(move -> -1 < move.getDestRow() && move.getDestRow() < ChessBoardModel.BOARD_SIZE
                 && -1 < move.getDestCol() && move.getDestCol() < ChessBoardModel.BOARD_SIZE).collect(Collectors.toList());
-
     }
 
+    /**
+     * Filters out moves which are to cells with friendly pieces.
+     * @param moves - unfiltered list of moves.
+     * @return - a filtered list of moves.
+     */
     protected List<Move> filterFriendlyPieces(final List<Move> moves) {
         return moves.stream().filter(move -> this.color != this.board.getPieceColorForCell(move.getDestRow(),
                 move.getDestCol())).collect(Collectors.toList());
     }
 
+    /**
+     * Indicates the type of piece that this is.
+     */
     public enum PieceType {
 
         NONE(ChessPiece.NO_PIECE_CODE, Strings.EMPTY),
@@ -95,6 +110,13 @@ public abstract class ChessPiece {
         }
     }
 
+    /**
+     * Gets all moves the piece can make in a straight line up until it hits another piece. Note that this could
+     * be a friendly piece. See this::filterFriendlyPieces for filtering this out.
+     * @param sourceRow - source row of the move.
+     * @param sourceCol - source column of the move.
+     * @param moves - current list of moves to add to.
+     */
     protected void getLinearMovesUp(final int sourceRow, final int sourceCol, final List<Move> moves) {
         int nextRow = sourceRow - 1;
         boolean checkNextMove = this.indexInBounds(nextRow);
@@ -110,6 +132,14 @@ public abstract class ChessPiece {
         }
     }
 
+
+    /**
+     * Gets all moves the piece can make in a straight line down until it hits another piece. Note that this could
+     * be a friendly piece. See this::filterFriendlyPieces for filtering this out.
+     * @param sourceRow - source row of the move.
+     * @param sourceCol - source column of the move.
+     * @param moves - current list of moves to add to.
+     */
     protected void getLinearMovesDown(final int sourceRow, final int sourceCol, final List<Move> moves) {
         int nextRow = sourceRow + 1;
         boolean checkNextMove = this.indexInBounds(nextRow);
@@ -125,6 +155,13 @@ public abstract class ChessPiece {
         }
     }
 
+    /**
+     * Gets all moves the piece can make in a straight line left until it hits another piece. Note that this could
+     * be a friendly piece. See this::filterFriendlyPieces for filtering this out.
+     * @param sourceRow - source row of the move.
+     * @param sourceCol - source column of the move.
+     * @param moves - current list of moves to add to.
+     */
     protected void getLinearMovesLeft(final int sourceRow, final int sourceCol, final List<Move> moves) {
         int nextCol = sourceCol - 1;
         boolean checkNextMove = this.indexInBounds(nextCol);
@@ -140,6 +177,13 @@ public abstract class ChessPiece {
         }
     }
 
+    /**
+     * Gets all moves the piece can make in a straight line right until it hits another piece. Note that this could
+     * be a friendly piece. See this::filterFriendlyPieces for filtering this out.
+     * @param sourceRow - source row of the move.
+     * @param sourceCol - source column of the move.
+     * @param moves - current list of moves to add to.
+     */
     protected void getLinearMovesRight(final int sourceRow, final int sourceCol, final List<Move> moves) {
         int nextCol = sourceCol + 1;
         boolean checkNextMove = this.indexInBounds(nextCol);
@@ -155,6 +199,13 @@ public abstract class ChessPiece {
         }
     }
 
+    /**
+     * Gets all moves the piece can make in a diagonal line up and to the right until it hits another piece. Note
+     * that this could be a friendly piece. See this::filterFriendlyPieces for filtering this out.
+     * @param sourceRow - source row of the move.
+     * @param sourceCol - source column of the move.
+     * @param moves - current list of moves to add to.
+     */
     protected void getLinearMovesUpRight(final int sourceRow, final int sourceCol, final List<Move> moves) {
         int nextRow = sourceRow - 1;
         int nextCol = sourceCol + 1;
@@ -172,6 +223,13 @@ public abstract class ChessPiece {
         }
     }
 
+    /**
+     * Gets all moves the piece can make in a diagonal line down and to the right until it hits another piece. Note
+     * that this could be a friendly piece. See this::filterFriendlyPieces for filtering this out.
+     * @param sourceRow - source row of the move.
+     * @param sourceCol - source column of the move.
+     * @param moves - current list of moves to add to.
+     */
     protected void getLinearMovesDownRight(final int sourceRow, final int sourceCol, final List<Move> moves) {
         int nextRow = sourceRow + 1;
         int nextCol = sourceCol + 1;
@@ -189,6 +247,13 @@ public abstract class ChessPiece {
         }
     }
 
+    /**
+     * Gets all moves the piece can make in a diagonal line up and to the left until it hits another piece. Note
+     * that this could be a friendly piece. See this::filterFriendlyPieces for filtering this out.
+     * @param sourceRow - source row of the move.
+     * @param sourceCol - source column of the move.
+     * @param moves - current list of moves to add to.
+     */
     protected void getLinearMovesUpLeft(final int sourceRow, final int sourceCol, final List<Move> moves) {
         int nextRow = sourceRow - 1;
         int nextCol = sourceCol - 1;
@@ -206,6 +271,13 @@ public abstract class ChessPiece {
         }
     }
 
+    /**
+     * Gets all moves the piece can make in a diagonal line down to the left until it hits another piece. Note
+     * that this could be a friendly piece. See this::filterFriendlyPieces for filtering this out.
+     * @param sourceRow - source row of the move.
+     * @param sourceCol - source column of the move.
+     * @param moves - current list of moves to add to.
+     */
     protected void getLinearMovesDownLeft(final int sourceRow, final int sourceCol, final List<Move> moves) {
         int nextRow = sourceRow + 1;
         int nextCol = sourceCol - 1;
@@ -223,8 +295,13 @@ public abstract class ChessPiece {
         }
     }
 
-    protected boolean indexInBounds(final int nextRow) {
-        return -1 < nextRow && nextRow < ChessBoardModel.BOARD_SIZE;
+    /**
+     * Returns true iff the given index is in the bounds of the board.
+     * @param index - position on board to check.
+     * @return - true iff the given index is in the bounds of the board.
+     */
+    protected boolean indexInBounds(final int index) {
+        return -1 < index && index < ChessBoardModel.BOARD_SIZE;
     }
 
 }

@@ -27,32 +27,32 @@ public class StateFactory {
 
     @Bean
     public MinimizedState minimizedState() {
-        return new MinimizedState(this.stateContext);
+        return new MinimizedState(this.stateContext, this.modelFactory, this.modelFactory.chessModelUtils());
     }
 
     @Bean
     public ClosedState closedState() {
-        return new ClosedState(this.stateContext);
+        return new ClosedState(this.stateContext, this.modelFactory, this.modelFactory.chessModelUtils());
     }
 
     @Bean
     public NewGameState newGameState() {
-        return new NewGameState(this.stateContext);
+        return new NewGameState(this.stateContext, this.modelFactory, this.modelFactory.chessModelUtils());
     }
 
     @Bean
     public UndoActionState undoState() {
-        return new UndoActionState(this.stateContext);
+        return new UndoActionState(this.stateContext, this.modelFactory, this.modelFactory.chessModelUtils());
     }
 
     @Bean
     public RedoActionState redoState() {
-        return new RedoActionState(this.stateContext);
+        return new RedoActionState(this.stateContext, this.modelFactory, this.modelFactory.chessModelUtils());
     }
 
     @Bean
     public ToggleContextMenuState toggleContextMenuState() {
-        return new ToggleContextMenuState(this.stateContext);
+        return new ToggleContextMenuState(this.stateContext, this.modelFactory, this.modelFactory.chessModelUtils());
     }
 
     @Bean

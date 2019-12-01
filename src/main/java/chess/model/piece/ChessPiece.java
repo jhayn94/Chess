@@ -40,19 +40,26 @@ public abstract class ChessPiece {
     }
 
     /**
-     * Returns a list of moves the piece can make. The returned list considers boundaries and
+     * Returns a list of moves the piece can make. The returned list considers board boundaries and
      * placements of other pieces, but does not review if the player is in check.
      *
-     * @param sourceRow - start row of piece.
-     * @param sourceCol - start column of piece.
+     * @param sourceRow            - start row of piece.
+     * @param sourceCol            - start column of piece.
+     * @param filterFriendlyPieces - if true, moves returned will not include cells covered by pieces of the
+     *                             same color.
      * @return - a list of moves the piece can make.
      */
-    public abstract List<Move> getMoves(final int sourceRow, final int sourceCol);
+    public abstract List<Move> getMoves(final int sourceRow, final int sourceCol, boolean filterFriendlyPieces);
 
     protected List<Move> filterOutOfBoundsMoves(final List<Move> moves) {
         return moves.stream().filter(move -> -1 < move.getDestRow() && move.getDestRow() < ChessBoardModel.BOARD_SIZE
                 && -1 < move.getDestCol() && move.getDestCol() < ChessBoardModel.BOARD_SIZE).collect(Collectors.toList());
 
+    }
+
+    protected List<Move> filterFriendlyPieces(final List<Move> moves) {
+        return moves.stream().filter(move -> this.color != this.board.getPieceColorForCell(move.getDestRow(),
+                move.getDestCol())).collect(Collectors.toList());
     }
 
     public enum PieceType {
@@ -88,18 +95,15 @@ public abstract class ChessPiece {
         }
     }
 
-
     protected void getLinearMovesUp(final int sourceRow, final int sourceCol, final List<Move> moves) {
         int nextRow = sourceRow - 1;
         boolean checkNextMove = this.indexInBounds(nextRow);
         while (checkNextMove && this.indexInBounds(nextRow)) {
             final Color pieceColorForCell = this.board.getPieceColorForCell(nextRow, sourceCol);
-            if (Color.NONE == pieceColorForCell ) {
+            if (Color.NONE == pieceColorForCell) {
                 moves.add(new Move(nextRow, sourceCol));
-            } else if (this.color != pieceColorForCell) {
-                moves.add(new Move(nextRow, sourceCol));
-                checkNextMove = false;
             } else {
+                moves.add(new Move(nextRow, sourceCol));
                 checkNextMove = false;
             }
             nextRow--;
@@ -111,12 +115,10 @@ public abstract class ChessPiece {
         boolean checkNextMove = this.indexInBounds(nextRow);
         while (checkNextMove && this.indexInBounds(nextRow)) {
             final Color pieceColorForCell = this.board.getPieceColorForCell(nextRow, sourceCol);
-            if (Color.NONE == pieceColorForCell ) {
+            if (Color.NONE == pieceColorForCell) {
                 moves.add(new Move(nextRow, sourceCol));
-            } else if (this.color != pieceColorForCell) {
-                moves.add(new Move(nextRow, sourceCol));
-                checkNextMove = false;
             } else {
+                moves.add(new Move(nextRow, sourceCol));
                 checkNextMove = false;
             }
             nextRow++;
@@ -128,12 +130,10 @@ public abstract class ChessPiece {
         boolean checkNextMove = this.indexInBounds(nextCol);
         while (checkNextMove && this.indexInBounds(nextCol)) {
             final Color pieceColorForCell = this.board.getPieceColorForCell(sourceRow, nextCol);
-            if (Color.NONE == pieceColorForCell ) {
+            if (Color.NONE == pieceColorForCell) {
                 moves.add(new Move(sourceRow, nextCol));
-            } else if (this.color != pieceColorForCell) {
-                moves.add(new Move(sourceRow, nextCol));
-                checkNextMove = false;
             } else {
+                moves.add(new Move(sourceRow, nextCol));
                 checkNextMove = false;
             }
             nextCol--;
@@ -145,12 +145,10 @@ public abstract class ChessPiece {
         boolean checkNextMove = this.indexInBounds(nextCol);
         while (checkNextMove && this.indexInBounds(nextCol)) {
             final Color pieceColorForCell = this.board.getPieceColorForCell(sourceRow, nextCol);
-            if (Color.NONE == pieceColorForCell ) {
+            if (Color.NONE == pieceColorForCell) {
                 moves.add(new Move(sourceRow, nextCol));
-            } else if (this.color != pieceColorForCell) {
-                moves.add(new Move(sourceRow, nextCol));
-                checkNextMove = false;
             } else {
+                moves.add(new Move(sourceRow, nextCol));
                 checkNextMove = false;
             }
             nextCol++;
@@ -163,12 +161,10 @@ public abstract class ChessPiece {
         boolean checkNextMove = this.indexInBounds(nextRow) && this.indexInBounds(nextCol);
         while (checkNextMove && this.indexInBounds(nextRow) && this.indexInBounds(nextCol)) {
             final Color pieceColorForCell = this.board.getPieceColorForCell(nextRow, nextCol);
-            if (Color.NONE == pieceColorForCell ) {
+            if (Color.NONE == pieceColorForCell) {
                 moves.add(new Move(nextRow, nextCol));
-            } else if (this.color != pieceColorForCell) {
-                moves.add(new Move(nextRow, nextCol));
-                checkNextMove = false;
             } else {
+                moves.add(new Move(nextRow, nextCol));
                 checkNextMove = false;
             }
             nextRow--;
@@ -182,12 +178,10 @@ public abstract class ChessPiece {
         boolean checkNextMove = this.indexInBounds(nextRow) && this.indexInBounds(nextCol);
         while (checkNextMove && this.indexInBounds(nextRow) && this.indexInBounds(nextCol)) {
             final Color pieceColorForCell = this.board.getPieceColorForCell(nextRow, nextCol);
-            if (Color.NONE == pieceColorForCell ) {
+            if (Color.NONE == pieceColorForCell) {
                 moves.add(new Move(nextRow, nextCol));
-            } else if (this.color != pieceColorForCell) {
-                moves.add(new Move(nextRow, nextCol));
-                checkNextMove = false;
             } else {
+                moves.add(new Move(nextRow, nextCol));
                 checkNextMove = false;
             }
             nextRow++;
@@ -201,12 +195,10 @@ public abstract class ChessPiece {
         boolean checkNextMove = this.indexInBounds(nextRow) && this.indexInBounds(nextCol);
         while (checkNextMove && this.indexInBounds(nextRow) && this.indexInBounds(nextCol)) {
             final Color pieceColorForCell = this.board.getPieceColorForCell(nextRow, nextCol);
-            if (Color.NONE == pieceColorForCell ) {
+            if (Color.NONE == pieceColorForCell) {
                 moves.add(new Move(nextRow, nextCol));
-            } else if (this.color != pieceColorForCell) {
-                moves.add(new Move(nextRow, nextCol));
-                checkNextMove = false;
             } else {
+                moves.add(new Move(nextRow, nextCol));
                 checkNextMove = false;
             }
             nextRow--;
@@ -220,12 +212,10 @@ public abstract class ChessPiece {
         boolean checkNextMove = this.indexInBounds(nextRow) && this.indexInBounds(nextCol);
         while (checkNextMove && this.indexInBounds(nextRow) && this.indexInBounds(nextCol)) {
             final Color pieceColorForCell = this.board.getPieceColorForCell(nextRow, nextCol);
-            if (Color.NONE == pieceColorForCell ) {
+            if (Color.NONE == pieceColorForCell) {
                 moves.add(new Move(nextRow, nextCol));
-            } else if (this.color != pieceColorForCell) {
-                moves.add(new Move(nextRow, nextCol));
-                checkNextMove = false;
             } else {
+                moves.add(new Move(nextRow, nextCol));
                 checkNextMove = false;
             }
             nextRow++;

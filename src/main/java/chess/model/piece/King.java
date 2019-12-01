@@ -14,8 +14,8 @@ public class King extends ChessPiece {
     }
 
     @Override
-    public List<Move> getMoves(final int sourceRow, final int sourceCol) {
-        final List<Move> moves = new ArrayList<>();
+    public List<Move> getMoves(final int sourceRow, final int sourceCol, final boolean filterFriendlyPieces) {
+        List<Move> moves = new ArrayList<>();
         this.getMoveUp(sourceRow, sourceCol, moves);
         this.getMoveDown(sourceRow, sourceCol, moves);
         this.getMoveLeft(sourceRow, sourceCol, moves);
@@ -24,7 +24,11 @@ public class King extends ChessPiece {
         this.getMoveDownRight(sourceRow, sourceCol, moves);
         this.getMoveUpLeft(sourceRow, sourceCol, moves);
         this.getMoveDownLeft(sourceRow, sourceCol, moves);
-        return this.filterOutOfBoundsMoves(moves);
+        moves = this.filterOutOfBoundsMoves(moves);
+        if (filterFriendlyPieces) {
+            moves = this.filterFriendlyPieces(moves);
+        }
+        return moves;
     }
 
     protected void getMoveUp(final int sourceRow, final int sourceCol, final List<Move> moves) {

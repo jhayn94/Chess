@@ -1,6 +1,8 @@
 package chess.state.action;
 
+import chess.config.ModelFactory;
 import chess.controller.ApplicationStateContext;
+import chess.model.ChessModelUtils;
 import chess.state.GameState;
 
 /**
@@ -8,8 +10,9 @@ import chess.state.GameState;
  */
 public class ToggleContextMenuState extends GameState {
 
-    public ToggleContextMenuState(final ApplicationStateContext context) {
-        super(context);
+    public ToggleContextMenuState(final ApplicationStateContext context,
+                                  final ModelFactory modelFactory, final ChessModelUtils utils) {
+        super(context, utils, modelFactory);
     }
 
     @Override

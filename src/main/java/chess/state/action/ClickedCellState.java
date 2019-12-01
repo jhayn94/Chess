@@ -17,19 +17,13 @@ import java.util.List;
  */
 public class ClickedCellState extends GameState {
 
-    private final ModelFactory modelFactory;
-
-    private final ChessModelUtils utils;
-
     private int row;
 
     private int col;
 
     public ClickedCellState(final ApplicationStateContext context,
                             final ModelFactory modelFactory, final ChessModelUtils utils) {
-        super(context);
-        this.modelFactory = modelFactory;
-        this.utils = utils;
+        super(context, utils, modelFactory);
         this.row = -1;
         this.col = -1;
     }
@@ -45,8 +39,7 @@ public class ClickedCellState extends GameState {
         final int selectedRow = this.context.getSelectedCellRow();
         final int selectedCol = this.context.getSelectedCellCol();
 
-        if (this.triedToSelectWrongColorPiece(chessBoardModel, newSelectedPieceColor,
-                selectedRow, selectedCol)) {
+        if (this.triedToSelectWrongColorPiece(chessBoardModel, newSelectedPieceColor, selectedRow, selectedCol)) {
             return;
         }
 
@@ -57,7 +50,7 @@ public class ClickedCellState extends GameState {
                 this.doMove(selectedRow, selectedCol, chessBoardModel, oldSelectedPieceColor);
             } else {
                 this.updateSelectedCell();
-                this.clearHighlightedCells();
+                this.clearHighlightedCells(false);
                 this.updateCellHighlightedForSelectedCell(chessBoardModel, newSelectedPieceColor);
             }
 
@@ -67,13 +60,14 @@ public class ClickedCellState extends GameState {
         }
     }
 
-    private void updateCellHighlightedForSelectedCell(final ChessBoardModel chessBoardModel, final Color newSelectedPieceColor) {
+    private void updateCellHighlightedForSelectedCell(final ChessBoardModel chessBoardModel,
+                                                      final Color newSelectedPieceColor) {
         final int selectedCellRow = this.context.getSelectedCellRow();
         final int selectedCellCol = this.context.getSelectedCellCol();
         final int selectedPiece = chessBoardModel.getPieceForCell(selectedCellRow, selectedCellCol);
         final ChessPiece.PieceType pieceType = ChessPiece.PieceType.fromCode(selectedPiece);
         final ChessPiece chessPiece = this.modelFactory.chessPiece(chessBoardModel, pieceType, newSelectedPieceColor);
-        final List<Move> moves = chessPiece.getMoves(selectedCellRow, selectedCellCol);
+        final List<Move> moves = chessPiece.getMoves(selectedCellRow, selectedCellCol, true);
         moves.forEach(move -> {
             final ChessBoardModel tempChessBoard = this.utils.applyMoveToCopiedBoard(move.getDestRow(),
                     move.getDestCol(), selectedCellRow, selectedCellCol,
@@ -89,79 +83,59 @@ public class ClickedCellState extends GameState {
      * Returns true iff a player tries to select the wrong color piece (i.e. to show available
      * moves)
      *
-     * @param chessBoardModel       - chess board to check.
+     * @param board                 - chess board to check.
      * @param newSelectedPieceColor - selected piece color.
      * @param selectedCellRow       - selected row.
      * @param selectedCellCol       - selected column.
      * @return true iff a player tries to select the wrong color piece (i.e. to show available
      * * moves)
      */
-    private boolean triedToSelectWrongColorPiece(final ChessBoardModel chessBoardModel, final Color newSelectedPieceColor, final int selectedCellRow, final int selectedCellCol) {
+    private boolean triedToSelectWrongColorPiece(final ChessBoardModel board, final Color newSelectedPieceColor,
+                                                 final int selectedCellRow, final int selectedCellCol) {
         return (selectedCellRow == -1 && selectedCellCol == -1) &&
-                ((this.context.isPlayer1sTurn() && chessBoardModel.isPlayerOneWhite()
+                ((this.context.isPlayer1sTurn() && board.isPlayerOneWhite()
                         && Color.BLACK == newSelectedPieceColor) ||
-                        (this.context.isPlayer1sTurn() && !chessBoardModel.isPlayerOneWhite()
+                        (this.context.isPlayer1sTurn() && !board.isPlayerOneWhite()
                                 && Color.WHITE == newSelectedPieceColor) ||
-                        (!this.context.isPlayer1sTurn() && chessBoardModel.isPlayerOneWhite()
+                        (!this.context.isPlayer1sTurn() && board.isPlayerOneWhite()
                                 && Color.WHITE == newSelectedPieceColor) ||
-                        (!this.context.isPlayer1sTurn() && !chessBoardModel.isPlayerOneWhite()
+                        (!this.context.isPlayer1sTurn() && !board.isPlayerOneWhite()
                                 && Color.BLACK == newSelectedPieceColor));
     }
 
-    private void doMove(final int selectedRow, final int selectedCol,
-                        final ChessBoardModel chessBoardModel,
+    private void doMove(final int selectedRow, final int selectedCol, final ChessBoardModel board,
                         final Color selectedPieceColor) {
-        final int selectedPiece = chessBoardModel.getPieceForCell(selectedRow, selectedCol);
+        final int selectedPiece = board.getPieceForCell(selectedRow, selectedCol);
         final ChessPiece.PieceType pieceType = ChessPiece.PieceType.fromCode(selectedPiece);
-        final ChessPiece chessPiece = this.modelFactory.chessPiece(chessBoardModel, pieceType,
+        final ChessPiece chessPiece = this.modelFactory.chessPiece(board, pieceType,
                 selectedPieceColor);
-        final List<Move> moves = chessPiece.getMoves(selectedRow, selectedCol);
+        final List<Move> moves = chessPiece.getMoves(selectedRow, selectedCol, true);
         final boolean isLegalMove = moves.stream()
                 .filter(move -> move.getDestRow() == this.row && move.getDestCol() == this.col).count() == 1;
 
-        final ChessBoardModel tempChessBoard = this.utils.applyMoveToCopiedBoard(this.row, this.col,
-                selectedRow, selectedCol, chessBoardModel, selectedPieceColor, pieceType);
+        final ChessBoardModel tempBoard = this.utils.applyMoveToCopiedBoard(this.row, this.col,
+                selectedRow, selectedCol, board, selectedPieceColor, pieceType);
 
-        if (isLegalMove && !this.utils.isColorInCheck(tempChessBoard, selectedPieceColor)) {
+        if (isLegalMove && !this.utils.isColorInCheck(tempBoard, selectedPieceColor)) {
             this.updateAfterMove(selectedRow, selectedCol, selectedPieceColor, pieceType);
         }
 
         final Color opposingColor = Color.getOpposingColor(selectedPieceColor);
-        if (this.utils.isColorInCheckMate(tempChessBoard, opposingColor)) {
-            this.setCheckmateStyle();
-        } else if (this.utils.isColorInCheck(tempChessBoard, opposingColor)) {
-            this.setKingInCheckStyle(chessBoardModel, opposingColor);
+        if (this.utils.isColorInCheckMate(tempBoard, opposingColor)) {
+            this.setKingInCheckmateStyle(board, opposingColor);
+        } else if (this.utils.isColorInCheck(tempBoard, opposingColor)) {
+            this.setKingInCheckStyle(board, opposingColor);
         }
-
-
     }
 
     private void updateAfterMove(final int selectedRow, final int selectedCol,
                                  final Color selectedPieceColor, final ChessPiece.PieceType pieceType) {
-        this.clearHighlightedCells();
+        this.clearHighlightedCells(true);
         this.clearCell(selectedRow, selectedCol);
         this.updateBoardWithPiece(this.row, this.col, pieceType, selectedPieceColor);
         this.context.setSelectedRow(-1);
         this.context.setSelectedCol(-1);
         this.context.setIsPlayer1sTurn(!this.context.isPlayer1sTurn());
-    }
-
-    private void setKingInCheckStyle(final ChessBoardModel chessBoardModel,
-                                     final Color opposingColor) {
-        int kingRow = -1;
-        int kingCol = -1;
-        for (int row = 0; row < ChessBoardModel.BOARD_SIZE; row++) {
-            for (int col = 0; col < ChessBoardModel.BOARD_SIZE; col++) {
-                final int pieceForCell = chessBoardModel.getPieceForCell(row, col);
-                final Color pieceColorForCell = chessBoardModel.getPieceColorForCell(row, col);
-                if (Math.abs(pieceForCell) == ChessPiece.PieceType.KING.getPieceCode()
-                        && pieceColorForCell == opposingColor) {
-                    kingRow = row;
-                    kingCol = col;
-                }
-            }
-        }
-        this.updateCellStyle(kingRow, kingCol, ChessBoardCell.IN_CHECK_CELL_CSS_CLASS, true);
     }
 
     private void updateSelectedCell() {

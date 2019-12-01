@@ -14,37 +14,21 @@ public class Knight extends ChessPiece {
     }
 
     @Override
-    public List<Move> getMoves(final int sourceRow, final int sourceCol) {
-        final List<Move> moves = new ArrayList<>();
-        if (this.isOtherCellEmptyOrOpposingColor(sourceRow + 2, sourceCol - 1)) {
-            moves.add(new Move(sourceRow + 2, sourceCol - 1));
+    public List<Move> getMoves(final int sourceRow, final int sourceCol, final boolean filterFriendlyPieces) {
+        List<Move> moves = new ArrayList<>();
+        moves.add(new Move(sourceRow + 2, sourceCol - 1));
+        moves.add(new Move(sourceRow + 2, sourceCol + 1));
+        moves.add(new Move(sourceRow - 2, sourceCol - 1));
+        moves.add(new Move(sourceRow - 2, sourceCol + 1));
+        moves.add(new Move(sourceRow + 1, sourceCol - 2));
+        moves.add(new Move(sourceRow + 1, sourceCol + 2));
+        moves.add(new Move(sourceRow - 1, sourceCol - 2));
+        moves.add(new Move(sourceRow - 1, sourceCol + 2));
+        moves = this.filterOutOfBoundsMoves(moves);
+        if (filterFriendlyPieces) {
+            moves = this.filterFriendlyPieces(moves);
         }
-        if (this.isOtherCellEmptyOrOpposingColor(sourceRow + 2, sourceCol + 1)) {
-            moves.add(new Move(sourceRow + 2, sourceCol + 1));
-        }
-        if (this.isOtherCellEmptyOrOpposingColor(sourceRow - 2, sourceCol - 1)) {
-            moves.add(new Move(sourceRow - 2, sourceCol - 1));
-        }
-        if (this.isOtherCellEmptyOrOpposingColor(sourceRow - 2, sourceCol + 1)) {
-            moves.add(new Move(sourceRow - 2, sourceCol + 1));
-        }
-        if (this.isOtherCellEmptyOrOpposingColor(sourceRow + 1, sourceCol - 2)) {
-            moves.add(new Move(sourceRow + 1, sourceCol - 2));
-        }
-        if (this.isOtherCellEmptyOrOpposingColor(sourceRow + 1, sourceCol + 2)) {
-            moves.add(new Move(sourceRow + 1, sourceCol + 2));
-        }
-        if (this.isOtherCellEmptyOrOpposingColor(sourceRow - 1, sourceCol - 2)) {
-            moves.add(new Move(sourceRow - 1, sourceCol - 2));
-        }
-        if (this.isOtherCellEmptyOrOpposingColor(sourceRow - 1, sourceCol + 2)) {
-            moves.add(new Move(sourceRow - 1, sourceCol + 2));
-        }
-
-        return this.filterOutOfBoundsMoves(moves);
+        return moves;
     }
 
-    private boolean isOtherCellEmptyOrOpposingColor(final int row, final int col) {
-        return this.color != this.board.getPieceColorForCell(row, col);
-    }
 }

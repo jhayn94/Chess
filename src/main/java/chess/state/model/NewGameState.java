@@ -1,7 +1,9 @@
 package chess.state.model;
 
+import chess.config.ModelFactory;
 import chess.controller.ApplicationStateContext;
 import chess.model.ChessBoardModel;
+import chess.model.ChessModelUtils;
 import chess.model.Color;
 import chess.model.piece.ChessPiece;
 import chess.state.GameState;
@@ -12,17 +14,19 @@ import chess.state.GameState;
  */
 public class NewGameState extends GameState {
 
-    public NewGameState(final ApplicationStateContext context) {
-        super(context);
+    public NewGameState(final ApplicationStateContext context,
+                        final ModelFactory modelFactory, final ChessModelUtils utils) {
+        super(context, utils, modelFactory);
         context.setIsPlayer1sTurn(true);
     }
 
     @Override
     public void onEnter() {
         this.clearBoard();
-        this.clearHighlightedCells();
+        this.clearHighlightedCells(true);
 
-        final Color playerTwoColor = Color.BLACK;
+        final Color playerTwoColor = this.context.getChessBoardModel().isPlayerOneWhite()
+                ? Color.BLACK : Color.WHITE;
         this.updateBoardWithPiece(0, 0, ChessPiece.PieceType.ROOK, playerTwoColor);
         this.updateBoardWithPiece(0, 1, ChessPiece.PieceType.KNIGHT, playerTwoColor);
         this.updateBoardWithPiece(0, 2, ChessPiece.PieceType.BISHOP, playerTwoColor);
@@ -32,7 +36,7 @@ public class NewGameState extends GameState {
         this.updateBoardWithPiece(0, 6, ChessPiece.PieceType.KNIGHT, playerTwoColor);
         this.updateBoardWithPiece(0, 7, ChessPiece.PieceType.ROOK, playerTwoColor);
 
-        final Color playerOneColor = Color.WHITE;
+        final Color playerOneColor = Color.getOpposingColor(playerTwoColor);
         this.updateBoardWithPiece(7, 0, ChessPiece.PieceType.ROOK, playerOneColor);
         this.updateBoardWithPiece(7, 1, ChessPiece.PieceType.KNIGHT, playerOneColor);
         this.updateBoardWithPiece(7, 2, ChessPiece.PieceType.BISHOP, playerOneColor);
@@ -47,7 +51,7 @@ public class NewGameState extends GameState {
             this.updateBoardWithPiece(6, col, ChessPiece.PieceType.PAWN, playerOneColor);
         }
 
-        this.context.setIsPlayer1sTurn(true);
+        this.context.setIsPlayer1sTurn(this.context.getChessBoardModel().isPlayerOneWhite());
         this.context.setSelectedRow(-1);
         this.context.setSelectedCol(-1);
     }

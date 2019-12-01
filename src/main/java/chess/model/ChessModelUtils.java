@@ -2,6 +2,7 @@ package chess.model;
 
 import chess.config.ModelFactory;
 import chess.model.piece.ChessPiece;
+import javafx.util.Pair;
 
 import java.util.List;
 
@@ -52,7 +53,6 @@ public class ChessModelUtils {
                 }
             }
         }
-
         return true;
     }
 
@@ -64,6 +64,23 @@ public class ChessModelUtils {
      * @return - true iff the given color is in check.
      */
     public boolean isColorInCheck(final ChessBoardModel board, final Color color) {
+        final Pair<Integer, Integer> kingPosition = this.getKingPosition(board, color);
+
+        for (int row = 0; row < ChessBoardModel.BOARD_SIZE; row++) {
+            for (int col = 0; col < ChessBoardModel.BOARD_SIZE; col++) {
+                final Color pieceColorForCell = board.getPieceColorForCell(row, col);
+                if (pieceColorForCell == Color.getOpposingColor(color)) {
+                    if (this.isPieceThreateningCell(board, kingPosition.getKey(),
+                            kingPosition.getValue(), row, col)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    public Pair<Integer, Integer> getKingPosition(final ChessBoardModel board, final Color color) {
         int kingRow = -1;
         int kingCol = -1;
         for (int row = 0; row < ChessBoardModel.BOARD_SIZE; row++) {
@@ -77,18 +94,7 @@ public class ChessModelUtils {
                 }
             }
         }
-
-        for (int row = 0; row < ChessBoardModel.BOARD_SIZE; row++) {
-            for (int col = 0; col < ChessBoardModel.BOARD_SIZE; col++) {
-                final Color pieceColorForCell = board.getPieceColorForCell(row, col);
-                if (pieceColorForCell == Color.getOpposingColor(color)) {
-                    if (this.isPieceThreateningOpposingKing(board, kingRow, kingCol, row, col)) {
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
+        return new Pair<>(kingRow, kingCol);
     }
 
     private boolean canPiecePreventCheckmate(final ChessBoardModel board, final Color color,
@@ -98,7 +104,7 @@ public class ChessModelUtils {
         final ChessPiece.PieceType pieceType = ChessPiece.PieceType.fromCode(pieceForCell);
         final ChessPiece chessPiece = this.modelFactory.chessPiece(board, pieceType,
                 pieceColorForCell);
-        final List<Move> moves = chessPiece.getMoves(row, col);
+        final List<Move> moves = chessPiece.getMoves(row, col, true);
         for (final Move move : moves) {
             final ChessBoardModel boardWithNextMove = this.applyMoveToCopiedBoard(move.getDestRow(),
                     move.getDestCol(), row, col, board, color, pieceType);
@@ -109,16 +115,16 @@ public class ChessModelUtils {
         return false;
     }
 
-    private boolean isPieceThreateningOpposingKing(final ChessBoardModel board, final int kingRow,
-                                                   final int kingCol, final int row, final int col) {
+    public boolean isPieceThreateningCell(final ChessBoardModel board, final int targetRow,
+                                          final int targetCol, final int row, final int col) {
         final int pieceForCell = board.getPieceForCell(row, col);
         final ChessPiece.PieceType pieceType = ChessPiece.PieceType.fromCode(pieceForCell);
         final Color pieceColorForCell = board.getPieceColorForCell(row, col);
         final ChessPiece chessPiece = this.modelFactory.chessPiece(board, pieceType,
                 pieceColorForCell);
-        final List<Move> moves = chessPiece.getMoves(row, col);
+        final List<Move> moves = chessPiece.getMoves(row, col, false);
         for (final Move move : moves) {
-            if (move.getDestRow() == kingRow && move.getDestCol() == kingCol) {
+            if (move.getDestRow() == targetRow && move.getDestCol() == targetCol) {
                 return true;
             }
         }

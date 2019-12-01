@@ -18,8 +18,8 @@ public class Pawn extends ChessPiece {
     }
 
     @Override
-    public List<Move> getMoves(final int sourceRow, final int sourceCol) {
-        final List<Move> moves = new ArrayList<>();
+    public List<Move> getMoves(final int sourceRow, final int sourceCol, final boolean filterFriendlyPieces) {
+        List<Move> moves = new ArrayList<>();
         // TODO - this could be merged into one method; only changes are the sign of the offsets
         //  to source cells , and the start row.
         if (this.color == Color.WHITE && this.board.isPlayerOneWhite() ||
@@ -29,7 +29,11 @@ public class Pawn extends ChessPiece {
             this.getMovesAsPlayerTwo(sourceRow, sourceCol, moves);
         }
 
-        return this.filterOutOfBoundsMoves(moves);
+        moves = this.filterOutOfBoundsMoves(moves);
+        if (filterFriendlyPieces) {
+            moves = this.filterFriendlyPieces(moves);
+        }
+        return moves;
     }
 
     /**
@@ -41,22 +45,23 @@ public class Pawn extends ChessPiece {
      */
     private void getMovesAsPlayerOne(final int sourceRow, final int sourceCol, final List<Move> moves) {
         // First move.
-        if (sourceRow == PAWN_START_ROW_BOTTOM && this.board.isCellEmpty(sourceRow - 2, sourceCol)) {
+        if (sourceRow == PAWN_START_ROW_BOTTOM && this.board.isCellEmpty(sourceRow - 2, sourceCol)
+                && this.board.isCellEmpty(sourceRow - 1, sourceCol)) {
             moves.add(new Move(sourceRow - 2, sourceCol));
         }
         // Basic move.
         if (this.board.isCellEmpty(sourceRow - 1, sourceCol)) {
             moves.add(new Move(sourceRow - 1, sourceCol));
         }
-        // Capture moves.
-        final Color leftCaptureCellColor = this.board.getPieceColorForCell(sourceRow - 1,
+        // Capture moves. Remember that moves to cells with friendly pieces are optionally filtered out later.
+        final Color leftCapturePieceColor = this.board.getPieceColorForCell(sourceRow - 1,
                 sourceCol - 1);
-        if (Color.areOpposingColors(this.color, leftCaptureCellColor)) {
+        if (Color.NONE != leftCapturePieceColor) {
             moves.add(new Move(sourceRow - 1, sourceCol - 1));
         }
-        final Color rightCaptureCellColor = this.board.getPieceColorForCell(sourceRow - 1,
+        final Color rightCapturePieceColor = this.board.getPieceColorForCell(sourceRow - 1,
                 sourceCol + 1);
-        if (Color.areOpposingColors(this.color, rightCaptureCellColor)) {
+        if (Color.NONE != rightCapturePieceColor) {
             moves.add(new Move(sourceRow - 1, sourceCol + 1));
         }
         // TODO - enpassant
@@ -71,22 +76,23 @@ public class Pawn extends ChessPiece {
      */
     private void getMovesAsPlayerTwo(final int sourceRow, final int sourceCol, final List<Move> moves) {
         // First move.
-        if (sourceRow == PAWN_START_ROW_TOP && this.board.isCellEmpty(sourceRow + 2, sourceCol)) {
+        if (sourceRow == PAWN_START_ROW_TOP && this.board.isCellEmpty(sourceRow + 2, sourceCol)
+                && this.board.isCellEmpty(sourceRow + 1, sourceCol)) {
             moves.add(new Move((sourceRow + 2), sourceCol));
         }
         // Basic move.
         if (this.board.isCellEmpty(sourceRow + 1, sourceCol)) {
             moves.add(new Move((sourceRow + 1), sourceCol));
         }
-        // Capture moves.
-        final Color leftCaptureCellColor = this.board.getPieceColorForCell(sourceRow + 1,
+        // Capture moves. Remember that moves to cells with friendly pieces are optionally filtered out later.
+        final Color leftCapturePieceColor = this.board.getPieceColorForCell(sourceRow + 1,
                 sourceCol - 1);
-        if (Color.areOpposingColors(this.color, leftCaptureCellColor)) {
+        if (Color.NONE != leftCapturePieceColor) {
             moves.add(new Move(sourceRow + 1, sourceCol - 1));
         }
-        final Color rightCaptureCellColor = this.board.getPieceColorForCell(sourceRow + 1,
+        final Color rightCapturePieceColor = this.board.getPieceColorForCell(sourceRow + 1,
                 sourceCol + 1);
-        if (Color.areOpposingColors(this.color, rightCaptureCellColor)) {
+        if (Color.NONE != rightCapturePieceColor) {
             moves.add(new Move(sourceRow + 1, sourceCol + 1));
         }
         // TODO - enpassant

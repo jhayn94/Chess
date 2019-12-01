@@ -1,6 +1,8 @@
 package chess.state.window;
 
+import chess.config.ModelFactory;
 import chess.controller.ApplicationStateContext;
+import chess.model.ChessModelUtils;
 import chess.state.GameState;
 import javafx.application.Platform;
 
@@ -9,8 +11,9 @@ import javafx.application.Platform;
  */
 public class ClosedState extends GameState {
 
-    public ClosedState(final ApplicationStateContext context) {
-        super(context);
+    public ClosedState(final ApplicationStateContext context,
+                       final ModelFactory modelFactory, final ChessModelUtils utils) {
+        super(context, utils, modelFactory);
     }
 
     @Override

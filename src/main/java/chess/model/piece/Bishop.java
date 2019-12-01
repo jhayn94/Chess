@@ -15,12 +15,15 @@ public class Bishop extends ChessPiece {
     }
 
     @Override
-    public List<Move> getMoves(final int sourceRow, final int sourceCol) {
-        final List<Move> moves = new ArrayList<>();
+    public List<Move> getMoves(final int sourceRow, final int sourceCol, final boolean filterFriendlyPieces) {
+        List<Move> moves = new ArrayList<>();
         this.getLinearMovesUpRight(sourceRow, sourceCol, moves);
         this.getLinearMovesDownRight(sourceRow, sourceCol, moves);
         this.getLinearMovesUpLeft(sourceRow, sourceCol, moves);
         this.getLinearMovesDownLeft(sourceRow, sourceCol, moves);
+        if (filterFriendlyPieces) {
+            moves = this.filterFriendlyPieces(moves);
+        }
         return moves;
     }
 

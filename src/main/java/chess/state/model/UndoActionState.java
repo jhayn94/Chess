@@ -1,6 +1,8 @@
 package chess.state.model;
 
+import chess.config.ModelFactory;
 import chess.controller.ApplicationStateContext;
+import chess.model.ChessModelUtils;
 import chess.state.GameState;
 
 /**
@@ -9,8 +11,9 @@ import chess.state.GameState;
  */
 public class UndoActionState extends GameState {
 
-    public UndoActionState(final ApplicationStateContext context) {
-        super(context);
+    public UndoActionState(final ApplicationStateContext context,
+                           final ModelFactory modelFactory, final ChessModelUtils utils) {
+        super(context, utils, modelFactory);
     }
 
     @Override

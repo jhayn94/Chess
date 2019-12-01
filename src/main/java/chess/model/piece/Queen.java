@@ -17,7 +17,14 @@ public class Queen extends ChessPiece {
     @Override
     public List<Move> getMoves(final int sourceRow, final int sourceCol) {
         final List<Move> moves = new ArrayList<>();
-
+        this.getLinearMovesUp(sourceRow, sourceCol, moves);
+        this.getLinearMovesDown(sourceRow, sourceCol, moves);
+        this.getLinearMovesLeft(sourceRow, sourceCol, moves);
+        this.getLinearMovesRight(sourceRow, sourceCol, moves);
+        this.getLinearMovesUpRight(sourceRow, sourceCol, moves);
+        this.getLinearMovesDownRight(sourceRow, sourceCol, moves);
+        this.getLinearMovesUpLeft(sourceRow, sourceCol, moves);
+        this.getLinearMovesDownLeft(sourceRow, sourceCol, moves);
         return moves;
     }
 

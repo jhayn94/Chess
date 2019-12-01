@@ -79,4 +79,154 @@ public abstract class ChessPiece {
                     .findFirst().orElseThrow(NullPointerException::new);
         }
     }
+
+
+    protected void getLinearMovesUp(final int sourceRow, final int sourceCol, final List<Move> moves) {
+        int nextRow = sourceRow - 1;
+        boolean checkNextMove = this.indexInBounds(nextRow);
+        while (checkNextMove && this.indexInBounds(nextRow)) {
+            final Color pieceColorForCell = this.board.getPieceColorForCell(nextRow, sourceCol);
+            if (Color.NONE == pieceColorForCell ) {
+                moves.add(new Move(nextRow, sourceCol));
+            } else if (this.color != pieceColorForCell) {
+                moves.add(new Move(nextRow, sourceCol));
+                checkNextMove = false;
+            } else {
+                checkNextMove = false;
+            }
+            nextRow--;
+        }
+    }
+
+    protected void getLinearMovesDown(final int sourceRow, final int sourceCol, final List<Move> moves) {
+        int nextRow = sourceRow + 1;
+        boolean checkNextMove = this.indexInBounds(nextRow);
+        while (checkNextMove && this.indexInBounds(nextRow)) {
+            final Color pieceColorForCell = this.board.getPieceColorForCell(nextRow, sourceCol);
+            if (Color.NONE == pieceColorForCell ) {
+                moves.add(new Move(nextRow, sourceCol));
+            } else if (this.color != pieceColorForCell) {
+                moves.add(new Move(nextRow, sourceCol));
+                checkNextMove = false;
+            } else {
+                checkNextMove = false;
+            }
+            nextRow++;
+        }
+    }
+
+    protected void getLinearMovesLeft(final int sourceRow, final int sourceCol, final List<Move> moves) {
+        int nextCol = sourceCol - 1;
+        boolean checkNextMove = this.indexInBounds(nextCol);
+        while (checkNextMove && this.indexInBounds(nextCol)) {
+            final Color pieceColorForCell = this.board.getPieceColorForCell(sourceRow, nextCol);
+            if (Color.NONE == pieceColorForCell ) {
+                moves.add(new Move(sourceRow, nextCol));
+            } else if (this.color != pieceColorForCell) {
+                moves.add(new Move(sourceRow, nextCol));
+                checkNextMove = false;
+            } else {
+                checkNextMove = false;
+            }
+            nextCol--;
+        }
+    }
+
+    protected void getLinearMovesRight(final int sourceRow, final int sourceCol, final List<Move> moves) {
+        int nextCol = sourceCol + 1;
+        boolean checkNextMove = this.indexInBounds(nextCol);
+        while (checkNextMove && this.indexInBounds(nextCol)) {
+            final Color pieceColorForCell = this.board.getPieceColorForCell(sourceRow, nextCol);
+            if (Color.NONE == pieceColorForCell ) {
+                moves.add(new Move(sourceRow, nextCol));
+            } else if (this.color != pieceColorForCell) {
+                moves.add(new Move(sourceRow, nextCol));
+                checkNextMove = false;
+            } else {
+                checkNextMove = false;
+            }
+            nextCol++;
+        }
+    }
+
+    protected void getLinearMovesUpRight(final int sourceRow, final int sourceCol, final List<Move> moves) {
+        int nextRow = sourceRow - 1;
+        int nextCol = sourceCol + 1;
+        boolean checkNextMove = this.indexInBounds(nextRow) && this.indexInBounds(nextCol);
+        while (checkNextMove && this.indexInBounds(nextRow) && this.indexInBounds(nextCol)) {
+            final Color pieceColorForCell = this.board.getPieceColorForCell(nextRow, nextCol);
+            if (Color.NONE == pieceColorForCell ) {
+                moves.add(new Move(nextRow, nextCol));
+            } else if (this.color != pieceColorForCell) {
+                moves.add(new Move(nextRow, nextCol));
+                checkNextMove = false;
+            } else {
+                checkNextMove = false;
+            }
+            nextRow--;
+            nextCol++;
+        }
+    }
+
+    protected void getLinearMovesDownRight(final int sourceRow, final int sourceCol, final List<Move> moves) {
+        int nextRow = sourceRow + 1;
+        int nextCol = sourceCol + 1;
+        boolean checkNextMove = this.indexInBounds(nextRow) && this.indexInBounds(nextCol);
+        while (checkNextMove && this.indexInBounds(nextRow) && this.indexInBounds(nextCol)) {
+            final Color pieceColorForCell = this.board.getPieceColorForCell(nextRow, nextCol);
+            if (Color.NONE == pieceColorForCell ) {
+                moves.add(new Move(nextRow, nextCol));
+            } else if (this.color != pieceColorForCell) {
+                moves.add(new Move(nextRow, nextCol));
+                checkNextMove = false;
+            } else {
+                checkNextMove = false;
+            }
+            nextRow++;
+            nextCol++;
+        }
+    }
+
+    protected void getLinearMovesUpLeft(final int sourceRow, final int sourceCol, final List<Move> moves) {
+        int nextRow = sourceRow - 1;
+        int nextCol = sourceCol - 1;
+        boolean checkNextMove = this.indexInBounds(nextRow) && this.indexInBounds(nextCol);
+        while (checkNextMove && this.indexInBounds(nextRow) && this.indexInBounds(nextCol)) {
+            final Color pieceColorForCell = this.board.getPieceColorForCell(nextRow, nextCol);
+            if (Color.NONE == pieceColorForCell ) {
+                moves.add(new Move(nextRow, nextCol));
+            } else if (this.color != pieceColorForCell) {
+                moves.add(new Move(nextRow, nextCol));
+                checkNextMove = false;
+            } else {
+                checkNextMove = false;
+            }
+            nextRow--;
+            nextCol--;
+        }
+    }
+
+    protected void getLinearMovesDownLeft(final int sourceRow, final int sourceCol, final List<Move> moves) {
+        int nextRow = sourceRow + 1;
+        int nextCol = sourceCol - 1;
+        boolean checkNextMove = this.indexInBounds(nextRow) && this.indexInBounds(nextCol);
+        while (checkNextMove && this.indexInBounds(nextRow) && this.indexInBounds(nextCol)) {
+            final Color pieceColorForCell = this.board.getPieceColorForCell(nextRow, nextCol);
+            if (Color.NONE == pieceColorForCell ) {
+                moves.add(new Move(nextRow, nextCol));
+            } else if (this.color != pieceColorForCell) {
+                moves.add(new Move(nextRow, nextCol));
+                checkNextMove = false;
+            } else {
+                checkNextMove = false;
+            }
+            nextRow++;
+            nextCol--;
+        }
+    }
+
+    protected boolean indexInBounds(final int nextRow) {
+        return -1 < nextRow && nextRow < ChessBoardModel.BOARD_SIZE;
+    }
+
 }

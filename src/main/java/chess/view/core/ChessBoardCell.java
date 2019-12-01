@@ -16,7 +16,7 @@ import javafx.scene.layout.StackPane;
 
 public class ChessBoardCell extends StackPane {
 
-    private static final String SELECTED_CELL_CSS_CLASS = "chess-selected-cell";
+    public static final String HIGHLIGHTED_CELL_CSS_CLASS = "chess-highlighted-cell";
 
     private static final String CSS_CLASS = "chess-board-cell";
 

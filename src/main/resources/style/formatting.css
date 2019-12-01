@@ -1,13 +1,11 @@
 .root {
-	-chess-color-pebble: #e0e0e0;
+	-chess-color-light-gray: #e0e0e0;
 	-chess-color-parchment: #e5e2ca;
-	-chess-color-leaves: #506d2f;
+	-chess-color-green: #506d2f;
 	-chess-color-dark-red: #9e2f1e;
 	-chess-color-off-white: #eeeeee;
 	-chess-color-black: #000000;
-	-chess-color-rocky-brown: #785a46;
-
-	-chess-color-selected: #e5e2ca;
+	-chess-color-orange: #f0b41f;
 
 	-fx-font-family: "Quicksand";
 	-fx-font-size: 12pt;
@@ -16,7 +14,7 @@
 	-fx-box-border: transparent;
 	-fx-color: -chess-color-parchment;
 	-fx-background-color: -chess-color-parchment;
-	-fx-control-inner-background: -chess-color-pebble;
+	-fx-control-inner-background: -chess-color-light-gray;
 	-fx-outer-border: -chess-color-black;
 	-fx-inner-border: transparent;
 	-fx-inner-border-horizontal: transparent;
@@ -30,7 +28,7 @@
 }
 
 .chess-main-app-view {
-	-fx-background-color: -chess-color-pebble;
+	-fx-background-color: -chess-color-light-gray;
 }
 
 .chess-transparent-pane {
@@ -42,7 +40,7 @@
 }
 
 .chess-board-cell {
-	-fx-background-color: -chess-color-leaves;
+	-fx-background-color: -chess-color-green;
 	-fx-text-fill: -chess-color-black;
  	-fx-border-color: -chess-color-black;
     -fx-border-width: 0 0 0 0;
@@ -87,15 +85,9 @@
  	-fx-border-width: 0 0 2 2;
 }
 
-.chess-selected-cell {
- 	-fx-border-color: -chess-color-black;
- 	-fx-border-width: 3;
- 	-fx-background-color: rgba(0, 0, 0, .1);
+.chess-highlighted-cell {
+ 	-fx-background-color: -chess-color-orange;
  }
-
-.chess-move-option-cell {
-	-fx-background-color: -chess-color-rocky-brown;
-}
 
 .button {
 	-fx-background-color: -chess-color-parchment;
@@ -136,11 +128,11 @@
 
 /* Application system menu buttons (in the top corners of the screen). This must be after .button to override those configurations. */
 .chess-system-menu-button:hover {
-	-fx-background-color: derive(-chess-color-pebble,-30%);
+	-fx-background-color: derive(-chess-color-light-gray,-30%);
 }
 
 .menu-bar {
-	-fx-background-color: -chess-color-pebble;
+	-fx-background-color: -chess-color-light-gray;
 	-fx-font-size: 14pt;
 }
 
@@ -153,7 +145,7 @@
 
 /* Defines the rectangle responsible for the shadow. */
 .decoration-shadow {
-    -fx-fill: -chess-color-pebble;
+    -fx-fill: -chess-color-light-gray;
     -fx-stroke-width: 0;
 }
 
@@ -176,7 +168,7 @@
 }
 
 .chess-uneditable-text-field {
-	-fx-background-color: -chess-color-pebble;
+	-fx-background-color: -chess-color-light-gray;
 }
 
 .combo-box-base {
@@ -237,7 +229,7 @@
 
 .scroll-pane,
 .scroll-pane > .corner {
-    -fx-background-color: -chess-color-pebble;
+    -fx-background-color: -chess-color-light-gray;
 }
 
 .chess-color-button-selected {

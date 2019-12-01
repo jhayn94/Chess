@@ -4,9 +4,13 @@ import chess.config.ModelFactory;
 import chess.controller.ApplicationStateContext;
 import chess.model.ChessBoardModel;
 import chess.model.Color;
+import chess.model.Move;
 import chess.model.piece.ChessPiece;
 import chess.state.GameState;
+import chess.view.core.ChessBoardCell;
 import chess.view.core.ChessBoardView;
+
+import java.util.List;
 
 /**
  * This class contains methods to show or hide the application context menu.
@@ -34,9 +38,8 @@ public class ClickedCellState extends GameState {
         }
         System.out.println("CLICKED CELL " + this.row + " " + this.col);
 
-        // If selection + cell empty -> move piece
-        final int selectedCellRow = this.context.getSelectedCellRow();
-        final int selectedCellCol = this.context.getSelectedCellCol();
+        int selectedCellRow = this.context.getSelectedCellRow();
+        int selectedCellCol = this.context.getSelectedCellCol();
 
         final ChessBoardModel chessBoardModel = this.context.getChessBoardModel();
         final ChessBoardView chessBoardView = this.context.getChessBoardView();
@@ -45,7 +48,7 @@ public class ClickedCellState extends GameState {
         if (selectedCellRow > -1 && selectedCellCol > -1) {
             final Color oldSelectedPieceColor =
                     chessBoardModel.getPieceColorForCell(selectedCellRow, selectedCellCol);
-
+            this.clearHighlightedCells();
             if (oldSelectedPieceColor != newSelectedPieceColor) {
                 this.doMove(selectedCellRow, selectedCellCol, chessBoardModel, oldSelectedPieceColor);
             } else {
@@ -58,16 +61,35 @@ public class ClickedCellState extends GameState {
             this.context.setSelectedCol(this.col);
         }
 
-        // clear style
+//        if (this.row != selectedCellRow || this.col != selectedCellCol) {
+//            this.clearHighlightedCells();
+//        }
 
-        // If selected cell, set allowed move style
+        selectedCellRow = this.context.getSelectedCellRow();
+        selectedCellCol = this.context.getSelectedCellCol();
+        if (selectedCellRow > -1 && selectedCellCol > -1) {
+            final int selectedPiece = chessBoardModel.getPieceForCell(selectedCellRow, selectedCellCol);
+            final ChessPiece.PieceType pieceType = ChessPiece.PieceType.fromCode(selectedPiece);
+            final ChessPiece chessPiece = this.modelFactory.chessPiece(chessBoardModel, pieceType, newSelectedPieceColor);
+            final List<Move> moves = chessPiece.getMoves(selectedCellRow, selectedCellCol);
+            moves.forEach(move -> this.updateCellStyle(move.getDestRow(), move.getDestCol(),
+                    ChessBoardCell.HIGHLIGHTED_CELL_CSS_CLASS, true));
+        }
 
+    }
+
+    protected void clearHighlightedCells() {
+        for (int row = 0; row < ChessBoardModel.BOARD_SIZE; row++) {
+            for (int col = 0; col < ChessBoardModel.BOARD_SIZE; col++) {
+                this.updateCellStyle(row, col, ChessBoardCell.HIGHLIGHTED_CELL_CSS_CLASS, false);
+            }
+        }
     }
 
     private void doMove(final int selectedCellRow, final int selectedCellCol, final ChessBoardModel chessBoardModel, final Color oldSelectedPieceColor) {
         final int selectedPiece = chessBoardModel.getPieceForCell(selectedCellRow, selectedCellCol);
         final ChessPiece.PieceType pieceType = ChessPiece.PieceType.fromCode(selectedPiece);
-//                final ChessPiece chessPiece = this.modelFactory.chessPiece(chessBoardModel, pieceType, oldSelectedPieceColor);
+        final ChessPiece chessPiece = this.modelFactory.chessPiece(chessBoardModel, pieceType, oldSelectedPieceColor);
         // TODO - verify move is allowed.
 
         this.clearCell(selectedCellRow, selectedCellCol);

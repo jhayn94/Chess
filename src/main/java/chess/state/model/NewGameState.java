@@ -18,6 +18,8 @@ public class NewGameState extends GameState {
 
     @Override
     public void onEnter() {
+        this.clearBoard();
+
         final Color playerTwoColor = Color.BLACK;
         this.updateBoardWithPiece(0, 0, ChessPiece.PieceType.ROOK, playerTwoColor);
         this.updateBoardWithPiece(0, 1, ChessPiece.PieceType.KNIGHT, playerTwoColor);

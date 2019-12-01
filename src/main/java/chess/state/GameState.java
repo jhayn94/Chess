@@ -4,7 +4,9 @@ import chess.controller.ApplicationStateContext;
 import chess.model.ChessBoardModel;
 import chess.model.Color;
 import chess.model.piece.ChessPiece;
+import chess.view.core.ChessBoardCell;
 import chess.view.core.ChessBoardView;
+import javafx.collections.ObservableList;
 
 public abstract class GameState {
 
@@ -15,6 +17,14 @@ public abstract class GameState {
     }
 
     public abstract void onEnter();
+
+    protected void clearBoard() {
+        for (int row = 0; row < ChessBoardModel.BOARD_SIZE; row++) {
+            for (int col = 0; col < ChessBoardModel.BOARD_SIZE; col++) {
+                this.clearCell(row, col);
+            }
+        }
+    }
 
     protected void clearCell(final int row, final int col) {
         final ChessPiece.PieceType emptyPiece = ChessPiece.PieceType.NONE;
@@ -30,5 +40,16 @@ public abstract class GameState {
         chessBoardModel.setPieceForCell(row, col, pieceType.getPieceCode(), color);
         final ChessBoardView chessBoardView = this.context.getChessBoardView();
         chessBoardView.getCell(row, col).setImage(pieceType.getResourcePath(), color);
+    }
+
+    protected void updateCellStyle(final int row, final int col, final String cssClass, final boolean add) {
+        final ChessBoardView chessBoardView = this.context.getChessBoardView();
+        final ChessBoardCell cell = chessBoardView.getCell(row, col);
+        final ObservableList<String> styleClass = cell.getStyleClass();
+        if (add) {
+            styleClass.add(cssClass);
+        } else {
+            styleClass.remove(cssClass);
+        }
     }
 }

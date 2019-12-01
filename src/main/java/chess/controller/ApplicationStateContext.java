@@ -32,7 +32,10 @@ public class ApplicationStateContext {
     private ChessBoardModel chessBoardModel;
 
     private int selectedCellRow;
+
     private int selectedCellCol;
+
+    private boolean isPlayer1sTurn;
 
     public ApplicationStateContext() {
         this.currentState = null;
@@ -101,5 +104,13 @@ public class ApplicationStateContext {
 
     public int getSelectedCellCol() {
         return this.selectedCellCol;
+    }
+
+    public boolean isPlayer1sTurn() {
+        return this.isPlayer1sTurn;
+    }
+
+    public void setIsPlayer1sTurn(final boolean isPlayer1sTurn) {
+        this.isPlayer1sTurn = isPlayer1sTurn;
     }
 }

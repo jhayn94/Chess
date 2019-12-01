@@ -38,8 +38,10 @@ public class ModelFactory {
             return new Pawn(color, board);
         } else if (ChessPiece.PieceType.QUEEN == type) {
             return new Queen(color, board);
-        } else {
+        } else if (ChessPiece.PieceType.KING == type){
             return new King(color, board);
+        } else {
+            throw new IllegalArgumentException("Type " + type + " not recognized.");
         }
     }
 }

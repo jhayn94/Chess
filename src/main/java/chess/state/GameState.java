@@ -26,6 +26,14 @@ public abstract class GameState {
         }
     }
 
+    protected void clearHighlightedCells() {
+        for (int row = 0; row < ChessBoardModel.BOARD_SIZE; row++) {
+            for (int col = 0; col < ChessBoardModel.BOARD_SIZE; col++) {
+                this.updateCellStyle(row, col, ChessBoardCell.HIGHLIGHTED_CELL_CSS_CLASS, false);
+            }
+        }
+    }
+
     protected void clearCell(final int row, final int col) {
         final ChessPiece.PieceType emptyPiece = ChessPiece.PieceType.NONE;
         final ChessBoardModel chessBoardModel = this.context.getChessBoardModel();

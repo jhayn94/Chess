@@ -14,11 +14,13 @@ public class NewGameState extends GameState {
 
     public NewGameState(final ApplicationStateContext context) {
         super(context);
+        context.setIsPlayer1sTurn(true);
     }
 
     @Override
     public void onEnter() {
         this.clearBoard();
+        this.clearHighlightedCells();
 
         final Color playerTwoColor = Color.BLACK;
         this.updateBoardWithPiece(0, 0, ChessPiece.PieceType.ROOK, playerTwoColor);

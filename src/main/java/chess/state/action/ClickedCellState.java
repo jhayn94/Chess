@@ -125,7 +125,16 @@ public class ClickedCellState extends GameState {
         if (isLegalMove && !this.utils.isColorInCheck(tempChessBoard, selectedPieceColor)) {
             this.updateStateAfterMove(selectedRow, selectedCol, selectedPieceColor, pieceType);
         }
+
+        final Color opposingColor = Color.getOpposingColor(selectedPieceColor);
+        if (this.utils.isColorInCheck(tempChessBoard, opposingColor)) {
+            this.setKingInCheckStyle(chessBoardModel, opposingColor, true);
+        }
+
+        // Player can never be in check after their move.
+        this.setKingInCheckStyle(chessBoardModel, selectedPieceColor, false);
     }
+
 
     private void updateStateAfterMove(final int selectedRow, final int selectedCol, final Color selectedPieceColor, final ChessPiece.PieceType pieceType) {
         this.clearHighlightedCells();
@@ -134,6 +143,24 @@ public class ClickedCellState extends GameState {
         this.context.setSelectedRow(-1);
         this.context.setSelectedCol(-1);
         this.context.setIsPlayer1sTurn(!this.context.isPlayer1sTurn());
+    }
+
+    private void setKingInCheckStyle(final ChessBoardModel chessBoardModel,
+                                     final Color opposingColor, final boolean add) {
+        int kingRow = -1;
+        int kingCol = -1;
+        for (int row = 0; row < ChessBoardModel.BOARD_SIZE; row++) {
+            for (int col = 0; col < ChessBoardModel.BOARD_SIZE; col++) {
+                final int pieceForCell = chessBoardModel.getPieceForCell(row, col);
+                final Color pieceColorForCell = chessBoardModel.getPieceColorForCell(row, col);
+                if (Math.abs(pieceForCell) == ChessPiece.PieceType.KING.getPieceCode()
+                        && pieceColorForCell == opposingColor) {
+                    kingRow = row;
+                    kingCol = col;
+                }
+            }
+        }
+        this.updateCellStyle(kingRow, kingCol, ChessBoardCell.IN_CHECK_CELL_CSS_CLASS, add);
     }
 
     private void updateSelectedCell() {

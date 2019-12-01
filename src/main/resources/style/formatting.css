@@ -89,6 +89,10 @@
  	-fx-background-color: -chess-color-orange;
  }
 
+ .chess-in-check-cell {
+  	-fx-background-color: -chess-color-dark-red;
+ }
+
 .button {
 	-fx-background-color: -chess-color-parchment;
 	-fx-text-fill: -chess-color-black;

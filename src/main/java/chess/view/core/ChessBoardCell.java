@@ -16,6 +16,8 @@ import javafx.scene.layout.StackPane;
 
 public class ChessBoardCell extends StackPane {
 
+    public static final String IN_CHECK_CELL_CSS_CLASS = "chess-in-check-cell";
+
     public static final String HIGHLIGHTED_CELL_CSS_CLASS = "chess-highlighted-cell";
 
     private static final String CSS_CLASS = "chess-board-cell";
@@ -90,6 +92,10 @@ public class ChessBoardCell extends StackPane {
         this.createChildElements();
     }
 
+    /**
+     * Updates the *basic* cell style. This includes always present style ONLY, and not things
+     * like if the cell is a legal move, king is in check on the cell, etc.
+     */
     public void updateCellStyle() {
         final ObservableList<String> styleClass = this.getStyleClass();
         if ((this.row + this.col) % 2 == 1) {

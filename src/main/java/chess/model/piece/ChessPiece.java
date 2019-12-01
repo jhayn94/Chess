@@ -39,6 +39,14 @@ public abstract class ChessPiece {
         this.pieceType = pieceType;
     }
 
+    /**
+     * Returns a list of moves the piece can make. The returned list considers boundaries and
+     * placements of other pieces, but does not review if the player is in check.
+     *
+     * @param sourceRow - start row of piece.
+     * @param sourceCol - start column of piece.
+     * @return - a list of moves the piece can make.
+     */
     public abstract List<Move> getMoves(final int sourceRow, final int sourceCol);
 
     protected List<Move> filterOutOfBoundsMoves(final List<Move> moves) {

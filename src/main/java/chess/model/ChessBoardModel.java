@@ -33,13 +33,17 @@ public class ChessBoardModel {
     }
 
     /**
-     * Returns the color of piece in this cell.
+     * Returns the color of piece in this cell. If the given row or column are out of the bounds
+     * of the board, returns Color.NONE.
      *
      * @param row - row to check.
      * @param col - column to check.
      * @return - color of piece in this cell, Color.NONE if nothing is there.
      */
     public Color getPieceColorForCell(final int row, final int col) {
+        if (row < 0 || row >= BOARD_SIZE || col < 0 || col >= BOARD_SIZE) {
+            return Color.NONE;
+        }
         final int piece = this.board[col][row];
         if (piece == 0) {
             return Color.NONE;
@@ -47,7 +51,18 @@ public class ChessBoardModel {
         return piece < 0 ? Color.BLACK : Color.WHITE;
     }
 
+    /**
+     * Returns true iff the given cell is empty. If the given row or column are out of the bounds
+     * of the board, returns Color.NONE.
+     *
+     * @param row - row to check.
+     * @param col - column to check.
+     * @return - true iff the given cell is empty.
+     */
     public boolean isCellEmpty(final int row, final int col) {
+        if (row < 0 || row >= BOARD_SIZE || col < 0 || col >= BOARD_SIZE) {
+            return false;
+        }
         return this.board[col][row] == 0;
     }
 

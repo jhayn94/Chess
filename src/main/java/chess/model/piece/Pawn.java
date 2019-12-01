@@ -29,7 +29,7 @@ public class Pawn extends ChessPiece {
             this.getMovesAsPlayerTwo(sourceRow, sourceCol, moves);
         }
 
-        return moves;
+        return this.filterOutOfBoundsMoves(moves);
     }
 
     /**

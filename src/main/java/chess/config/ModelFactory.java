@@ -2,8 +2,10 @@ package chess.config;
 
 import chess.model.ChessBoardModel;
 import chess.model.Color;
+import chess.model.piece.Bishop;
 import chess.model.piece.ChessPiece;
 import chess.model.piece.King;
+import chess.model.piece.Knight;
 import chess.model.piece.Pawn;
 import chess.model.piece.Queen;
 import chess.model.piece.Rook;
@@ -33,9 +35,9 @@ public class ModelFactory {
         } else if (ChessPiece.PieceType.ROOK == type) {
             return new Rook(color, board);
         } else if (ChessPiece.PieceType.KNIGHT == type) {
-            return new Pawn(color, board);
+            return new Knight(color, board);
         } else if (ChessPiece.PieceType.BISHOP == type) {
-            return new Pawn(color, board);
+            return new Bishop(color, board);
         } else if (ChessPiece.PieceType.QUEEN == type) {
             return new Queen(color, board);
         } else if (ChessPiece.PieceType.KING == type){

@@ -8,6 +8,7 @@ import org.apache.logging.log4j.util.Strings;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public abstract class ChessPiece {
 
@@ -39,6 +40,12 @@ public abstract class ChessPiece {
     }
 
     public abstract List<Move> getMoves(final int sourceRow, final int sourceCol);
+
+    protected List<Move> filterOutOfBoundsMoves(final List<Move> moves) {
+        return moves.stream().filter(move -> -1 < move.getDestRow() && move.getDestRow() < ChessBoardModel.BOARD_SIZE
+                && -1 < move.getDestCol() && move.getDestCol() < ChessBoardModel.BOARD_SIZE).collect(Collectors.toList());
+
+    }
 
     public enum PieceType {
 

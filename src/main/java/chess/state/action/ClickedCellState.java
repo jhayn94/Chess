@@ -88,9 +88,8 @@ public class ClickedCellState extends GameState {
         final ChessPiece chessPiece = this.modelFactory.chessPiece(board, pieceType, newSelectedPieceColor);
         final List<Move> moves = chessPiece.getMoves(selectedCellRow, selectedCellCol, true);
         moves.forEach(move -> {
-            final ChessBoardModel boardAfterMove = this.utils.applyMoveToCopiedBoard(move.getDestRow(),
-                    move.getDestCol(), selectedCellRow, selectedCellCol,
-                    board, newSelectedPieceColor, pieceType);
+            final ChessBoardModel boardAfterMove = this.utils.applyMoveToCopiedBoard(move, this.context.isPlayer1sTurn(),
+                    selectedCellRow, selectedCellCol, board, newSelectedPieceColor, pieceType);
             if (this.utils.isMoveLegal(this.context, board, boardAfterMove, newSelectedPieceColor, move)) {
                 this.updateCellStyle(move.getDestRow(), move.getDestCol(),
                         ChessBoardCell.HIGHLIGHTED_CELL_CSS_CLASS, true);
@@ -141,14 +140,14 @@ public class ClickedCellState extends GameState {
                 .filter(move -> move.getDestRow() == this.row && move.getDestCol() == this.col).findFirst();
         final boolean isValidMoveForPiece = moveToMake.isPresent();
 
-        final ChessBoardModel tempBoard = this.utils.applyMoveToCopiedBoard(this.row, this.col,
-                selectedRow, selectedCol, board, selectedPieceColor, pieceType);
-
-        // TODO - do enpassant and castling checks here?
-        if (isValidMoveForPiece && this.utils.isMoveLegal(this.context, board, tempBoard, selectedPieceColor,
-                moveToMake.get())) {
-            this.applyMove(selectedRow, selectedCol, moveToMake.get(), selectedPieceColor, pieceType);
-            this.doAfterMoveChecks(board, selectedPieceColor, tempBoard);
+        if (isValidMoveForPiece) {
+            final ChessBoardModel tempBoard = this.utils.applyMoveToCopiedBoard(moveToMake.get(),
+                    this.context.isPlayer1sTurn(), selectedRow, selectedCol, board, selectedPieceColor, pieceType);
+            if (this.utils.isMoveLegal(this.context, board, tempBoard, selectedPieceColor,
+                    moveToMake.get())) {
+                this.applyMove(selectedRow, selectedCol, moveToMake.get(), selectedPieceColor, pieceType);
+                this.doAfterMoveChecks(board, selectedPieceColor, tempBoard);
+            }
         }
 
     }
@@ -176,11 +175,12 @@ public class ClickedCellState extends GameState {
 
     /**
      * Updates various data structures defining if special moves like castling and en passant are allowed.
-     * @param selectedRow - selected row of the moved piece.
-     * @param selectedCol - selected column of the moved piece.
-     * @param moveToMake - move being made this turn.
+     *
+     * @param selectedRow        - selected row of the moved piece.
+     * @param selectedCol        - selected column of the moved piece.
+     * @param moveToMake         - move being made this turn.
      * @param selectedPieceColor - color making the move.
-     * @param pieceType - piece type being moved.
+     * @param pieceType          - piece type being moved.
      */
     private void updateSpecialMoveStates(final int selectedRow, final int selectedCol, final Move moveToMake, final Color selectedPieceColor, final ChessPiece.PieceType pieceType) {
         if (ChessPiece.PieceType.PAWN == pieceType && Math.abs(selectedRow - moveToMake.getDestRow()) == 2) {
@@ -247,11 +247,11 @@ public class ClickedCellState extends GameState {
     private void doAfterMoveChecks(final ChessBoardModel board, final Color selectedPieceColor,
                                    final ChessBoardModel tempBoard) {
         final Color opposingColor = Color.getOpposingColor(selectedPieceColor);
-        if (this.utils.isColorInCheckMate(tempBoard, opposingColor)) {
+        if (this.utils.isColorInCheckMate(this.context.isPlayer1sTurn(), tempBoard, opposingColor)) {
             this.setKingInCheckmateStyle(board, opposingColor);
         } else if (this.utils.isColorInCheck(tempBoard, opposingColor)) {
             this.setKingCellStyle(board, opposingColor, ChessBoardCell.IN_CHECK_CELL_CSS_CLASS);
-        } else if (this.utils.isColorInStalemate(board, opposingColor)) {
+        } else if (this.utils.isColorInStalemate(this.context.isPlayer1sTurn(), board, opposingColor)) {
             this.setKingInStalemateStyle(board, opposingColor);
         }
     }

@@ -38,7 +38,7 @@ public class ApplicationStateContext {
     private boolean isPlayer1sTurn;
 
     // Tracks which pieces have moved that affect eligibility for castling.
-    private Set<MovedPieces> movedPieces;
+    private final Set<MovedPieces> movedPieces;
 
     public enum MovedPieces {
         BOTTOM_KING, TOP_KING, BOTTOM_LEFT_ROOK, BOTTOM_RIGHT_ROOK, TOP_LEFT_ROOK, TOP_RIGHT_ROOK;
@@ -124,15 +124,9 @@ public class ApplicationStateContext {
         this.isPlayer1sTurn = isPlayer1sTurn;
     }
 
-
     public Set<MovedPieces> getMovedPieces() {
         return this.movedPieces;
     }
-
-    public void setMovedPieces(final Set<MovedPieces> movedPieces) {
-        this.movedPieces = movedPieces;
-    }
-
 
     public Pair<Color, Integer> getEnpassant() {
         return this.enpassant;

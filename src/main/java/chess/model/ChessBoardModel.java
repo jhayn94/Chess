@@ -25,10 +25,13 @@ public class ChessBoardModel {
 
     private final boolean isPlayerOneWhite;
 
+    private final boolean isP2Ai;
+
     private int[][] board;
 
-    public ChessBoardModel(final boolean isPlayerOneWhite) {
+    public ChessBoardModel(final boolean isPlayerOneWhite, final boolean isP2Ai) {
         this.isPlayerOneWhite = isPlayerOneWhite;
+        this.isP2Ai = isP2Ai;
         this.enpassant = new Pair<>(Color.NONE, -1);
         this.movedPieces = new HashSet<>();
         this.board = new int[BOARD_SIZE][BOARD_SIZE];
@@ -90,7 +93,7 @@ public class ChessBoardModel {
      * @return - an aliasing proof copy of this
      */
     public ChessBoardModel createCopy() {
-        final ChessBoardModel other = new ChessBoardModel(this.isPlayerOneWhite);
+        final ChessBoardModel other = new ChessBoardModel(this.isPlayerOneWhite, this.isP2Ai);
         other.board = new int[BOARD_SIZE][BOARD_SIZE];
         for (int row = 0; row < BOARD_SIZE; row++) {
             for (int col = 0; col < BOARD_SIZE; col++) {
@@ -105,6 +108,10 @@ public class ChessBoardModel {
 
     public boolean isPlayerOneWhite() {
         return this.isPlayerOneWhite;
+    }
+
+    public boolean isP2Ai() {
+        return this.isP2Ai;
     }
 
     public Set<MovedPieces> getMovedPieces() {

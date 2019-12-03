@@ -6,13 +6,10 @@ import chess.view.menu.ApplicationMenuSpacer;
 import chess.view.menu.ContextMenu;
 import chess.view.menu.EditMenu;
 import chess.view.menu.FileMenu;
-import chess.view.menu.HelpMenu;
-import chess.view.menu.SettingsMenu;
 import chess.view.menu.SystemMenu;
 import chess.view.menu.button.CloseMenuButton;
 import chess.view.menu.button.ContextMenuButton;
 import chess.view.menu.button.MinimizeMenuButton;
-import javafx.scene.control.Menu;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Service;
@@ -47,8 +44,8 @@ public class MenuFactory {
 
     @Bean
     public ContextMenu contextMenu() {
-        final ContextMenu contextMenu = new ContextMenu(this.fileMenu(), this.editMenu(),
-                this.settingsMenu(), this.helpMenu());
+        final ContextMenu contextMenu = new ContextMenu(this.fileMenu(), this.editMenu()
+        );
         contextMenu.configure();
         return contextMenu;
     }
@@ -66,20 +63,6 @@ public class MenuFactory {
         final EditMenu editMenu = new EditMenu(this.stateContext, this.stateFactory);
         editMenu.configure();
         return editMenu;
-    }
-
-    @Bean
-    public Menu settingsMenu() {
-        final SettingsMenu settingsMenu = new SettingsMenu();
-        settingsMenu.configure();
-        return settingsMenu;
-    }
-
-    @Bean
-    public Menu helpMenu() {
-        final HelpMenu helpMenu = new HelpMenu();
-        helpMenu.configure();
-        return helpMenu;
     }
 
     @Bean

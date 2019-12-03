@@ -22,8 +22,8 @@ public class ModelFactory {
 
     @Bean
     @Scope("prototype")
-    public ChessBoardModel chessBoardModel(final boolean isP1White) {
-        return new ChessBoardModel(isP1White);
+    public ChessBoardModel chessBoardModel(final boolean isP1White, final boolean isP2Ai) {
+        return new ChessBoardModel(isP1White, isP2Ai);
     }
 
     @Bean

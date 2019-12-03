@@ -31,6 +31,11 @@ public class ChessApplication extends Application {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ChessApplication.class);
 
+    private static final boolean IS_PLAYER_1_WHITE = true;
+
+    private static final boolean IS_PLAYER_2_AI = true;
+
+
     private ApplicationContext context;
 
     @Override
@@ -67,7 +72,7 @@ public class ChessApplication extends Application {
         final ModelFactory modelFactory = this.context.getBean(ModelFactory.class);
         stateContext.setPrimaryStage(stage);
         stateContext.getChessBoardView().requestFocus();
-        stateContext.setBoard(modelFactory.chessBoardModel(true));
+        stateContext.setBoard(modelFactory.chessBoardModel(IS_PLAYER_1_WHITE, IS_PLAYER_2_AI));
         stateContext.setHistory(modelFactory.boardHistory());
     }
 

@@ -27,28 +27,28 @@ public class NewGameState extends GameState {
 
         final Color playerTwoColor = this.context.getChessBoardModel().isPlayerOneWhite()
                 ? Color.BLACK : Color.WHITE;
-//        this.updateBoardWithPiece(0, 0, ChessPiece.PieceType.ROOK, playerTwoColor);
-//        this.updateBoardWithPiece(0, 1, ChessPiece.PieceType.KNIGHT, playerTwoColor);
-//        this.updateBoardWithPiece(0, 2, ChessPiece.PieceType.BISHOP, playerTwoColor);
-//        this.updateBoardWithPiece(0, 3, ChessPiece.PieceType.QUEEN, playerTwoColor);
+        this.updateBoardWithPiece(0, 0, ChessPiece.PieceType.ROOK, playerTwoColor);
+        this.updateBoardWithPiece(0, 1, ChessPiece.PieceType.KNIGHT, playerTwoColor);
+        this.updateBoardWithPiece(0, 2, ChessPiece.PieceType.BISHOP, playerTwoColor);
+        this.updateBoardWithPiece(0, 3, ChessPiece.PieceType.QUEEN, playerTwoColor);
         this.updateBoardWithPiece(0, 4, ChessPiece.PieceType.KING, playerTwoColor);
-//        this.updateBoardWithPiece(0, 5, ChessPiece.PieceType.BISHOP, playerTwoColor);
-//        this.updateBoardWithPiece(0, 6, ChessPiece.PieceType.KNIGHT, playerTwoColor);
-//        this.updateBoardWithPiece(0, 7, ChessPiece.PieceType.ROOK, playerTwoColor);
+        this.updateBoardWithPiece(0, 5, ChessPiece.PieceType.BISHOP, playerTwoColor);
+        this.updateBoardWithPiece(0, 6, ChessPiece.PieceType.KNIGHT, playerTwoColor);
+        this.updateBoardWithPiece(0, 7, ChessPiece.PieceType.ROOK, playerTwoColor);
 
         final Color playerOneColor = Color.getOpposingColor(playerTwoColor);
-//        this.updateBoardWithPiece(7, 0, ChessPiece.PieceType.ROOK, playerOneColor);
-//        this.updateBoardWithPiece(7, 1, ChessPiece.PieceType.KNIGHT, playerOneColor);
-//        this.updateBoardWithPiece(7, 2, ChessPiece.PieceType.BISHOP, playerOneColor);
+        this.updateBoardWithPiece(7, 0, ChessPiece.PieceType.ROOK, playerOneColor);
+        this.updateBoardWithPiece(7, 1, ChessPiece.PieceType.KNIGHT, playerOneColor);
+        this.updateBoardWithPiece(7, 2, ChessPiece.PieceType.BISHOP, playerOneColor);
         this.updateBoardWithPiece(7, 3, ChessPiece.PieceType.QUEEN, playerOneColor);
         this.updateBoardWithPiece(7, 4, ChessPiece.PieceType.KING, playerOneColor);
-//        this.updateBoardWithPiece(7, 5, ChessPiece.PieceType.BISHOP, playerOneColor);
-//        this.updateBoardWithPiece(7, 6, ChessPiece.PieceType.KNIGHT, playerOneColor);
-//        this.updateBoardWithPiece(7, 7, ChessPiece.PieceType.ROOK, playerOneColor);
+        this.updateBoardWithPiece(7, 5, ChessPiece.PieceType.BISHOP, playerOneColor);
+        this.updateBoardWithPiece(7, 6, ChessPiece.PieceType.KNIGHT, playerOneColor);
+        this.updateBoardWithPiece(7, 7, ChessPiece.PieceType.ROOK, playerOneColor);
 
         for (int col = 0; col < ChessBoardModel.BOARD_SIZE; col++) {
-//            this.updateBoardWithPiece(1, col, ChessPiece.PieceType.PAWN, playerTwoColor);
-//            this.updateBoardWithPiece(6, col, ChessPiece.PieceType.PAWN, playerOneColor);
+            this.updateBoardWithPiece(1, col, ChessPiece.PieceType.PAWN, playerTwoColor);
+            this.updateBoardWithPiece(6, col, ChessPiece.PieceType.PAWN, playerOneColor);
         }
 
         this.context.setIsPlayer1sTurn(this.context.getChessBoardModel().isPlayerOneWhite());

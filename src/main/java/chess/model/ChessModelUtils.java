@@ -29,14 +29,14 @@ public class ChessModelUtils {
      * @param pieceType          - type of piece that will be moved.
      * @return copy of the board with the given move applied.
      */
-    public ChessBoardModel applyMoveToCopiedBoard(final int rowToSet, final int colToSet,
-                                                  final int rowToClear, final int colToClear,
-                                                  final ChessBoardModel chessBoardModel,
-                                                  final Color selectedPieceColor,
-                                                  final ChessPiece.PieceType pieceType) {
+    public ChessBoardModel applyMoveToCopiedBoard(final int rowToSet, final int colToSet, final int rowToClear,
+                                                  final int colToClear, final ChessBoardModel chessBoardModel,
+                                                  final Color selectedPieceColor, final ChessPiece.PieceType pieceType) {
         final ChessBoardModel tempChessBoard = chessBoardModel.createCopy();
         tempChessBoard.setPieceForCell(rowToSet, colToSet, pieceType.getPieceCode(), selectedPieceColor);
         tempChessBoard.setPieceForCell(rowToClear, colToClear, ChessPiece.PieceType.NONE.getPieceCode(), Color.NONE);
+
+        // TODO - castling and enpassant checks.
         return tempChessBoard;
     }
 
@@ -83,6 +83,55 @@ public class ChessModelUtils {
             }
         }
         return false;
+    }
+
+    /**
+     * Returns true iff the given color could move a piece to the given cell on their next turn.
+     *
+     * @param board     - chess board object.
+     * @param color     - color to check.
+     * @param targetRow - row to target.
+     * @param targetCol - column to target.
+     * @return - true iff the given color could move a piece to the given cell on their next turn.
+     */
+    public boolean canColorThreatenCell(final ChessBoardModel board, final Color color, final int targetRow,
+                                        final int targetCol) {
+        for (int row = 0; row < ChessBoardModel.BOARD_SIZE; row++) {
+            for (int col = 0; col < ChessBoardModel.BOARD_SIZE; col++) {
+                final Color pieceColorForCell = board.getPieceColorForCell(row, col);
+                if (pieceColorForCell == color) {
+                    if (this.isPieceThreateningCell(board, targetRow,
+                            targetCol, row, col)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Returns true iff the given move is legal.
+     *
+     * @param boardBeforeMove - board before the move.
+     * @param boardAfterMove  - board after the move.
+     * @param color           - color making the move.
+     * @param move            - move to check.
+     * @return - true iff the given move is legal.
+     */
+    public boolean isMoveLegal(final ChessBoardModel boardBeforeMove, final ChessBoardModel boardAfterMove,
+                               final Color color, final Move move) {
+        if (!this.isColorInCheck(boardAfterMove, color)) {
+            if (Move.MoveType.CASTLE_LEFT == move.getMoveType()) {
+                return this.isLeftCastleLegal(boardBeforeMove, boardAfterMove, color, move);
+            } else if (Move.MoveType.CASTLE_RIGHT == move.getMoveType()) {
+                return this.isRightCastleLegal(boardBeforeMove, boardAfterMove, color, move);
+            }
+            // TODO - enpassant
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -142,7 +191,7 @@ public class ChessModelUtils {
      * @param color - color to check.
      * @return true iff the given color has at least 1 move.
      */
-    protected boolean playerHasLegalMove(final ChessBoardModel board, final Color color) {
+    public boolean playerHasLegalMove(final ChessBoardModel board, final Color color) {
         for (int row = 0; row < ChessBoardModel.BOARD_SIZE; row++) {
             for (int col = 0; col < ChessBoardModel.BOARD_SIZE; col++) {
                 final Color pieceColorForCell = board.getPieceColorForCell(row, col);
@@ -165,8 +214,8 @@ public class ChessModelUtils {
      * @param col   - column to check.
      * @return - true iff the piece at the given position has any legal moves.
      */
-    private boolean canPieceMove(final ChessBoardModel board, final Color color,
-                                 final int row, final int col) {
+    public boolean canPieceMove(final ChessBoardModel board, final Color color,
+                                final int row, final int col) {
         final int pieceForCell = board.getPieceForCell(row, col);
         final ChessPiece.PieceType pieceType = ChessPiece.PieceType.fromCode(pieceForCell);
         final ChessPiece chessPiece = this.modelFactory.chessPiece(board, pieceType,
@@ -180,6 +229,18 @@ public class ChessModelUtils {
             }
         }
         return false;
+    }
+
+    private boolean isRightCastleLegal(final ChessBoardModel boardBeforeMove, final ChessBoardModel boardAfterMove, final Color color, final Move move) {
+        // TODO add king and rook haven't moved checks.
+        return !this.canColorThreatenCell(boardAfterMove, Color.getOpposingColor(color), move.getDestRow(),
+                move.getDestCol() - 1) && !this.isColorInCheck(boardBeforeMove, color);
+    }
+
+    private boolean isLeftCastleLegal(final ChessBoardModel boardBeforeMove, final ChessBoardModel boardAfterMove, final Color color, final Move move) {
+        // TODO add king and rook haven't moved checks.
+        return !this.canColorThreatenCell(boardAfterMove, Color.getOpposingColor(color), move.getDestRow(),
+                move.getDestCol() + 1) && !this.isColorInCheck(boardBeforeMove, color);
     }
 
 }

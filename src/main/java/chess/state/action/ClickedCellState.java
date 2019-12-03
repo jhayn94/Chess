@@ -242,25 +242,6 @@ public class ClickedCellState extends GameState {
     }
 
     /**
-     * Does various after move checks, such as looking for check, checkmate and stalemate.
-     *
-     * @param board              - chess board object.
-     * @param selectedPieceColor - color whose turn it will be.
-     * @param tempBoard          - new state of the board after a move.
-     */
-    private void doAfterMoveChecks(final ChessBoardModel board, final Color selectedPieceColor,
-                                   final ChessBoardModel tempBoard) {
-        final Color opposingColor = Color.getOpposingColor(selectedPieceColor);
-        if (this.utils.isColorInCheckMate(board.isPlayer1sTurn(), tempBoard, opposingColor)) {
-            this.setKingInCheckmateStyle(board, opposingColor);
-        } else if (this.utils.isColorInCheck(tempBoard, opposingColor)) {
-            this.setKingCellStyle(board, opposingColor, ChessBoardCell.IN_CHECK_CELL_CSS_CLASS);
-        } else if (this.utils.isColorInStalemate(board.isPlayer1sTurn(), board, opposingColor)) {
-            this.setKingInStalemateStyle(board, opposingColor);
-        }
-    }
-
-    /**
      * Updates the selected cell with the newly clicked cell in this event / state.
      */
     private void updateSelectedCell() {

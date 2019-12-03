@@ -37,7 +37,7 @@ public class Pawn extends ChessPiece {
     }
 
     /**
-     * Gets the moves as the player on the bottom half of the screen
+     * Gets the moves as the player on the bottom half of the screen.
      *
      * @param sourceRow - current row of the piece
      * @param sourceCol - current column of the piece
@@ -64,14 +64,16 @@ public class Pawn extends ChessPiece {
         if (Color.NONE != rightCapturePieceColor) {
             moves.add(new Move(sourceRow - 1, sourceCol + 1));
         }
+        // En passant moves. Note that friendly pieces are filtered out here as there is no concept of
+        // "protecting" your other pieces with an en passant move.
         final Color leftEnPassantCapturePieceColor = this.board.getPieceColorForCell(sourceRow,
                 sourceCol - 1);
-        if (Color.NONE != leftEnPassantCapturePieceColor) {
+        if (Color.areOpposingColors(this.color, leftEnPassantCapturePieceColor)) {
             moves.add(new Move(sourceRow - 1, sourceCol - 1, Move.MoveType.EN_PASSANT));
         }
         final Color rightEnPassantCapturePieceColor = this.board.getPieceColorForCell(sourceRow,
                 sourceCol + 1);
-        if (Color.NONE != rightEnPassantCapturePieceColor) {
+        if (Color.areOpposingColors(this.color, rightEnPassantCapturePieceColor)) {
             moves.add(new Move(sourceRow - 1, sourceCol + 1, Move.MoveType.EN_PASSANT));
         }
     }
@@ -104,14 +106,16 @@ public class Pawn extends ChessPiece {
         if (Color.NONE != rightCapturePieceColor) {
             moves.add(new Move(sourceRow + 1, sourceCol + 1));
         }
+        // En passant moves. Note that friendly pieces are filtered out here as there is no concept of
+        // "protecting" your other pieces with an en passant move.
         final Color leftEnPassantCapturePieceColor = this.board.getPieceColorForCell(sourceRow,
                 sourceCol - 1);
-        if (Color.NONE != leftEnPassantCapturePieceColor) {
+        if (Color.areOpposingColors(this.color, leftEnPassantCapturePieceColor)) {
             moves.add(new Move(sourceRow + 1, sourceCol - 1, Move.MoveType.EN_PASSANT));
         }
         final Color rightEnPassantCapturePieceColor = this.board.getPieceColorForCell(sourceRow,
                 sourceCol + 1);
-        if (Color.NONE != rightEnPassantCapturePieceColor) {
+        if (Color.areOpposingColors(this.color, rightEnPassantCapturePieceColor)) {
             moves.add(new Move(sourceRow + 1, sourceCol + 1, Move.MoveType.EN_PASSANT));
         }
     }

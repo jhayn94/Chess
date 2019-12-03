@@ -5,6 +5,7 @@ import chess.controller.ApplicationStateContext;
 import chess.model.BoardHistory;
 import chess.model.ChessBoardModel;
 import chess.model.ChessModelUtils;
+import chess.model.Color;
 import chess.state.GameState;
 
 /**
@@ -22,11 +23,14 @@ public class UndoActionState extends GameState {
     public void onEnter() {
         final BoardHistory history = this.context.getHistory();
         if (!history.isUndoStackEmpty()) {
+            this.clearHighlightedCells(true);
             final ChessBoardModel board = history.getBoardForUndo();
-            history.addToRedoStack(board);
+            history.addToRedoStack(this.context.getBoard());
             this.context.setBoard(board);
             this.resetAppToMatchBoard();
             this.updateUndoRedoButtons();
+            this.doAfterMoveChecks(board, Color.BLACK, board);
+            this.doAfterMoveChecks(board, Color.WHITE, board);
         }
 
     }

@@ -1,20 +1,20 @@
 package chess.controller;
 
 import chess.model.ChessBoardModel;
+import chess.model.Color;
 import chess.state.GameState;
 import chess.view.core.ChessBoardView;
 import chess.view.menu.EditMenu;
 import chess.view.menu.button.ContextMenuButton;
 import javafx.stage.Stage;
+import javafx.util.Pair;
 import org.springframework.stereotype.Service;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Service
 public class ApplicationStateContext {
-
-    // TODO - could split this into subcomponents - view and model context?
-
-    // States.
-    private GameState previousState;
 
     private GameState currentState;
 
@@ -37,15 +37,25 @@ public class ApplicationStateContext {
 
     private boolean isPlayer1sTurn;
 
+    // Tracks which pieces have moved that affect eligibility for castling.
+    private Set<MovedPieces> movedPieces;
+
+    public enum MovedPieces {
+        BOTTOM_KING, TOP_KING, BOTTOM_LEFT_ROOK, BOTTOM_RIGHT_ROOK, TOP_LEFT_ROOK, TOP_RIGHT_ROOK;
+    }
+
+    // Tracks if a pawn last moved two cells, making it able to be captured via en passant.
+    private Pair<Color, Integer> enpassant;
+
     public ApplicationStateContext() {
         this.currentState = null;
-        this.previousState = null;
         this.selectedCellRow = -1;
         this.selectedCellCol = -1;
+        this.enpassant = new Pair<>(Color.NONE, -1);
+        this.movedPieces = new HashSet<>();
     }
 
     public void changeState(final GameState newState) {
-        this.previousState = this.currentState;
         this.currentState = newState;
         this.currentState.onEnter();
     }
@@ -112,5 +122,23 @@ public class ApplicationStateContext {
 
     public void setIsPlayer1sTurn(final boolean isPlayer1sTurn) {
         this.isPlayer1sTurn = isPlayer1sTurn;
+    }
+
+
+    public Set<MovedPieces> getMovedPieces() {
+        return this.movedPieces;
+    }
+
+    public void setMovedPieces(final Set<MovedPieces> movedPieces) {
+        this.movedPieces = movedPieces;
+    }
+
+
+    public Pair<Color, Integer> getEnpassant() {
+        return this.enpassant;
+    }
+
+    public void setEnpassant(final Pair<Color, Integer> enpassant) {
+        this.enpassant = enpassant;
     }
 }

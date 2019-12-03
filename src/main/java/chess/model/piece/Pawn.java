@@ -64,7 +64,16 @@ public class Pawn extends ChessPiece {
         if (Color.NONE != rightCapturePieceColor) {
             moves.add(new Move(sourceRow - 1, sourceCol + 1));
         }
-        // TODO - enpassant
+        final Color leftEnPassantCapturePieceColor = this.board.getPieceColorForCell(sourceRow,
+                sourceCol - 1);
+        if (Color.NONE != leftEnPassantCapturePieceColor) {
+            moves.add(new Move(sourceRow - 1, sourceCol - 1, Move.MoveType.EN_PASSANT));
+        }
+        final Color rightEnPassantCapturePieceColor = this.board.getPieceColorForCell(sourceRow,
+                sourceCol + 1);
+        if (Color.NONE != rightEnPassantCapturePieceColor) {
+            moves.add(new Move(sourceRow - 1, sourceCol + 1, Move.MoveType.EN_PASSANT));
+        }
     }
 
     /**
@@ -95,7 +104,16 @@ public class Pawn extends ChessPiece {
         if (Color.NONE != rightCapturePieceColor) {
             moves.add(new Move(sourceRow + 1, sourceCol + 1));
         }
-        // TODO - enpassant
+        final Color leftEnPassantCapturePieceColor = this.board.getPieceColorForCell(sourceRow,
+                sourceCol - 1);
+        if (Color.NONE != leftEnPassantCapturePieceColor) {
+            moves.add(new Move(sourceRow + 1, sourceCol - 1, Move.MoveType.EN_PASSANT));
+        }
+        final Color rightEnPassantCapturePieceColor = this.board.getPieceColorForCell(sourceRow,
+                sourceCol + 1);
+        if (Color.NONE != rightEnPassantCapturePieceColor) {
+            moves.add(new Move(sourceRow + 1, sourceCol + 1, Move.MoveType.EN_PASSANT));
+        }
     }
 
 }

@@ -7,14 +7,6 @@ public class ChessBoardModel {
 
     public static final int BOARD_SIZE = 8;
 
-    public static final int PLAYER_ONE_ROOK_START_ROW = 7;
-
-    public static final int PLAYER_TWO_ROOK_START_ROW = 0;
-
-    public static final int RIGHT_ROOK_START_COL = 7;
-
-    public static final int LEFT_ROOK_START_COL = 0;
-
     public static final int RIGHT_ROOK_CASTLE_DEST_COL = 5;
 
     public static final int LEFT_ROOK_CASTLE_DEST_COL = 3;

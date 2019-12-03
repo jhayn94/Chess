@@ -1,10 +1,12 @@
 package chess.model;
 
 import chess.config.ModelFactory;
+import chess.controller.ApplicationStateContext;
 import chess.model.piece.ChessPiece;
 import javafx.util.Pair;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * A class for frequently used chess board-based methods.
@@ -113,21 +115,23 @@ public class ChessModelUtils {
     /**
      * Returns true iff the given move is legal.
      *
+     * @param context         - state context for the application.
      * @param boardBeforeMove - board before the move.
      * @param boardAfterMove  - board after the move.
      * @param color           - color making the move.
      * @param move            - move to check.
      * @return - true iff the given move is legal.
      */
-    public boolean isMoveLegal(final ChessBoardModel boardBeforeMove, final ChessBoardModel boardAfterMove,
+    public boolean isMoveLegal(final ApplicationStateContext context, final ChessBoardModel boardBeforeMove, final ChessBoardModel boardAfterMove,
                                final Color color, final Move move) {
         if (!this.isColorInCheck(boardAfterMove, color)) {
             if (Move.MoveType.CASTLE_LEFT == move.getMoveType()) {
-                return this.isLeftCastleLegal(boardBeforeMove, boardAfterMove, color, move);
+                return this.isLeftCastleLegal(context, boardBeforeMove, boardAfterMove, color, move);
             } else if (Move.MoveType.CASTLE_RIGHT == move.getMoveType()) {
-                return this.isRightCastleLegal(boardBeforeMove, boardAfterMove, color, move);
+                return this.isRightCastleLegal(context, boardBeforeMove, boardAfterMove, color, move);
+            } else if (Move.MoveType.EN_PASSANT == move.getMoveType()) {
+                return this.isEnpassantLegal(context, color, move);
             }
-            // TODO - enpassant
             return true;
         } else {
             return false;
@@ -231,16 +235,102 @@ public class ChessModelUtils {
         return false;
     }
 
-    private boolean isRightCastleLegal(final ChessBoardModel boardBeforeMove, final ChessBoardModel boardAfterMove, final Color color, final Move move) {
-        // TODO add king and rook haven't moved checks.
-        return !this.canColorThreatenCell(boardAfterMove, Color.getOpposingColor(color), move.getDestRow(),
-                move.getDestCol() - 1) && !this.isColorInCheck(boardBeforeMove, color);
+    /**
+     * Returns true iff the given right castle move is legal.
+     *
+     * @param context         - state context for the application.
+     * @param boardBeforeMove - board before the move.
+     * @param boardAfterMove  - board after the move, if proven to be valid.
+     * @param color           - color making the move.
+     * @param move            - move to check for validity.
+     * @return - true iff the given right castle move is legal.
+     */
+    private boolean isRightCastleLegal(final ApplicationStateContext context, final ChessBoardModel boardBeforeMove, final ChessBoardModel boardAfterMove,
+                                       final Color color, final Move move) {
+        final Set<ApplicationStateContext.MovedPieces> movedPieces = context.getMovedPieces();
+        final boolean haveRookOrKingMoved = this.haveRookOrKingMoved(boardBeforeMove, color, move, movedPieces);
+
+        return !haveRookOrKingMoved && !this.canColorThreatenCell(boardAfterMove, Color.getOpposingColor(color),
+                move.getDestRow(), move.getDestCol() - 1) && !this.isColorInCheck(boardBeforeMove, color);
     }
 
-    private boolean isLeftCastleLegal(final ChessBoardModel boardBeforeMove, final ChessBoardModel boardAfterMove, final Color color, final Move move) {
-        // TODO add king and rook haven't moved checks.
-        return !this.canColorThreatenCell(boardAfterMove, Color.getOpposingColor(color), move.getDestRow(),
-                move.getDestCol() + 1) && !this.isColorInCheck(boardBeforeMove, color);
+    /**
+     * Returns true iff the given left castle move is legal.
+     *
+     * @param context         - state context for the application.
+     * @param boardBeforeMove - board before the move.
+     * @param boardAfterMove  - board after the move, if proven to be valid.
+     * @param color           - color making the move.
+     * @param move            - move to check for validity.
+     * @return - true iff the given left castle move is legal.
+     */
+    private boolean isLeftCastleLegal(final ApplicationStateContext context,
+                                      final ChessBoardModel boardBeforeMove, final ChessBoardModel boardAfterMove,
+                                      final Color color, final Move move) {
+        final Set<ApplicationStateContext.MovedPieces> movedPieces = context.getMovedPieces();
+        final boolean haveRookOrKingMoved = this.haveRookOrKingMoved(boardBeforeMove, color, move, movedPieces);
+        return !haveRookOrKingMoved && !this.canColorThreatenCell(boardAfterMove, Color.getOpposingColor(color),
+                move.getDestRow(), move.getDestCol() + 1) && !this.isColorInCheck(boardBeforeMove, color);
     }
 
+    /**
+     * Returns true iff the given enpassant move is legal.
+     *
+     * @param context - state context for the application.
+     * @param color   - color making the move.
+     * @param move    - move to check for validity.
+     * @return - true iff the given enpassant move is legal.
+     */
+    private boolean isEnpassantLegal(final ApplicationStateContext context,
+                                     final Color color, final Move move) {
+        final Pair<Color, Integer> enpassant = context.getEnpassant();
+        return Color.areOpposingColors(enpassant.getKey(), color) && move.getDestCol() == enpassant.getValue();
+    }
+
+    /**
+     * Returns true if either the king, or one of the rooks have moved (based on the attempted move).
+     * Essentially, this returns true iff any piece has moved which should prevent the given move from occurring.
+     *
+     * @param board       - chess board object.
+     * @param color       - color making the move.
+     * @param move        - move to check for validity.
+     * @param movedPieces - set of specifically tracked moved pieces.
+     * @return - true iff any piece has moved which should prevent the given move from occurring.
+     */
+    private boolean haveRookOrKingMoved(final ChessBoardModel board, final Color color, final Move move,
+                                        final Set<ApplicationStateContext.MovedPieces> movedPieces) {
+        boolean haveRookOrKingMoved;
+        if (this.isForPlayerOne(board, color)) {
+            haveRookOrKingMoved = movedPieces.contains(ApplicationStateContext.MovedPieces.BOTTOM_KING);
+        } else {
+            haveRookOrKingMoved = movedPieces.contains(ApplicationStateContext.MovedPieces.TOP_KING);
+        }
+        if (Move.MoveType.CASTLE_LEFT == move.getMoveType()) {
+            if (this.isForPlayerOne(board, color)) {
+                haveRookOrKingMoved = haveRookOrKingMoved || movedPieces.contains(ApplicationStateContext.MovedPieces.BOTTOM_LEFT_ROOK);
+            } else {
+                haveRookOrKingMoved =
+                        haveRookOrKingMoved || movedPieces.contains(ApplicationStateContext.MovedPieces.TOP_LEFT_ROOK);
+            }
+        } else if (Move.MoveType.CASTLE_RIGHT == move.getMoveType()) {
+            if (this.isForPlayerOne(board, color)) {
+                haveRookOrKingMoved = haveRookOrKingMoved ||
+                        movedPieces.contains(ApplicationStateContext.MovedPieces.BOTTOM_RIGHT_ROOK);
+            } else {
+                haveRookOrKingMoved = haveRookOrKingMoved || movedPieces.contains(ApplicationStateContext.MovedPieces.TOP_RIGHT_ROOK);
+            }
+        }
+        return haveRookOrKingMoved;
+    }
+
+    /**
+     * Returns true iff the given board settings + color represent player one.
+     *
+     * @param board - chess board object.
+     * @param color - color whose turn it is.
+     * @return - true iff the given board settings + color represent player one.
+     */
+    public boolean isForPlayerOne(final ChessBoardModel board, final Color color) {
+        return (Color.WHITE == color && board.isPlayerOneWhite()) || (Color.BLACK == color && !board.isPlayerOneWhite());
+    }
 }

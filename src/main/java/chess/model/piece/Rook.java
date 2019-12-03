@@ -9,6 +9,14 @@ import java.util.List;
 
 public class Rook extends ChessPiece {
 
+    public static final int PLAYER_ONE_ROOK_START_ROW = 7;
+
+    public static final int PLAYER_TWO_ROOK_START_ROW = 0;
+
+    public static final int RIGHT_ROOK_START_COL = 7;
+
+    public static final int LEFT_ROOK_START_COL = 0;
+
 
     public Rook(final Color color, final ChessBoardModel board) {
         super(color, board, PieceType.ROOK);

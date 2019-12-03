@@ -3,7 +3,7 @@ package chess.model;
 public class Move {
 
     public enum MoveType {
-        NORMAL, EN_PASSANT, CASTLE_LEFT, CASTLE_RIGHT;
+        NORMAL, EN_PASSANT, CASTLE_LEFT, CASTLE_RIGHT
     }
 
     private final int destRow;

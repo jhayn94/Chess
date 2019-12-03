@@ -64,12 +64,10 @@ public class ChessApplication extends Application {
     private void updateStateContext(final Stage stage) {
         final ApplicationStateContext stateContext =
                 this.context.getBean(ApplicationStateContext.class);
-        final StateFactory stateFactory = this.context.getBean(StateFactory.class);
         final ModelFactory modelFactory = this.context.getBean(ModelFactory.class);
         stateContext.setPrimaryStage(stage);
         stateContext.getChessBoardView().requestFocus();
-        stateContext.setChessBoardModel(modelFactory.chessBoardModel(true));
-        stateContext.changeState(stateFactory.newGameState());
+        stateContext.setChessBoardModel(modelFactory.chessBoardModel(false));
     }
 
     /**

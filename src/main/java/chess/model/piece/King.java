@@ -9,11 +9,11 @@ import java.util.List;
 
 public class King extends ChessPiece {
 
-    private static final int KING_START_ROW_BOTTOM = 7;
+    public static final int KING_START_ROW_BOTTOM = 7;
 
-    private static final int KING_START_ROW_TOP = 0;
+    public static final int KING_START_ROW_TOP = 0;
 
-    private static final int KING_START_COL = 4;
+    public static final int KING_START_COL = 4;
 
     public King(final Color color, final ChessBoardModel board) {
         super(color, board, PieceType.PAWN);

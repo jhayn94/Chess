@@ -1,6 +1,10 @@
 package chess.model;
 
+import javafx.util.Pair;
 import org.springframework.stereotype.Component;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Component
 public class ChessBoardModel {
@@ -11,12 +15,22 @@ public class ChessBoardModel {
 
     public static final int LEFT_ROOK_CASTLE_DEST_COL = 3;
 
+    private boolean isPlayer1sTurn;
+
+    // Tracks which pieces have moved that affect eligibility for castling.
+    private Set<MovedPieces> movedPieces;
+
+    // Tracks if a pawn last moved two cells, making it able to be captured via en passant.
+    private Pair<Color, Integer> enpassant;
+
     private final boolean isPlayerOneWhite;
 
     private int[][] board;
 
     public ChessBoardModel(final boolean isPlayerOneWhite) {
         this.isPlayerOneWhite = isPlayerOneWhite;
+        this.enpassant = new Pair<>(Color.NONE, -1);
+        this.movedPieces = new HashSet<>();
         this.board = new int[BOARD_SIZE][BOARD_SIZE];
         for (int row = 0; row < BOARD_SIZE; row++) {
             for (int col = 0; col < BOARD_SIZE; col++) {
@@ -70,6 +84,11 @@ public class ChessBoardModel {
         return this.board[col][row] == 0;
     }
 
+    /**
+     * Returns an aliasing proof copy of this.
+     *
+     * @return - an aliasing proof copy of this
+     */
     public ChessBoardModel createCopy() {
         final ChessBoardModel other = new ChessBoardModel(this.isPlayerOneWhite);
         other.board = new int[BOARD_SIZE][BOARD_SIZE];
@@ -78,10 +97,33 @@ public class ChessBoardModel {
                 other.board[col][row] = this.board[col][row];
             }
         }
+        other.enpassant = new Pair<>(this.enpassant.getKey(), this.enpassant.getValue());
+        other.movedPieces = new HashSet<>(this.movedPieces);
+        other.isPlayer1sTurn = this.isPlayer1sTurn;
         return other;
     }
 
     public boolean isPlayerOneWhite() {
         return this.isPlayerOneWhite;
+    }
+
+    public Set<MovedPieces> getMovedPieces() {
+        return this.movedPieces;
+    }
+
+    public Pair<Color, Integer> getEnpassant() {
+        return this.enpassant;
+    }
+
+    public void setEnpassant(final Pair<Color, Integer> enpassant) {
+        this.enpassant = enpassant;
+    }
+
+    public boolean isPlayer1sTurn() {
+        return this.isPlayer1sTurn;
+    }
+
+    public void setIsPlayer1sTurn(final boolean isPlayer1sTurn) {
+        this.isPlayer1sTurn = isPlayer1sTurn;
     }
 }

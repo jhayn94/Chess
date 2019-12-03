@@ -2,6 +2,7 @@ package chess.state;
 
 import chess.config.ModelFactory;
 import chess.controller.ApplicationStateContext;
+import chess.model.BoardHistory;
 import chess.model.ChessBoardModel;
 import chess.model.ChessModelUtils;
 import chess.model.Color;
@@ -9,6 +10,7 @@ import chess.model.Move;
 import chess.model.piece.ChessPiece;
 import chess.view.core.ChessBoardCell;
 import chess.view.core.ChessBoardView;
+import chess.view.menu.EditMenu;
 import javafx.collections.ObservableList;
 import javafx.util.Pair;
 
@@ -37,10 +39,10 @@ public abstract class GameState {
     /**
      * Removes all pieces from the board.
      */
-    protected void clearBoard() {
+    protected void clearBoard(final boolean clearModel) {
         for (int row = 0; row < ChessBoardModel.BOARD_SIZE; row++) {
             for (int col = 0; col < ChessBoardModel.BOARD_SIZE; col++) {
-                this.clearCell(row, col);
+                this.clearCell(row, col, clearModel);
             }
         }
     }
@@ -68,12 +70,35 @@ public abstract class GameState {
      * @param row - row to clear.
      * @param col - column to clear.
      */
-    protected void clearCell(final int row, final int col) {
+    protected void clearCell(final int row, final int col, final boolean clearModel) {
+        if (clearModel) {
+            this.clearCellModel(row, col);
+        }
+        this.clearCellView(row, col);
+    }
+
+    /**
+     * Clears a single cell view component of its piece.
+     *
+     * @param row - row to clear.
+     * @param col - column to clear.
+     */
+    protected void clearCellView(final int row, final int col) {
         final ChessPiece.PieceType emptyPiece = ChessPiece.PieceType.NONE;
-        final ChessBoardModel chessBoardModel = this.context.getChessBoardModel();
-        chessBoardModel.setPieceForCell(row, col, emptyPiece.getPieceCode(), Color.NONE);
         final ChessBoardView chessBoardView = this.context.getChessBoardView();
         chessBoardView.getCell(row, col).setImage(emptyPiece.getResourcePath(), Color.NONE);
+    }
+
+    /**
+     * Clears a single cell model component of its piece.
+     *
+     * @param row - row to clear.
+     * @param col - column to clear.
+     */
+    protected void clearCellModel(final int row, final int col) {
+        final ChessPiece.PieceType emptyPiece = ChessPiece.PieceType.NONE;
+        final ChessBoardModel chessBoardModel = this.context.getBoard();
+        chessBoardModel.setPieceForCell(row, col, emptyPiece.getPieceCode(), Color.NONE);
     }
 
     /**
@@ -86,7 +111,7 @@ public abstract class GameState {
      */
     protected void updateBoardWithPiece(final int row, final int col,
                                         final ChessPiece.PieceType pieceType, final Color color) {
-        final ChessBoardModel chessBoardModel = this.context.getChessBoardModel();
+        final ChessBoardModel chessBoardModel = this.context.getBoard();
         chessBoardModel.setPieceForCell(row, col, pieceType.getPieceCode(), color);
         final ChessBoardView chessBoardView = this.context.getChessBoardView();
         chessBoardView.getCell(row, col).setImage(pieceType.getResourcePath(), color);
@@ -200,4 +225,41 @@ public abstract class GameState {
         }
         return false;
     }
+
+    /**
+     * Updates the undo and redo buttons / menu items based on their current sizes.
+     */
+    protected void updateUndoRedoButtons() {
+        final EditMenu editMenu = this.context.getEditMenu();
+        final BoardHistory history = this.context.getHistory();
+        editMenu.setUndoMenuItemEnabled(!history.isUndoStackEmpty());
+        editMenu.setRedoMenuItemEnabled(!history.isRedoStackEmpty());
+    }
+
+    /**
+     * Adds the current board to the undo stack.
+     */
+    protected void addBoardToUndoStack() {
+        final BoardHistory history = this.context.getHistory();
+        history.addToUndoStack(this.context.getBoard());
+        history.clearRedoStack();
+        this.updateUndoRedoButtons();
+    }
+
+    /**
+     * Updates the view to match a restored model (e.g. from an undo).
+     */
+    protected void resetAppToMatchBoard() {
+        this.clearBoard(false);
+        final ChessBoardModel board = this.context.getBoard();
+        for (int row = 0; row < ChessBoardModel.BOARD_SIZE; row++) {
+            for (int col = 0; col < ChessBoardModel.BOARD_SIZE; col++) {
+                final int pieceCode = board.getPieceForCell(row, col);
+                final ChessPiece.PieceType pieceType = ChessPiece.PieceType.fromCode(pieceCode);
+                final Color color = board.getPieceColorForCell(row, col);
+                this.updateBoardWithPiece(row, col, pieceType, color);
+            }
+        }
+    }
+
 }

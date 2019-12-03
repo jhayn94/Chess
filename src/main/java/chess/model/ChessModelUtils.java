@@ -30,23 +30,22 @@ public class ChessModelUtils {
      * Creates a copy of the given board, applies a move, then returns the new board.
      *
      * @param move               - move to make.
-     * @param isPlayerOneTurn    - is it the first player's turn?
      * @param rowToClear         - row to make empty after the move.
      * @param colToClear         - column to make empty after the move.
-     * @param chessBoardModel    - source board to use in copy.
+     * @param board              - source board to use in copy.
      * @param selectedPieceColor - color of piece which will be moved.
      * @param pieceType          - type of piece that will be moved.
      * @return copy of the board with the given move applied.
      */
-    public ChessBoardModel applyMoveToCopiedBoard(final Move move, final boolean isPlayerOneTurn,
+    public ChessBoardModel applyMoveToCopiedBoard(final Move move,
                                                   final int rowToClear, final int colToClear,
-                                                  final ChessBoardModel chessBoardModel,
+                                                  final ChessBoardModel board,
                                                   final Color selectedPieceColor, final ChessPiece.PieceType pieceType) {
-        final ChessBoardModel tempChessBoard = chessBoardModel.createCopy();
+        final ChessBoardModel tempChessBoard = board.createCopy();
         tempChessBoard.setPieceForCell(move.getDestRow(), move.getDestCol(), pieceType.getPieceCode(), selectedPieceColor);
         tempChessBoard.setPieceForCell(rowToClear, colToClear, ChessPiece.PieceType.NONE.getPieceCode(), Color.NONE);
         if (Move.MoveType.CASTLE_RIGHT == move.getMoveType()) {
-            if (isPlayerOneTurn) {
+            if (board.isPlayer1sTurn()) {
                 tempChessBoard.setPieceForCell(PLAYER_ONE_ROOK_START_ROW, RIGHT_ROOK_START_COL, ChessPiece.PieceType.NONE.getPieceCode(), Color.NONE);
                 tempChessBoard.setPieceForCell(PLAYER_ONE_ROOK_START_ROW, RIGHT_ROOK_CASTLE_DEST_COL,
                         ChessPiece.PieceType.ROOK.getPieceCode(), selectedPieceColor);
@@ -56,7 +55,7 @@ public class ChessModelUtils {
                         ChessPiece.PieceType.ROOK.getPieceCode(), selectedPieceColor);
             }
         } else if (Move.MoveType.CASTLE_LEFT == move.getMoveType()) {
-            if (isPlayerOneTurn) {
+            if (board.isPlayer1sTurn()) {
                 tempChessBoard.setPieceForCell(PLAYER_ONE_ROOK_START_ROW, LEFT_ROOK_CASTLE_DEST_COL, ChessPiece.PieceType.NONE.getPieceCode(), Color.NONE);
                 tempChessBoard.setPieceForCell(PLAYER_ONE_ROOK_START_ROW, LEFT_ROOK_CASTLE_DEST_COL,
                         ChessPiece.PieceType.ROOK.getPieceCode(), selectedPieceColor);
@@ -66,7 +65,7 @@ public class ChessModelUtils {
                         ChessPiece.PieceType.ROOK.getPieceCode(), selectedPieceColor);
             }
         } else if (Move.MoveType.EN_PASSANT == move.getMoveType()) {
-            if (isPlayerOneTurn) {
+            if (board.isPlayer1sTurn()) {
                 tempChessBoard.setPieceForCell(move.getDestRow() + 1, move.getDestCol(), ChessPiece.PieceType.NONE.getPieceCode(), Color.NONE);
             } else {
                 tempChessBoard.setPieceForCell(move.getDestRow() - 1, move.getDestCol(),
@@ -230,7 +229,6 @@ public class ChessModelUtils {
     /**
      * Returns true iff the given color has at least 1 move.
      *
-     * @param isPlayerOneTurn - is it player one's turn?
      * @param board           - chess board object.
      * @param board           - chess board object.
      * @param color           - color to check.
@@ -242,7 +240,7 @@ public class ChessModelUtils {
             for (int col = 0; col < ChessBoardModel.BOARD_SIZE; col++) {
                 final Color pieceColorForCell = board.getPieceColorForCell(row, col);
                 if (pieceColorForCell == color) {
-                    if (this.canPieceMove(isPlayerOneTurn, board, color, row, col)) {
+                    if (this.canPieceMove(board, color, row, col)) {
                         return true;
                     }
                 }
@@ -254,14 +252,13 @@ public class ChessModelUtils {
     /**
      * Returns true iff the piece at the given position has any legal moves (check and stalemate considered).
      *
-     * @param isPlayerOneTurn - is it player one's turn?
      * @param board           - chess board object.
      * @param color           - color of piece to check.
      * @param row             - row to check.
      * @param col             - column to check.
      * @return - true iff the piece at the given position has any legal moves.
      */
-    public boolean canPieceMove(final boolean isPlayerOneTurn, final ChessBoardModel board, final Color color,
+    public boolean canPieceMove(final ChessBoardModel board, final Color color,
                                 final int row, final int col) {
         final int pieceForCell = board.getPieceForCell(row, col);
         final ChessPiece.PieceType pieceType = ChessPiece.PieceType.fromCode(pieceForCell);
@@ -269,7 +266,7 @@ public class ChessModelUtils {
                 color);
         final List<Move> moves = chessPiece.getMoves(row, col, true);
         for (final Move move : moves) {
-            final ChessBoardModel boardWithNextMove = this.applyMoveToCopiedBoard(move, isPlayerOneTurn, row,
+            final ChessBoardModel boardWithNextMove = this.applyMoveToCopiedBoard(move, row,
                     col, board, color,
                     pieceType);
             if (!this.isColorInCheck(boardWithNextMove, color)) {
@@ -291,7 +288,7 @@ public class ChessModelUtils {
      */
     private boolean isRightCastleLegal(final ApplicationStateContext context, final ChessBoardModel boardBeforeMove, final ChessBoardModel boardAfterMove,
                                        final Color color, final Move move) {
-        final Set<ApplicationStateContext.MovedPieces> movedPieces = context.getMovedPieces();
+        final Set<MovedPieces> movedPieces = context.getBoard().getMovedPieces();
         final boolean haveRookOrKingMoved = this.haveRookOrKingMoved(boardBeforeMove, color, move, movedPieces);
 
         return !haveRookOrKingMoved && !this.canColorThreatenCell(boardAfterMove, Color.getOpposingColor(color),
@@ -311,7 +308,7 @@ public class ChessModelUtils {
     private boolean isLeftCastleLegal(final ApplicationStateContext context,
                                       final ChessBoardModel boardBeforeMove, final ChessBoardModel boardAfterMove,
                                       final Color color, final Move move) {
-        final Set<ApplicationStateContext.MovedPieces> movedPieces = context.getMovedPieces();
+        final Set<MovedPieces> movedPieces = context.getBoard().getMovedPieces();
         final boolean haveRookOrKingMoved = this.haveRookOrKingMoved(boardBeforeMove, color, move, movedPieces);
         return !haveRookOrKingMoved && !this.canColorThreatenCell(boardAfterMove, Color.getOpposingColor(color),
                 move.getDestRow(), move.getDestCol() + 1) && !this.isColorInCheck(boardBeforeMove, color);
@@ -327,7 +324,7 @@ public class ChessModelUtils {
      */
     private boolean isEnpassantLegal(final ApplicationStateContext context,
                                      final Color color, final Move move) {
-        final Pair<Color, Integer> enpassant = context.getEnpassant();
+        final Pair<Color, Integer> enpassant = context.getBoard().getEnpassant();
         return Color.areOpposingColors(enpassant.getKey(), color) && move.getDestCol() == enpassant.getValue();
     }
 
@@ -342,26 +339,26 @@ public class ChessModelUtils {
      * @return - true iff any piece has moved which should prevent the given move from occurring.
      */
     private boolean haveRookOrKingMoved(final ChessBoardModel board, final Color color, final Move move,
-                                        final Set<ApplicationStateContext.MovedPieces> movedPieces) {
+                                        final Set<MovedPieces> movedPieces) {
         boolean haveRookOrKingMoved;
         if (this.isForPlayerOne(board, color)) {
-            haveRookOrKingMoved = movedPieces.contains(ApplicationStateContext.MovedPieces.BOTTOM_KING);
+            haveRookOrKingMoved = movedPieces.contains(MovedPieces.BOTTOM_KING);
         } else {
-            haveRookOrKingMoved = movedPieces.contains(ApplicationStateContext.MovedPieces.TOP_KING);
+            haveRookOrKingMoved = movedPieces.contains(MovedPieces.TOP_KING);
         }
         if (Move.MoveType.CASTLE_LEFT == move.getMoveType()) {
             if (this.isForPlayerOne(board, color)) {
-                haveRookOrKingMoved = haveRookOrKingMoved || movedPieces.contains(ApplicationStateContext.MovedPieces.BOTTOM_LEFT_ROOK);
+                haveRookOrKingMoved = haveRookOrKingMoved || movedPieces.contains(MovedPieces.BOTTOM_LEFT_ROOK);
             } else {
                 haveRookOrKingMoved =
-                        haveRookOrKingMoved || movedPieces.contains(ApplicationStateContext.MovedPieces.TOP_LEFT_ROOK);
+                        haveRookOrKingMoved || movedPieces.contains(MovedPieces.TOP_LEFT_ROOK);
             }
         } else if (Move.MoveType.CASTLE_RIGHT == move.getMoveType()) {
             if (this.isForPlayerOne(board, color)) {
                 haveRookOrKingMoved = haveRookOrKingMoved ||
-                        movedPieces.contains(ApplicationStateContext.MovedPieces.BOTTOM_RIGHT_ROOK);
+                        movedPieces.contains(MovedPieces.BOTTOM_RIGHT_ROOK);
             } else {
-                haveRookOrKingMoved = haveRookOrKingMoved || movedPieces.contains(ApplicationStateContext.MovedPieces.TOP_RIGHT_ROOK);
+                haveRookOrKingMoved = haveRookOrKingMoved || movedPieces.contains(MovedPieces.TOP_RIGHT_ROOK);
             }
         }
         return haveRookOrKingMoved;

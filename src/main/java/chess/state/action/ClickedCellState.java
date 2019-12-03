@@ -6,6 +6,7 @@ import chess.model.ChessBoardModel;
 import chess.model.ChessModelUtils;
 import chess.model.Color;
 import chess.model.Move;
+import chess.model.MovedPieces;
 import chess.model.piece.ChessPiece;
 import chess.model.piece.King;
 import chess.state.GameState;
@@ -44,7 +45,7 @@ public class ClickedCellState extends GameState {
         if (this.row == -1 || this.col == -1) {
             throw new IllegalStateException("Must set row and column index first.");
         }
-        final ChessBoardModel chessBoardModel = this.context.getChessBoardModel();
+        final ChessBoardModel chessBoardModel = this.context.getBoard();
         final Color newSelectedPieceColor = chessBoardModel.getPieceColorForCell(this.row,
                 this.col);
         final int selectedRow = this.context.getSelectedCellRow();
@@ -88,7 +89,7 @@ public class ClickedCellState extends GameState {
         final ChessPiece chessPiece = this.modelFactory.chessPiece(board, pieceType, newSelectedPieceColor);
         final List<Move> moves = chessPiece.getMoves(selectedCellRow, selectedCellCol, true);
         moves.forEach(move -> {
-            final ChessBoardModel boardAfterMove = this.utils.applyMoveToCopiedBoard(move, this.context.isPlayer1sTurn(),
+            final ChessBoardModel boardAfterMove = this.utils.applyMoveToCopiedBoard(move,
                     selectedCellRow, selectedCellCol, board, newSelectedPieceColor, pieceType);
             if (this.utils.isMoveLegal(this.context, board, boardAfterMove, newSelectedPieceColor, move)) {
                 this.updateCellStyle(move.getDestRow(), move.getDestCol(),
@@ -111,13 +112,13 @@ public class ClickedCellState extends GameState {
     private boolean triedToSelectWrongColorPiece(final ChessBoardModel board, final Color newSelectedPieceColor,
                                                  final int selectedCellRow, final int selectedCellCol) {
         return (selectedCellRow == -1 && selectedCellCol == -1) &&
-                ((this.context.isPlayer1sTurn() && board.isPlayerOneWhite()
+                ((board.isPlayer1sTurn() && board.isPlayerOneWhite()
                         && Color.BLACK == newSelectedPieceColor) ||
-                        (this.context.isPlayer1sTurn() && !board.isPlayerOneWhite()
+                        (board.isPlayer1sTurn() && !board.isPlayerOneWhite()
                                 && Color.WHITE == newSelectedPieceColor) ||
-                        (!this.context.isPlayer1sTurn() && board.isPlayerOneWhite()
+                        (!board.isPlayer1sTurn() && board.isPlayerOneWhite()
                                 && Color.WHITE == newSelectedPieceColor) ||
-                        (!this.context.isPlayer1sTurn() && !board.isPlayerOneWhite()
+                        (!board.isPlayer1sTurn() && !board.isPlayerOneWhite()
                                 && Color.BLACK == newSelectedPieceColor));
     }
 
@@ -142,9 +143,10 @@ public class ClickedCellState extends GameState {
 
         if (isValidMoveForPiece) {
             final ChessBoardModel tempBoard = this.utils.applyMoveToCopiedBoard(moveToMake.get(),
-                    this.context.isPlayer1sTurn(), selectedRow, selectedCol, board, selectedPieceColor, pieceType);
+                    selectedRow, selectedCol, board, selectedPieceColor, pieceType);
             if (this.utils.isMoveLegal(this.context, board, tempBoard, selectedPieceColor,
                     moveToMake.get())) {
+                this.addBoardToUndoStack();
                 this.applyMove(selectedRow, selectedCol, moveToMake.get(), selectedPieceColor, pieceType);
                 this.doAfterMoveChecks(board, selectedPieceColor, tempBoard);
             }
@@ -164,12 +166,12 @@ public class ClickedCellState extends GameState {
     private void applyMove(final int selectedRow, final int selectedCol, final Move moveToMake,
                            final Color selectedPieceColor, final ChessPiece.PieceType pieceType) {
         this.clearHighlightedCells(true);
-        this.clearCell(selectedRow, selectedCol);
+        this.clearCell(selectedRow, selectedCol, true);
         this.updateBoardWithPiece(moveToMake.getDestRow(), moveToMake.getDestCol(), pieceType, selectedPieceColor);
         this.checkForSpecialMove(moveToMake, selectedPieceColor);
         this.context.setSelectedRow(-1);
         this.context.setSelectedCol(-1);
-        this.context.setIsPlayer1sTurn(!this.context.isPlayer1sTurn());
+        this.context.getBoard().setIsPlayer1sTurn(!this.context.getBoard().isPlayer1sTurn());
         this.updateSpecialMoveStates(selectedRow, selectedCol, moveToMake, selectedPieceColor, pieceType);
     }
 
@@ -183,24 +185,25 @@ public class ClickedCellState extends GameState {
      * @param pieceType          - piece type being moved.
      */
     private void updateSpecialMoveStates(final int selectedRow, final int selectedCol, final Move moveToMake, final Color selectedPieceColor, final ChessPiece.PieceType pieceType) {
+        final ChessBoardModel board = this.context.getBoard();
         if (ChessPiece.PieceType.PAWN == pieceType && Math.abs(selectedRow - moveToMake.getDestRow()) == 2) {
-            this.context.setEnpassant(new Pair<>(selectedPieceColor, moveToMake.getDestCol()));
+            board.setEnpassant(new Pair<>(selectedPieceColor, moveToMake.getDestCol()));
         } else {
-            this.context.setEnpassant(new Pair<>(Color.NONE, -1));
+            board.setEnpassant(new Pair<>(Color.NONE, -1));
         }
         if (ChessPiece.PieceType.KING == pieceType && selectedRow == King.KING_START_ROW_BOTTOM) {
-            this.context.getMovedPieces().add(ApplicationStateContext.MovedPieces.BOTTOM_KING);
+            board.getMovedPieces().add(MovedPieces.BOTTOM_KING);
         } else if (ChessPiece.PieceType.KING == pieceType && selectedRow == King.KING_START_ROW_TOP) {
-            this.context.getMovedPieces().add(ApplicationStateContext.MovedPieces.TOP_KING);
+            board.getMovedPieces().add(MovedPieces.TOP_KING);
         } else if (ChessPiece.PieceType.ROOK == pieceType) {
             if (selectedRow == PLAYER_ONE_ROOK_START_ROW && selectedCol == LEFT_ROOK_START_COL) {
-                this.context.getMovedPieces().add(ApplicationStateContext.MovedPieces.BOTTOM_LEFT_ROOK);
+                board.getMovedPieces().add(MovedPieces.BOTTOM_LEFT_ROOK);
             } else if (selectedRow == PLAYER_ONE_ROOK_START_ROW && selectedCol == RIGHT_ROOK_START_COL) {
-                this.context.getMovedPieces().add(ApplicationStateContext.MovedPieces.BOTTOM_RIGHT_ROOK);
+                board.getMovedPieces().add(MovedPieces.BOTTOM_RIGHT_ROOK);
             } else if (selectedRow == PLAYER_TWO_ROOK_START_ROW && selectedCol == LEFT_ROOK_START_COL) {
-                this.context.getMovedPieces().add(ApplicationStateContext.MovedPieces.TOP_LEFT_ROOK);
+                board.getMovedPieces().add(MovedPieces.TOP_LEFT_ROOK);
             } else if (selectedRow == PLAYER_TWO_ROOK_START_ROW && selectedCol == RIGHT_ROOK_START_COL) {
-                this.context.getMovedPieces().add(ApplicationStateContext.MovedPieces.TOP_RIGHT_ROOK);
+                board.getMovedPieces().add(MovedPieces.TOP_RIGHT_ROOK);
             }
         }
     }
@@ -212,27 +215,28 @@ public class ClickedCellState extends GameState {
      * @param selectedPieceColor - color who is moving.
      */
     private void checkForSpecialMove(final Move moveToMake, final Color selectedPieceColor) {
+        final ChessBoardModel board = this.context.getBoard();
         if (Move.MoveType.CASTLE_RIGHT == moveToMake.getMoveType()) {
-            if (this.context.isPlayer1sTurn()) {
-                this.clearCell(PLAYER_ONE_ROOK_START_ROW, RIGHT_ROOK_START_COL);
+            if (board.isPlayer1sTurn()) {
+                this.clearCell(PLAYER_ONE_ROOK_START_ROW, RIGHT_ROOK_START_COL, true);
                 this.updateBoardWithPiece(PLAYER_ONE_ROOK_START_ROW, RIGHT_ROOK_CASTLE_DEST_COL, ChessPiece.PieceType.ROOK, selectedPieceColor);
             } else {
-                this.clearCell(PLAYER_TWO_ROOK_START_ROW, RIGHT_ROOK_START_COL);
+                this.clearCell(PLAYER_TWO_ROOK_START_ROW, RIGHT_ROOK_START_COL, true);
                 this.updateBoardWithPiece(PLAYER_TWO_ROOK_START_ROW, RIGHT_ROOK_CASTLE_DEST_COL, ChessPiece.PieceType.ROOK, selectedPieceColor);
             }
         } else if (Move.MoveType.CASTLE_LEFT == moveToMake.getMoveType()) {
-            if (this.context.isPlayer1sTurn()) {
-                this.clearCell(PLAYER_ONE_ROOK_START_ROW, LEFT_ROOK_START_COL);
+            if (board.isPlayer1sTurn()) {
+                this.clearCell(PLAYER_ONE_ROOK_START_ROW, LEFT_ROOK_START_COL, true);
                 this.updateBoardWithPiece(PLAYER_ONE_ROOK_START_ROW, LEFT_ROOK_CASTLE_DEST_COL, ChessPiece.PieceType.ROOK, selectedPieceColor);
             } else {
-                this.clearCell(PLAYER_TWO_ROOK_START_ROW, LEFT_ROOK_START_COL);
+                this.clearCell(PLAYER_TWO_ROOK_START_ROW, LEFT_ROOK_START_COL, true);
                 this.updateBoardWithPiece(PLAYER_TWO_ROOK_START_ROW, LEFT_ROOK_CASTLE_DEST_COL, ChessPiece.PieceType.ROOK, selectedPieceColor);
             }
         } else if (Move.MoveType.EN_PASSANT == moveToMake.getMoveType()) {
-            if (this.context.isPlayer1sTurn()) {
-                this.clearCell(moveToMake.getDestRow() + 1, moveToMake.getDestCol());
+            if (board.isPlayer1sTurn()) {
+                this.clearCell(moveToMake.getDestRow() + 1, moveToMake.getDestCol(), true);
             } else {
-                this.clearCell(moveToMake.getDestRow() - 1, moveToMake.getDestCol());
+                this.clearCell(moveToMake.getDestRow() - 1, moveToMake.getDestCol(), true);
             }
         }
     }
@@ -247,11 +251,11 @@ public class ClickedCellState extends GameState {
     private void doAfterMoveChecks(final ChessBoardModel board, final Color selectedPieceColor,
                                    final ChessBoardModel tempBoard) {
         final Color opposingColor = Color.getOpposingColor(selectedPieceColor);
-        if (this.utils.isColorInCheckMate(this.context.isPlayer1sTurn(), tempBoard, opposingColor)) {
+        if (this.utils.isColorInCheckMate(board.isPlayer1sTurn(), tempBoard, opposingColor)) {
             this.setKingInCheckmateStyle(board, opposingColor);
         } else if (this.utils.isColorInCheck(tempBoard, opposingColor)) {
             this.setKingCellStyle(board, opposingColor, ChessBoardCell.IN_CHECK_CELL_CSS_CLASS);
-        } else if (this.utils.isColorInStalemate(this.context.isPlayer1sTurn(), board, opposingColor)) {
+        } else if (this.utils.isColorInStalemate(board.isPlayer1sTurn(), board, opposingColor)) {
             this.setKingInStalemateStyle(board, opposingColor);
         }
     }

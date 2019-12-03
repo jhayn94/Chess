@@ -1,5 +1,6 @@
 package chess.config;
 
+import chess.model.BoardHistory;
 import chess.model.ChessBoardModel;
 import chess.model.ChessModelUtils;
 import chess.model.Color;
@@ -25,6 +26,13 @@ public class ModelFactory {
         return new ChessBoardModel(isP1White);
     }
 
+    @Bean
+    public BoardHistory boardHistory() {
+        return new BoardHistory();
+    }
+
+    @Bean
+    @Scope("prototype")
     public ChessModelUtils chessModelUtils() {
         return new ChessModelUtils(this);
     }
@@ -41,7 +49,7 @@ public class ModelFactory {
             return new Bishop(color, board);
         } else if (ChessPiece.PieceType.QUEEN == type) {
             return new Queen(color, board);
-        } else if (ChessPiece.PieceType.KING == type){
+        } else if (ChessPiece.PieceType.KING == type) {
             return new King(color, board);
         } else {
             throw new IllegalArgumentException("Type " + type + " not recognized.");

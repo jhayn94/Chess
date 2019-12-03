@@ -2,6 +2,7 @@ package chess.state.model;
 
 import chess.config.ModelFactory;
 import chess.controller.ApplicationStateContext;
+import chess.model.BoardHistory;
 import chess.model.ChessBoardModel;
 import chess.model.ChessModelUtils;
 import chess.model.Color;
@@ -18,15 +19,29 @@ public class NewGameState extends GameState {
     public NewGameState(final ApplicationStateContext context,
                         final ModelFactory modelFactory, final ChessModelUtils utils) {
         super(context, utils, modelFactory);
-        context.setIsPlayer1sTurn(true);
+
     }
 
     @Override
     public void onEnter() {
-        this.clearBoard();
+        this.context.getBoard().setIsPlayer1sTurn(true);
+        this.clearBoard(true);
         this.clearHighlightedCells(true);
 
-        final Color playerTwoColor = this.context.getChessBoardModel().isPlayerOneWhite()
+        final ChessBoardModel board = this.context.getBoard();
+        board.getMovedPieces().clear();
+        board.setEnpassant(new Pair<>(Color.NONE, -1));
+        this.setBoardPieces(board);
+
+        board.setIsPlayer1sTurn(board.isPlayerOneWhite());
+        this.context.setSelectedRow(-1);
+        this.context.setSelectedCol(-1);
+
+        this.updateUndoRedoComponents();
+    }
+
+    private void setBoardPieces(final ChessBoardModel board) {
+        final Color playerTwoColor = board.isPlayerOneWhite()
                 ? Color.BLACK : Color.WHITE;
         this.updateBoardWithPiece(0, 0, ChessPiece.PieceType.ROOK, playerTwoColor);
         this.updateBoardWithPiece(0, 1, ChessPiece.PieceType.KNIGHT, playerTwoColor);
@@ -51,12 +66,13 @@ public class NewGameState extends GameState {
             this.updateBoardWithPiece(1, col, ChessPiece.PieceType.PAWN, playerTwoColor);
             this.updateBoardWithPiece(6, col, ChessPiece.PieceType.PAWN, playerOneColor);
         }
+    }
 
-        this.context.setIsPlayer1sTurn(this.context.getChessBoardModel().isPlayerOneWhite());
-        this.context.setSelectedRow(-1);
-        this.context.setSelectedCol(-1);
-        this.context.getMovedPieces().clear();
-        this.context.setEnpassant(new Pair<>(Color.NONE, -1));
+    private void updateUndoRedoComponents() {
+        final BoardHistory history = this.context.getHistory();
+        history.clearRedoStack();
+        history.clearUndoStack();
+        this.updateUndoRedoButtons();
     }
 
 }

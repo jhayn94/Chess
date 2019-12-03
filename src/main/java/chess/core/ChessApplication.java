@@ -67,7 +67,8 @@ public class ChessApplication extends Application {
         final ModelFactory modelFactory = this.context.getBean(ModelFactory.class);
         stateContext.setPrimaryStage(stage);
         stateContext.getChessBoardView().requestFocus();
-        stateContext.setChessBoardModel(modelFactory.chessBoardModel(true));
+        stateContext.setBoard(modelFactory.chessBoardModel(true));
+        stateContext.setHistory(modelFactory.boardHistory());
     }
 
     /**

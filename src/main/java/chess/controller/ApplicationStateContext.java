@@ -1,17 +1,13 @@
 package chess.controller;
 
+import chess.model.BoardHistory;
 import chess.model.ChessBoardModel;
-import chess.model.Color;
 import chess.state.GameState;
 import chess.view.core.ChessBoardView;
 import chess.view.menu.EditMenu;
 import chess.view.menu.button.ContextMenuButton;
 import javafx.stage.Stage;
-import javafx.util.Pair;
 import org.springframework.stereotype.Service;
-
-import java.util.HashSet;
-import java.util.Set;
 
 @Service
 public class ApplicationStateContext {
@@ -35,24 +31,12 @@ public class ApplicationStateContext {
 
     private int selectedCellCol;
 
-    private boolean isPlayer1sTurn;
-
-    // Tracks which pieces have moved that affect eligibility for castling.
-    private final Set<MovedPieces> movedPieces;
-
-    public enum MovedPieces {
-        BOTTOM_KING, TOP_KING, BOTTOM_LEFT_ROOK, BOTTOM_RIGHT_ROOK, TOP_LEFT_ROOK, TOP_RIGHT_ROOK;
-    }
-
-    // Tracks if a pawn last moved two cells, making it able to be captured via en passant.
-    private Pair<Color, Integer> enpassant;
+    private BoardHistory history;
 
     public ApplicationStateContext() {
         this.currentState = null;
         this.selectedCellRow = -1;
         this.selectedCellCol = -1;
-        this.enpassant = new Pair<>(Color.NONE, -1);
-        this.movedPieces = new HashSet<>();
     }
 
     public void changeState(final GameState newState) {
@@ -92,11 +76,11 @@ public class ApplicationStateContext {
         this.chessBoardView = chessBoardView;
     }
 
-    public ChessBoardModel getChessBoardModel() {
+    public ChessBoardModel getBoard() {
         return this.chessBoardModel;
     }
 
-    public void setChessBoardModel(final ChessBoardModel chessBoardModel) {
+    public void setBoard(final ChessBoardModel chessBoardModel) {
         this.chessBoardModel = chessBoardModel;
     }
 
@@ -116,23 +100,11 @@ public class ApplicationStateContext {
         return this.selectedCellCol;
     }
 
-    public boolean isPlayer1sTurn() {
-        return this.isPlayer1sTurn;
+    public BoardHistory getHistory() {
+        return this.history;
     }
 
-    public void setIsPlayer1sTurn(final boolean isPlayer1sTurn) {
-        this.isPlayer1sTurn = isPlayer1sTurn;
-    }
-
-    public Set<MovedPieces> getMovedPieces() {
-        return this.movedPieces;
-    }
-
-    public Pair<Color, Integer> getEnpassant() {
-        return this.enpassant;
-    }
-
-    public void setEnpassant(final Pair<Color, Integer> enpassant) {
-        this.enpassant = enpassant;
+    public void setHistory(final BoardHistory history) {
+        this.history = history;
     }
 }

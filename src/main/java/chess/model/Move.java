@@ -13,9 +13,7 @@ public class Move {
     private final MoveType moveType;
 
     public Move(final int destRow, final int destCol) {
-        this.destRow = destRow;
-        this.destCol = destCol;
-        this.moveType = MoveType.NORMAL;
+        this(destRow, destCol, MoveType.NORMAL);
     }
 
     public Move(final int destRow, final int destCol, final MoveType moveType) {

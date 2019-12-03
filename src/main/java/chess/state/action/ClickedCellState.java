@@ -2,10 +2,12 @@ package chess.state.action;
 
 import chess.config.ModelFactory;
 import chess.controller.ApplicationStateContext;
+import chess.model.ChessAI;
 import chess.model.ChessBoardModel;
 import chess.model.ChessModelUtils;
 import chess.model.Color;
 import chess.model.Move;
+import chess.model.MoveWithSource;
 import chess.model.MovedPieces;
 import chess.model.piece.ChessPiece;
 import chess.model.piece.King;
@@ -148,10 +150,29 @@ public class ClickedCellState extends GameState {
                     moveToMake.get())) {
                 this.addBoardToUndoStack();
                 this.applyMove(selectedRow, selectedCol, moveToMake.get(), selectedPieceColor, pieceType);
-                this.doAfterMoveChecks(board, selectedPieceColor, tempBoard);
+                this.doAfterMoveChecks(board, selectedPieceColor);
+                if (board.isP2Ai()) {
+                    this.makeAIMove(board, Color.getOpposingColor(selectedPieceColor));
+                }
             }
         }
 
+    }
+
+    /**
+     * Makes a move as the AI.
+     *
+     * @param board   - chess board object.
+     * @param aiColor - ai's color
+     */
+    private void makeAIMove(final ChessBoardModel board, final Color aiColor) {
+        final ChessAI chessAI = this.modelFactory.chessAi(board, aiColor, this.utils);
+        final MoveWithSource move = chessAI.findMove();
+        final int pieceCode = board.getPieceForCell(move.getSrcRow(), move.getSrcCol());
+        final ChessPiece.PieceType aiMovePieceType = ChessPiece.PieceType.fromCode(pieceCode);
+        this.applyMove(move.getSrcRow(), move.getSrcCol(), move,
+                aiColor, aiMovePieceType);
+        this.doAfterMoveChecks(board, aiColor);
     }
 
     /**

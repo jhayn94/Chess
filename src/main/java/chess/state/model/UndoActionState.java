@@ -29,8 +29,8 @@ public class UndoActionState extends GameState {
             this.context.setBoard(board);
             this.resetAppToMatchBoard();
             this.updateUndoRedoButtons();
-            this.doAfterMoveChecks(board, Color.BLACK, board);
-            this.doAfterMoveChecks(board, Color.WHITE, board);
+            this.doAfterMoveChecks(board, Color.BLACK);
+            this.doAfterMoveChecks(board, Color.WHITE);
         }
 
     }

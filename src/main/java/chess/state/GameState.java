@@ -117,26 +117,22 @@ public abstract class GameState {
         chessBoardView.getCell(row, col).setImage(pieceType.getResourcePath(), color);
     }
 
-
     /**
      * Does various after move checks, such as looking for check, checkmate and stalemate.
      *
      * @param board              - chess board object.
-     * @param selectedPieceColor - color whose turn it will be.
-     * @param tempBoard          - new state of the board after a move.
+     * @param movedPieceColor - color whose turn it just was.
      */
-    protected void doAfterMoveChecks(final ChessBoardModel board, final Color selectedPieceColor,
-                                     final ChessBoardModel tempBoard) {
-        final Color opposingColor = Color.getOpposingColor(selectedPieceColor);
-        if (this.utils.isColorInCheckMate(board.isPlayer1sTurn(), tempBoard, opposingColor)) {
+    protected void doAfterMoveChecks(final ChessBoardModel board, final Color movedPieceColor) {
+        final Color opposingColor = Color.getOpposingColor(movedPieceColor);
+        if (this.utils.isColorInCheckMate(board, opposingColor)) {
             this.setKingInCheckmateStyle(board, opposingColor);
-        } else if (this.utils.isColorInCheck(tempBoard, opposingColor)) {
+        } else if (this.utils.isColorInCheck(board, opposingColor)) {
             this.setKingCellStyle(board, opposingColor, ChessBoardCell.IN_CHECK_CELL_CSS_CLASS);
-        } else if (this.utils.isColorInStalemate(board.isPlayer1sTurn(), tempBoard, opposingColor)) {
+        } else if (this.utils.isColorInStalemate(board, opposingColor)) {
             this.setKingInStalemateStyle(board, opposingColor);
         }
     }
-
 
     /**
      * Updates the style of the given cell on the board.

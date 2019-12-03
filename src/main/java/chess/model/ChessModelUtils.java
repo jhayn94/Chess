@@ -5,8 +5,10 @@ import chess.controller.ApplicationStateContext;
 import chess.model.piece.ChessPiece;
 import javafx.util.Pair;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static chess.model.ChessBoardModel.LEFT_ROOK_CASTLE_DEST_COL;
 import static chess.model.ChessBoardModel.RIGHT_ROOK_CASTLE_DEST_COL;
@@ -79,27 +81,25 @@ public class ChessModelUtils {
     /**
      * Returns true iff the given color is in checkmate.
      *
-     * @param isPlayerOneTurn - is it player one's turn?
-     * @param board           - chess board model.
-     * @param color           - the color to check.
+     * @param board - chess board model.
+     * @param color - the color to check.
      * @return - true iff the given color is in checkmate.
      */
-    public boolean isColorInCheckMate(final boolean isPlayerOneTurn, final ChessBoardModel board,
+    public boolean isColorInCheckMate(final ChessBoardModel board,
                                       final Color color) {
-        return this.isColorInCheck(board, color) && !this.playerHasLegalMove(isPlayerOneTurn, board, color);
+        return this.isColorInCheck(board, color) && !this.playerHasLegalMove(board, color);
     }
 
     /**
      * Returns true iff the given color is in stalemate.
      *
-     * @param isPlayerOneTurn - is it player one's turn?
-     * @param board           - chess board model.
-     * @param color           - the color to check.
+     * @param board - chess board model.
+     * @param color - the color to check.
      * @return - true iff the given color is in stalemate.
      */
-    public boolean isColorInStalemate(final boolean isPlayerOneTurn, final ChessBoardModel board,
+    public boolean isColorInStalemate(final ChessBoardModel board,
                                       final Color color) {
-        return !this.isColorInCheck(board, color) && !this.playerHasLegalMove(isPlayerOneTurn, board, color);
+        return !this.isColorInCheck(board, color) && !this.playerHasLegalMove(board, color);
     }
 
     /**
@@ -227,14 +227,45 @@ public class ChessModelUtils {
     }
 
     /**
+     * Returns a list of all moves the given color could make. Since no context of source cells is kept, a
+     * special class with source and destination data is used.
+     *
+     * @param board - chess board object.
+     * @param color - color to check for moves.
+     * @return all viable moves, no ordering guaranteed.
+     */
+    public List<MoveWithSource> getAllMoves(final ChessBoardModel board, final Color color) {
+        final List<MoveWithSource> allMoves = new ArrayList<>();
+        for (int row = 0; row < ChessBoardModel.BOARD_SIZE; row++) {
+            for (int col = 0; col < ChessBoardModel.BOARD_SIZE; col++) {
+                final Color pieceColorForCell = board.getPieceColorForCell(row, col);
+                if (pieceColorForCell == color) {
+                    final int pieceForCell = board.getPieceForCell(row, col);
+                    final ChessPiece.PieceType pieceType = ChessPiece.PieceType.fromCode(pieceForCell);
+                    final ChessPiece chessPiece = this.modelFactory.chessPiece(board, pieceType,
+                            pieceColorForCell);
+                    final List<Move> moves = chessPiece.getMoves(row, col, true);
+                    final int srcRow = row;
+                    final int srcCol = col;
+                    final List<MoveWithSource> aiMoves = moves.stream().map(move ->
+                            new MoveWithSource(move.getDestRow(), move.getDestCol(), srcRow, srcCol,
+                                    move.getMoveType())
+                    ).collect(Collectors.toList());
+                    allMoves.addAll(aiMoves);
+                }
+            }
+        }
+        return allMoves;
+    }
+
+    /**
      * Returns true iff the given color has at least 1 move.
      *
-     * @param board           - chess board object.
-     * @param board           - chess board object.
-     * @param color           - color to check.
+     * @param board - chess board object.
+     * @param color - color to check.
      * @return true iff the given color has at least 1 move.
      */
-    public boolean playerHasLegalMove(final boolean isPlayerOneTurn, final ChessBoardModel board,
+    public boolean playerHasLegalMove(final ChessBoardModel board,
                                       final Color color) {
         for (int row = 0; row < ChessBoardModel.BOARD_SIZE; row++) {
             for (int col = 0; col < ChessBoardModel.BOARD_SIZE; col++) {
@@ -252,10 +283,10 @@ public class ChessModelUtils {
     /**
      * Returns true iff the piece at the given position has any legal moves (check and stalemate considered).
      *
-     * @param board           - chess board object.
-     * @param color           - color of piece to check.
-     * @param row             - row to check.
-     * @param col             - column to check.
+     * @param board - chess board object.
+     * @param color - color of piece to check.
+     * @param row   - row to check.
+     * @param col   - column to check.
      * @return - true iff the piece at the given position has any legal moves.
      */
     public boolean canPieceMove(final ChessBoardModel board, final Color color,
@@ -286,8 +317,8 @@ public class ChessModelUtils {
      * @param move            - move to check for validity.
      * @return - true iff the given right castle move is legal.
      */
-    private boolean isRightCastleLegal(final ApplicationStateContext context, final ChessBoardModel boardBeforeMove, final ChessBoardModel boardAfterMove,
-                                       final Color color, final Move move) {
+    public boolean isRightCastleLegal(final ApplicationStateContext context, final ChessBoardModel boardBeforeMove, final ChessBoardModel boardAfterMove,
+                                      final Color color, final Move move) {
         final Set<MovedPieces> movedPieces = context.getBoard().getMovedPieces();
         final boolean haveRookOrKingMoved = this.haveRookOrKingMoved(boardBeforeMove, color, move, movedPieces);
 
@@ -305,9 +336,9 @@ public class ChessModelUtils {
      * @param move            - move to check for validity.
      * @return - true iff the given left castle move is legal.
      */
-    private boolean isLeftCastleLegal(final ApplicationStateContext context,
-                                      final ChessBoardModel boardBeforeMove, final ChessBoardModel boardAfterMove,
-                                      final Color color, final Move move) {
+    public boolean isLeftCastleLegal(final ApplicationStateContext context,
+                                     final ChessBoardModel boardBeforeMove, final ChessBoardModel boardAfterMove,
+                                     final Color color, final Move move) {
         final Set<MovedPieces> movedPieces = context.getBoard().getMovedPieces();
         final boolean haveRookOrKingMoved = this.haveRookOrKingMoved(boardBeforeMove, color, move, movedPieces);
         return !haveRookOrKingMoved && !this.canColorThreatenCell(boardAfterMove, Color.getOpposingColor(color),
@@ -322,8 +353,8 @@ public class ChessModelUtils {
      * @param move    - move to check for validity.
      * @return - true iff the given enpassant move is legal.
      */
-    private boolean isEnpassantLegal(final ApplicationStateContext context,
-                                     final Color color, final Move move) {
+    public boolean isEnpassantLegal(final ApplicationStateContext context,
+                                    final Color color, final Move move) {
         final Pair<Color, Integer> enpassant = context.getBoard().getEnpassant();
         return Color.areOpposingColors(enpassant.getKey(), color) && move.getDestCol() == enpassant.getValue();
     }
@@ -338,8 +369,8 @@ public class ChessModelUtils {
      * @param movedPieces - set of specifically tracked moved pieces.
      * @return - true iff any piece has moved which should prevent the given move from occurring.
      */
-    private boolean haveRookOrKingMoved(final ChessBoardModel board, final Color color, final Move move,
-                                        final Set<MovedPieces> movedPieces) {
+    public boolean haveRookOrKingMoved(final ChessBoardModel board, final Color color, final Move move,
+                                       final Set<MovedPieces> movedPieces) {
         boolean haveRookOrKingMoved;
         if (this.isForPlayerOne(board, color)) {
             haveRookOrKingMoved = movedPieces.contains(MovedPieces.BOTTOM_KING);

@@ -46,7 +46,6 @@ public class ChessApplication extends Application {
                 .sources(SpringApplicationLauncher.class)
                 .initializers(initializer)
                 .run(this.getParameters().getRaw().toArray(new String[0]));
-
     }
 
     @Override

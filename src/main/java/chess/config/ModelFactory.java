@@ -1,6 +1,7 @@
 package chess.config;
 
 import chess.model.BoardHistory;
+import chess.model.ChessAI;
 import chess.model.ChessBoardModel;
 import chess.model.ChessModelUtils;
 import chess.model.Color;
@@ -54,5 +55,9 @@ public class ModelFactory {
         } else {
             throw new IllegalArgumentException("Type " + type + " not recognized.");
         }
+    }
+
+    public ChessAI chessAi(final ChessBoardModel board, final Color color, final ChessModelUtils utils) {
+        return new ChessAI(board, color, utils);
     }
 }

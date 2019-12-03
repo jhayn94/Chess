@@ -1,5 +1,6 @@
 package chess.model;
 
+import chess.model.piece.ChessPiece;
 import javafx.util.Pair;
 import org.springframework.stereotype.Component;
 
@@ -27,7 +28,7 @@ public class ChessBoardModel {
 
     private final boolean isP2Ai;
 
-    private int[][] board;
+    private final int[][] board;
 
     public ChessBoardModel(final boolean isPlayerOneWhite, final boolean isP2Ai) {
         this.isPlayerOneWhite = isPlayerOneWhite;
@@ -42,7 +43,18 @@ public class ChessBoardModel {
         }
     }
 
+    /**
+     * Returns the piece code in this cell. If the given row or column are out of the bounds
+     * of the board, returns ChessPiece.PieceType.NONE.getPieceCode().
+     *
+     * @param row - row to check.
+     * @param col - column to check.
+     * @return - piece code of piece in this cell,  ChessPiece.PieceType.NONE.getPieceCode() if nothing is there.
+     */
     public int getPieceForCell(final int row, final int col) {
+        if (row < 0 || row >= BOARD_SIZE || col < 0 || col >= BOARD_SIZE) {
+            return ChessPiece.PieceType.NONE.getPieceCode();
+        }
         return this.board[col][row];
     }
 
@@ -94,7 +106,8 @@ public class ChessBoardModel {
      */
     public ChessBoardModel createCopy() {
         final ChessBoardModel other = new ChessBoardModel(this.isPlayerOneWhite, this.isP2Ai);
-        other.board = new int[BOARD_SIZE][BOARD_SIZE];
+//        other.board = new int[BOARD_SIZE][BOARD_SIZE];
+//        other.board = this.board.clone();
         for (int row = 0; row < BOARD_SIZE; row++) {
             for (int col = 0; col < BOARD_SIZE; col++) {
                 other.board[col][row] = this.board[col][row];

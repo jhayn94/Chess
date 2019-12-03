@@ -68,12 +68,18 @@ public class Pawn extends ChessPiece {
         // "protecting" your other pieces with an en passant move.
         final Color leftEnPassantCapturePieceColor = this.board.getPieceColorForCell(sourceRow,
                 sourceCol - 1);
-        if (Color.areOpposingColors(this.color, leftEnPassantCapturePieceColor)) {
+        final int pieceForLeftEnPassantCaptureCell =
+                Math.abs(this.board.getPieceForCell(sourceRow, sourceCol - 1));
+        if (pieceForLeftEnPassantCaptureCell == 1 && Color.areOpposingColors(this.color,
+                leftEnPassantCapturePieceColor)) {
             moves.add(new Move(sourceRow - 1, sourceCol - 1, Move.MoveType.EN_PASSANT));
         }
         final Color rightEnPassantCapturePieceColor = this.board.getPieceColorForCell(sourceRow,
                 sourceCol + 1);
-        if (Color.areOpposingColors(this.color, rightEnPassantCapturePieceColor)) {
+        final int pieceForRightEnPassantCaptureCell =
+                Math.abs(this.board.getPieceForCell(sourceRow, sourceCol + 1));
+        if (pieceForRightEnPassantCaptureCell == 1 && Color.areOpposingColors(this.color,
+                rightEnPassantCapturePieceColor)) {
             moves.add(new Move(sourceRow - 1, sourceCol + 1, Move.MoveType.EN_PASSANT));
         }
     }
@@ -110,12 +116,18 @@ public class Pawn extends ChessPiece {
         // "protecting" your other pieces with an en passant move.
         final Color leftEnPassantCapturePieceColor = this.board.getPieceColorForCell(sourceRow,
                 sourceCol - 1);
-        if (Color.areOpposingColors(this.color, leftEnPassantCapturePieceColor)) {
+        final int pieceForLeftEnPassantCaptureCell =
+                Math.abs(this.board.getPieceForCell(sourceRow, sourceCol - 1));
+        if (pieceForLeftEnPassantCaptureCell == 1 && Color.areOpposingColors(this.color,
+                leftEnPassantCapturePieceColor)) {
             moves.add(new Move(sourceRow + 1, sourceCol - 1, Move.MoveType.EN_PASSANT));
         }
         final Color rightEnPassantCapturePieceColor = this.board.getPieceColorForCell(sourceRow,
                 sourceCol + 1);
-        if (Color.areOpposingColors(this.color, rightEnPassantCapturePieceColor)) {
+        final int pieceForRightEnPassantCaptureCell = Math.abs(this.board.getPieceForCell(sourceRow,
+                sourceCol + 1));
+        if (pieceForRightEnPassantCaptureCell == 1 && Color.areOpposingColors(this.color,
+                rightEnPassantCapturePieceColor)) {
             moves.add(new Move(sourceRow + 1, sourceCol + 1, Move.MoveType.EN_PASSANT));
         }
     }

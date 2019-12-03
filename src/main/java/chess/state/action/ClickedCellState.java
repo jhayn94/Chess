@@ -93,7 +93,7 @@ public class ClickedCellState extends GameState {
         moves.forEach(move -> {
             final ChessBoardModel boardAfterMove = this.utils.applyMoveToCopiedBoard(move,
                     selectedCellRow, selectedCellCol, board, newSelectedPieceColor, pieceType);
-            if (this.utils.isMoveLegal(this.context, board, boardAfterMove, newSelectedPieceColor, move)) {
+            if (this.utils.isMoveLegal(board, boardAfterMove, newSelectedPieceColor, move)) {
                 this.updateCellStyle(move.getDestRow(), move.getDestCol(),
                         ChessBoardCell.HIGHLIGHTED_CELL_CSS_CLASS, true);
             }
@@ -146,7 +146,7 @@ public class ClickedCellState extends GameState {
         if (isValidMoveForPiece) {
             final ChessBoardModel tempBoard = this.utils.applyMoveToCopiedBoard(moveToMake.get(),
                     selectedRow, selectedCol, board, selectedPieceColor, pieceType);
-            if (this.utils.isMoveLegal(this.context, board, tempBoard, selectedPieceColor,
+            if (this.utils.isMoveLegal(board, tempBoard, selectedPieceColor,
                     moveToMake.get())) {
                 this.addBoardToUndoStack();
                 this.applyMove(selectedRow, selectedCol, moveToMake.get(), selectedPieceColor, pieceType);

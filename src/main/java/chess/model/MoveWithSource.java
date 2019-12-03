@@ -23,4 +23,11 @@ public class MoveWithSource extends Move {
     public int getSrcCol() {
         return this.srcCol;
     }
+
+    @Override
+    public String toString() {
+        return "MoveWithSource: srcRow=" + this.srcRow + ", srcCol=" + this.srcCol
+                + ", destRow=" + this.getDestRow() + ", destCol=" + this.getDestCol()
+                + ", type=" + this.getMoveType();
+    }
 }

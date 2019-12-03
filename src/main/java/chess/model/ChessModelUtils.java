@@ -1,8 +1,8 @@
 package chess.model;
 
 import chess.config.ModelFactory;
-import chess.controller.ApplicationStateContext;
 import chess.model.piece.ChessPiece;
+import chess.model.piece.King;
 import javafx.util.Pair;
 
 import java.util.ArrayList;
@@ -39,10 +39,9 @@ public class ChessModelUtils {
      * @param pieceType          - type of piece that will be moved.
      * @return copy of the board with the given move applied.
      */
-    public ChessBoardModel applyMoveToCopiedBoard(final Move move,
-                                                  final int rowToClear, final int colToClear,
-                                                  final ChessBoardModel board,
-                                                  final Color selectedPieceColor, final ChessPiece.PieceType pieceType) {
+    public ChessBoardModel applyMoveToCopiedBoard(final Move move, final int rowToClear, final int colToClear,
+                                                  final ChessBoardModel board, final Color selectedPieceColor,
+                                                  final ChessPiece.PieceType pieceType) {
         final ChessBoardModel tempChessBoard = board.createCopy();
         tempChessBoard.setPieceForCell(move.getDestRow(), move.getDestCol(), pieceType.getPieceCode(), selectedPieceColor);
         tempChessBoard.setPieceForCell(rowToClear, colToClear, ChessPiece.PieceType.NONE.getPieceCode(), Color.NONE);
@@ -74,7 +73,27 @@ public class ChessModelUtils {
                         ChessPiece.PieceType.NONE.getPieceCode(), Color.NONE);
             }
         }
-
+        if (ChessPiece.PieceType.PAWN == pieceType && Math.abs(rowToClear - move.getDestRow()) == 2) {
+            tempChessBoard.setEnpassant(new Pair<>(selectedPieceColor, move.getDestCol()));
+        } else {
+            tempChessBoard.setEnpassant(new Pair<>(Color.NONE, -1));
+        }
+        if (ChessPiece.PieceType.KING == pieceType && rowToClear == King.KING_START_ROW_BOTTOM) {
+            tempChessBoard.getMovedPieces().add(MovedPieces.BOTTOM_KING);
+        } else if (ChessPiece.PieceType.KING == pieceType && rowToClear == King.KING_START_ROW_TOP) {
+            tempChessBoard.getMovedPieces().add(MovedPieces.TOP_KING);
+        } else if (ChessPiece.PieceType.ROOK == pieceType) {
+            if (rowToClear == PLAYER_ONE_ROOK_START_ROW && colToClear == LEFT_ROOK_START_COL) {
+                tempChessBoard.getMovedPieces().add(MovedPieces.BOTTOM_LEFT_ROOK);
+            } else if (rowToClear == PLAYER_ONE_ROOK_START_ROW && colToClear == RIGHT_ROOK_START_COL) {
+                tempChessBoard.getMovedPieces().add(MovedPieces.BOTTOM_RIGHT_ROOK);
+            } else if (rowToClear == PLAYER_TWO_ROOK_START_ROW && colToClear == LEFT_ROOK_START_COL) {
+                tempChessBoard.getMovedPieces().add(MovedPieces.TOP_LEFT_ROOK);
+            } else if (rowToClear == PLAYER_TWO_ROOK_START_ROW && colToClear == RIGHT_ROOK_START_COL) {
+                tempChessBoard.getMovedPieces().add(MovedPieces.TOP_RIGHT_ROOK);
+            }
+        }
+        tempChessBoard.setIsPlayer1sTurn(!tempChessBoard.isPlayer1sTurn());
         return tempChessBoard;
     }
 
@@ -85,8 +104,7 @@ public class ChessModelUtils {
      * @param color - the color to check.
      * @return - true iff the given color is in checkmate.
      */
-    public boolean isColorInCheckMate(final ChessBoardModel board,
-                                      final Color color) {
+    public boolean isColorInCheckMate(final ChessBoardModel board, final Color color) {
         return this.isColorInCheck(board, color) && !this.playerHasLegalMove(board, color);
     }
 
@@ -153,22 +171,21 @@ public class ChessModelUtils {
     /**
      * Returns true iff the given move is legal.
      *
-     * @param context         - state context for the application.
      * @param boardBeforeMove - board before the move.
      * @param boardAfterMove  - board after the move.
      * @param color           - color making the move.
      * @param move            - move to check.
      * @return - true iff the given move is legal.
      */
-    public boolean isMoveLegal(final ApplicationStateContext context, final ChessBoardModel boardBeforeMove, final ChessBoardModel boardAfterMove,
+    public boolean isMoveLegal(final ChessBoardModel boardBeforeMove, final ChessBoardModel boardAfterMove,
                                final Color color, final Move move) {
         if (!this.isColorInCheck(boardAfterMove, color)) {
             if (Move.MoveType.CASTLE_LEFT == move.getMoveType()) {
-                return this.isLeftCastleLegal(context, boardBeforeMove, boardAfterMove, color, move);
+                return this.isLeftCastleLegal(boardBeforeMove, boardAfterMove, color, move);
             } else if (Move.MoveType.CASTLE_RIGHT == move.getMoveType()) {
-                return this.isRightCastleLegal(context, boardBeforeMove, boardAfterMove, color, move);
+                return this.isRightCastleLegal(boardBeforeMove, boardAfterMove, color, move);
             } else if (Move.MoveType.EN_PASSANT == move.getMoveType()) {
-                return this.isEnpassantLegal(context, color, move);
+                return this.isEnpassantLegal(boardBeforeMove, color, move);
             }
             return true;
         } else {
@@ -250,7 +267,10 @@ public class ChessModelUtils {
                     final List<MoveWithSource> aiMoves = moves.stream().map(move ->
                             new MoveWithSource(move.getDestRow(), move.getDestCol(), srcRow, srcCol,
                                     move.getMoveType())
-                    ).collect(Collectors.toList());
+                    ).filter(move -> {
+                        final ChessBoardModel boardAfterMove = this.applyMoveToCopiedBoard(move, srcRow, srcCol, board, color, pieceType);
+                        return this.isMoveLegal(board, boardAfterMove, color, move);
+                    }).collect(Collectors.toList());
                     allMoves.addAll(aiMoves);
                 }
             }
@@ -298,8 +318,7 @@ public class ChessModelUtils {
         final List<Move> moves = chessPiece.getMoves(row, col, true);
         for (final Move move : moves) {
             final ChessBoardModel boardWithNextMove = this.applyMoveToCopiedBoard(move, row,
-                    col, board, color,
-                    pieceType);
+                    col, board, color, pieceType);
             if (!this.isColorInCheck(boardWithNextMove, color)) {
                 return true;
             }
@@ -310,16 +329,15 @@ public class ChessModelUtils {
     /**
      * Returns true iff the given right castle move is legal.
      *
-     * @param context         - state context for the application.
      * @param boardBeforeMove - board before the move.
      * @param boardAfterMove  - board after the move, if proven to be valid.
      * @param color           - color making the move.
      * @param move            - move to check for validity.
      * @return - true iff the given right castle move is legal.
      */
-    public boolean isRightCastleLegal(final ApplicationStateContext context, final ChessBoardModel boardBeforeMove, final ChessBoardModel boardAfterMove,
+    public boolean isRightCastleLegal(final ChessBoardModel boardBeforeMove, final ChessBoardModel boardAfterMove,
                                       final Color color, final Move move) {
-        final Set<MovedPieces> movedPieces = context.getBoard().getMovedPieces();
+        final Set<MovedPieces> movedPieces = boardBeforeMove.getMovedPieces();
         final boolean haveRookOrKingMoved = this.haveRookOrKingMoved(boardBeforeMove, color, move, movedPieces);
 
         return !haveRookOrKingMoved && !this.canColorThreatenCell(boardAfterMove, Color.getOpposingColor(color),
@@ -329,17 +347,15 @@ public class ChessModelUtils {
     /**
      * Returns true iff the given left castle move is legal.
      *
-     * @param context         - state context for the application.
      * @param boardBeforeMove - board before the move.
      * @param boardAfterMove  - board after the move, if proven to be valid.
      * @param color           - color making the move.
      * @param move            - move to check for validity.
      * @return - true iff the given left castle move is legal.
      */
-    public boolean isLeftCastleLegal(final ApplicationStateContext context,
-                                     final ChessBoardModel boardBeforeMove, final ChessBoardModel boardAfterMove,
+    public boolean isLeftCastleLegal(final ChessBoardModel boardBeforeMove, final ChessBoardModel boardAfterMove,
                                      final Color color, final Move move) {
-        final Set<MovedPieces> movedPieces = context.getBoard().getMovedPieces();
+        final Set<MovedPieces> movedPieces = boardBeforeMove.getMovedPieces();
         final boolean haveRookOrKingMoved = this.haveRookOrKingMoved(boardBeforeMove, color, move, movedPieces);
         return !haveRookOrKingMoved && !this.canColorThreatenCell(boardAfterMove, Color.getOpposingColor(color),
                 move.getDestRow(), move.getDestCol() + 1) && !this.isColorInCheck(boardBeforeMove, color);
@@ -348,14 +364,13 @@ public class ChessModelUtils {
     /**
      * Returns true iff the given enpassant move is legal.
      *
-     * @param context - state context for the application.
-     * @param color   - color making the move.
-     * @param move    - move to check for validity.
+     * @param board - chess board object.
+     * @param color - color making the move.
+     * @param move  - move to check for validity.
      * @return - true iff the given enpassant move is legal.
      */
-    public boolean isEnpassantLegal(final ApplicationStateContext context,
-                                    final Color color, final Move move) {
-        final Pair<Color, Integer> enpassant = context.getBoard().getEnpassant();
+    public boolean isEnpassantLegal(final ChessBoardModel board, final Color color, final Move move) {
+        final Pair<Color, Integer> enpassant = board.getEnpassant();
         return Color.areOpposingColors(enpassant.getKey(), color) && move.getDestCol() == enpassant.getValue();
     }
 

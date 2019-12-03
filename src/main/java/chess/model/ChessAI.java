@@ -2,9 +2,16 @@ package chess.model;
 
 import chess.model.piece.ChessPiece;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 public class ChessAI {
 
@@ -22,11 +29,9 @@ public class ChessAI {
 
     private static final int MAX_SEARCH_TIME = 15;
 
-    private static final int MAX_SEARCH_DEPTH = 2;
+    private static final int MAX_SEARCH_DEPTH = 3;
 
     private static final int WINNING_SCORE = 1000000;
-
-    private static final int LOSING_SCORE = -1000000;
 
     private final ChessBoardModel boardAtStart;
 
@@ -34,7 +39,7 @@ public class ChessAI {
 
     private final ChessModelUtils utils;
 
-    private final boolean maxDepthExceeded;
+    private final ExecutorService threadPool;
 
     private Map<Integer, Integer> pieceValues;
 
@@ -42,7 +47,7 @@ public class ChessAI {
         this.boardAtStart = board;
         this.color = color;
         this.utils = utils;
-        this.maxDepthExceeded = false;
+        this.threadPool = Executors.newFixedThreadPool(50);
         this.setPieceValues();
     }
 
@@ -63,23 +68,39 @@ public class ChessAI {
             throw new IllegalStateException("AI has no moves!");
         }
 
+        // This helps to avoid the AI swapping a piece back and forth when it can't capture anything.
         // TODO - sort by captures?
-//        Collections.shuffle(allMoves);
-        return this.getBestScoringMove(allMoves, this.boardAtStart);
+        Collections.shuffle(allMoves);
+        try {
+            return this.getBestScoringMove(allMoves, this.boardAtStart);
+        } catch (final ExecutionException | InterruptedException e) {
+            System.out.println("ERROR:" + e.getMessage());
+            e.printStackTrace();
+            return allMoves.get(0);
+        }
     }
 
-    private MoveWithSource getBestScoringMove(final List<MoveWithSource> allMoves, final ChessBoardModel board) {
+    private MoveWithSource getBestScoringMove(final List<MoveWithSource> allMoves,
+                                              final ChessBoardModel board) throws ExecutionException, InterruptedException {
         int bestScore = Integer.MIN_VALUE;
         MoveWithSource bestMove = null;
+        final List<Future<Integer>> results = new ArrayList<>();
+        final List<MoveWithSource> moves = new ArrayList<>();
         for (final MoveWithSource move : allMoves) {
-
-            final int scoreForMove = this.getScoreForMove(move, board.createCopy(), 0, this.color);
-            if (scoreForMove > bestScore) {
-                bestScore = scoreForMove;
-                bestMove = move;
-            }
+            moves.add(move);
+            final Callable<Integer> thread = () -> this.getScoreForMove(move, board.createCopy(), 0, this.color);
+            final Future<Integer> threadResult = this.threadPool.submit(thread);
+            results.add(threadResult);
 
         }
+        for (int i = 0; i < allMoves.size(); i++) {
+            final int scoreForMove = results.get(i).get();
+            if (scoreForMove > bestScore) {
+                bestScore = scoreForMove;
+                bestMove = moves.get(i);
+            }
+        }
+
         return bestMove;
     }
 
@@ -101,13 +122,9 @@ public class ChessAI {
                 move.getSrcCol(), board, colorToMove, pieceType);
 
         final Color opposingColor = Color.getOpposingColor(colorToMove);
-        if (this.utils.isColorInStalemate(newBoard, opposingColor) || this.utils.isColorInStalemate(newBoard,
-                colorToMove)) {
+        if (this.utils.isColorInStalemate(newBoard, opposingColor)) {
             // Either player stalemates = same neutral heuristic.
             return 0;
-        } else if (this.utils.isColorInCheckMate(newBoard, colorToMove)) {
-            // My color losing should be considered as bad as possible.
-            return LOSING_SCORE;
         } else if (this.utils.isColorInCheckMate(newBoard, opposingColor)) {
             // The opponent losing should be considered as good as possible.
             return WINNING_SCORE;

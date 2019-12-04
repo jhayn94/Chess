@@ -73,7 +73,6 @@ public class ChessAI {
                 this.topLevelMoves.entrySet().stream().max((entry1, entry2) -> entry1.getValue() >= entry2.getValue() ?
                 1 : -1).orElseThrow(NullPointerException::new).getKey();
 
-        System.out.println("BEST: " + bestMove + " " + this.topLevelMoves.get(bestMove));
         return bestMove;
     }
 
@@ -103,7 +102,6 @@ public class ChessAI {
                 alpha.set(Math.max(alpha.get(), scoreForMove));
                 if (depth == 0) {
                     this.topLevelMoves.put(move, scoreForMove);
-                    System.out.println(move + " " + scoreForMove + " " + alpha.get());
                 }
                 if (alpha.get() >= beta.get() && depth > 0) {
                     break;

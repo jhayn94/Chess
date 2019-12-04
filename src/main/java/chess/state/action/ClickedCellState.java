@@ -151,8 +151,10 @@ public class ClickedCellState extends GameState {
                 this.addBoardToUndoStack();
                 this.applyMove(selectedRow, selectedCol, moveToMake.get(), selectedPieceColor, pieceType);
                 this.doAfterMoveChecks(board, selectedPieceColor);
-                if (board.isP2Ai()) {
-                    this.makeAIMove(board, Color.getOpposingColor(selectedPieceColor));
+                final Color opposingColor = Color.getOpposingColor(selectedPieceColor);
+                if (board.isP2Ai() && !this.utils.isColorInCheckMate(board, opposingColor)
+                        && !this.utils.isColorInStalemate(board, opposingColor)) {
+                    this.makeAIMove(board, opposingColor);
                 }
             }
         }

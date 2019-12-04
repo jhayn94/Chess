@@ -2,16 +2,10 @@ package chess.model;
 
 import chess.model.piece.ChessPiece;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class ChessAI {
 
@@ -27,11 +21,11 @@ public class ChessAI {
 
     private static final int KING_VALUE = 10000;
 
-    private static final int MAX_SEARCH_TIME = 15;
-
-    private static final int MAX_SEARCH_DEPTH = 3;
+    private static final int MAX_SEARCH_DEPTH = 75;
 
     private static final int WINNING_SCORE = 1000000;
+
+    private static final int LOSING_SCORE = -1 * WINNING_SCORE;
 
     private final ChessBoardModel boardAtStart;
 
@@ -39,15 +33,14 @@ public class ChessAI {
 
     private final ChessModelUtils utils;
 
-    private final ExecutorService threadPool;
-
     private Map<Integer, Integer> pieceValues;
+
+    private Map<MoveWithSource, Integer> topLevelMoves;
 
     public ChessAI(final ChessBoardModel board, final Color color, final ChessModelUtils utils) {
         this.boardAtStart = board;
         this.color = color;
         this.utils = utils;
-        this.threadPool = Executors.newFixedThreadPool(50);
         this.setPieceValues();
     }
 
@@ -65,90 +58,91 @@ public class ChessAI {
     public MoveWithSource findMove() {
         final List<MoveWithSource> allMoves = this.utils.getAllMoves(this.boardAtStart, this.color);
         if (allMoves.isEmpty()) {
-            throw new IllegalStateException("AI has no moves!");
+
+            return null;
         }
+        this.topLevelMoves = new HashMap<>(allMoves.size());
 
         // This helps to avoid the AI swapping a piece back and forth when it can't capture anything.
         // TODO - sort by captures?
-        Collections.shuffle(allMoves);
-        try {
-            return this.getBestScoringMove(allMoves, this.boardAtStart);
-        } catch (final ExecutionException | InterruptedException e) {
-            System.out.println("ERROR:" + e.getMessage());
-            e.printStackTrace();
-            return allMoves.get(0);
-        }
-    }
+        System.out.println("==============================");
+        this.getBestMoveFromBoard(this.boardAtStart, 0, new AtomicInteger(Integer.MIN_VALUE),
+                new AtomicInteger(Integer.MAX_VALUE), this.color);
 
-    private MoveWithSource getBestScoringMove(final List<MoveWithSource> allMoves,
-                                              final ChessBoardModel board) throws ExecutionException, InterruptedException {
-        int bestScore = Integer.MIN_VALUE;
-        MoveWithSource bestMove = null;
-        final List<Future<Integer>> results = new ArrayList<>();
-        final List<MoveWithSource> moves = new ArrayList<>();
-        for (final MoveWithSource move : allMoves) {
-            moves.add(move);
-            final Callable<Integer> thread = () -> this.getScoreForMove(move, board.createCopy(), 0, this.color);
-            final Future<Integer> threadResult = this.threadPool.submit(thread);
-            results.add(threadResult);
+        final MoveWithSource bestMove =
+                this.topLevelMoves.entrySet().stream().max((entry1, entry2) -> entry1.getValue() >= entry2.getValue() ?
+                1 : -1).orElseThrow(NullPointerException::new).getKey();
 
-        }
-        for (int i = 0; i < allMoves.size(); i++) {
-            final int scoreForMove = results.get(i).get();
-            if (scoreForMove > bestScore) {
-                bestScore = scoreForMove;
-                bestMove = moves.get(i);
-            }
-        }
-
+        System.out.println("BEST: " + bestMove + " " + this.topLevelMoves.get(bestMove));
         return bestMove;
     }
 
-    private int getScoreForMove(final MoveWithSource move, final ChessBoardModel board, final int depth,
-                                final Color colorToMove) {
-        // If we searched past the depth limit, just return a neutral score.
-        if (depth > MAX_SEARCH_DEPTH) {
-            return 0;
-        }
+    private int getBestMoveFromBoard(final ChessBoardModel board, final int depth, final AtomicInteger alpha,
+                                     final AtomicInteger beta, final Color colorToMove) {
 
-        // Calculate the immediate impact of this move if no end condition applies.
-        final int capturedPieceCode = Math.abs(board.getPieceForCell(move.getDestRow(), move.getDestCol()));
-        final int scoreForMove = this.pieceValues.get(capturedPieceCode);
-
-        // Update the board with the move.
-        final int movedPieceCode = board.getPieceForCell(move.getSrcRow(), move.getSrcCol());
-        final ChessPiece.PieceType pieceType = ChessPiece.PieceType.fromCode(movedPieceCode);
-        final ChessBoardModel newBoard = this.utils.applyMoveToCopiedBoard(move, move.getSrcRow(),
-                move.getSrcCol(), board, colorToMove, pieceType);
-
-        final Color opposingColor = Color.getOpposingColor(colorToMove);
-        if (this.utils.isColorInStalemate(newBoard, opposingColor)) {
+        if (this.utils.isColorInStalemate(board, colorToMove)) {
             // Either player stalemates = same neutral heuristic.
             return 0;
-        } else if (this.utils.isColorInCheckMate(newBoard, opposingColor)) {
-            // The opponent losing should be considered as good as possible.
-            return WINNING_SCORE;
+        } else if (this.utils.isColorInCheckMate(board, colorToMove)) {
+            return this.color == colorToMove ? LOSING_SCORE : WINNING_SCORE;
+        } else if (depth > MAX_SEARCH_DEPTH) {
+            return this.getQuickScoreForMove(board);
         }
 
-        // If no end condition applies, recursively search the space further to determine best move.
-        final List<MoveWithSource> possibleNextMoves = this.utils.getAllMoves(newBoard,
-                opposingColor);
-
-        int probableOpponentResponse = Integer.MIN_VALUE;
-        for (final MoveWithSource nextMove : possibleNextMoves) {
-            final int scoreForNextMove = this.getScoreForMove(nextMove, newBoard, depth + 1,
-                    opposingColor);
-            if (scoreForNextMove > probableOpponentResponse) {
-                probableOpponentResponse = scoreForNextMove;
+        final List<MoveWithSource> allMoves = this.utils.getAllMoves(board, colorToMove);
+        final Color opposingColor = Color.getOpposingColor(colorToMove);
+        if (this.color == colorToMove) {
+            int bestScore = Integer.MIN_VALUE;
+            for (final MoveWithSource move : allMoves) {
+                final int movedPieceCode = board.getPieceForCell(move.getSrcRow(), move.getSrcCol());
+                final ChessPiece.PieceType pieceType = ChessPiece.PieceType.fromCode(movedPieceCode);
+                final ChessBoardModel newBoard = this.utils.applyMoveToCopiedBoard(move, move.getSrcRow(),
+                        move.getSrcCol(), board, colorToMove, pieceType);
+                final int scoreForMove = this.getBestMoveFromBoard(newBoard, depth + 1, alpha, beta, opposingColor);
+                bestScore = Math.max(bestScore, scoreForMove);
+                alpha.set(Math.max(alpha.get(), scoreForMove));
+                if (depth == 0) {
+                    this.topLevelMoves.put(move, scoreForMove);
+                    System.out.println(move + " " + scoreForMove + " " + alpha.get());
+                }
+                if (alpha.get() >= beta.get() && depth > 0) {
+                    break;
+                }
             }
+            return bestScore;
+        } else {
+            int bestScore = Integer.MAX_VALUE;
+            for (final MoveWithSource move : allMoves) {
+                final int movedPieceCode = board.getPieceForCell(move.getSrcRow(), move.getSrcCol());
+                final ChessPiece.PieceType pieceType = ChessPiece.PieceType.fromCode(movedPieceCode);
+                final ChessBoardModel newBoard = this.utils.applyMoveToCopiedBoard(move, move.getSrcRow(),
+                        move.getSrcCol(), board, colorToMove, pieceType);
+                final int scoreForMove = this.getBestMoveFromBoard(newBoard, depth + 1, alpha, beta, opposingColor);
+                bestScore = Math.min(bestScore, scoreForMove);
+                beta.set(Math.min(beta.get(), bestScore));
+                if (alpha.get() >= beta.get() && depth > 1) {
+                    break;
+                }
+            }
+            return bestScore;
         }
-
-        // Invert the score from the prior call. The goal is to maximize the even depths,
-        // and minimize the score on the odd depths. Again, this is because we assume both
-        // players are trying to win (and negative odds depths mean the opponent is picking
-        // his best available move).
-        return scoreForMove + (-1 * probableOpponentResponse);
 
     }
 
+    private int getQuickScoreForMove(final ChessBoardModel board) {
+
+        int score = 0;
+        for (int row = 0; row < ChessBoardModel.BOARD_SIZE; row++) {
+            for (int col = 0; col < ChessBoardModel.BOARD_SIZE; col++) {
+                final Color pieceColorForCell = board.getPieceColorForCell(row, col);
+                final int pieceCode = Math.abs(board.getPieceForCell(row, col));
+                if (pieceColorForCell == this.color) {
+                    score += this.pieceValues.get(pieceCode);
+                } else if (pieceColorForCell == Color.getOpposingColor(this.color)) {
+                    score -= this.pieceValues.get(pieceCode);
+                }
+            }
+        }
+        return score;
+    }
 }

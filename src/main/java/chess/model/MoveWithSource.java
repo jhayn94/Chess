@@ -30,4 +30,5 @@ public class MoveWithSource extends Move {
                 + ", destRow=" + this.getDestRow() + ", destCol=" + this.getDestCol()
                 + ", type=" + this.getMoveType();
     }
+
 }

@@ -46,7 +46,7 @@ public class ChessModelUtils {
         tempChessBoard.setPieceForCell(move.getDestRow(), move.getDestCol(), pieceType.getPieceCode(), selectedPieceColor);
         tempChessBoard.setPieceForCell(rowToClear, colToClear, ChessPiece.PieceType.NONE.getPieceCode(), Color.NONE);
         if (Move.MoveType.CASTLE_RIGHT == move.getMoveType()) {
-            if (board.isPlayer1sTurn()) {
+            if (tempChessBoard.isPlayer1sTurn()) {
                 tempChessBoard.setPieceForCell(PLAYER_ONE_ROOK_START_ROW, RIGHT_ROOK_START_COL, ChessPiece.PieceType.NONE.getPieceCode(), Color.NONE);
                 tempChessBoard.setPieceForCell(PLAYER_ONE_ROOK_START_ROW, RIGHT_ROOK_CASTLE_DEST_COL,
                         ChessPiece.PieceType.ROOK.getPieceCode(), selectedPieceColor);
@@ -56,7 +56,7 @@ public class ChessModelUtils {
                         ChessPiece.PieceType.ROOK.getPieceCode(), selectedPieceColor);
             }
         } else if (Move.MoveType.CASTLE_LEFT == move.getMoveType()) {
-            if (board.isPlayer1sTurn()) {
+            if (tempChessBoard.isPlayer1sTurn()) {
                 tempChessBoard.setPieceForCell(PLAYER_ONE_ROOK_START_ROW, LEFT_ROOK_CASTLE_DEST_COL, ChessPiece.PieceType.NONE.getPieceCode(), Color.NONE);
                 tempChessBoard.setPieceForCell(PLAYER_ONE_ROOK_START_ROW, LEFT_ROOK_CASTLE_DEST_COL,
                         ChessPiece.PieceType.ROOK.getPieceCode(), selectedPieceColor);
@@ -66,7 +66,7 @@ public class ChessModelUtils {
                         ChessPiece.PieceType.ROOK.getPieceCode(), selectedPieceColor);
             }
         } else if (Move.MoveType.EN_PASSANT == move.getMoveType()) {
-            if (board.isPlayer1sTurn()) {
+            if (tempChessBoard.isPlayer1sTurn()) {
                 tempChessBoard.setPieceForCell(move.getDestRow() + 1, move.getDestCol(), ChessPiece.PieceType.NONE.getPieceCode(), Color.NONE);
             } else {
                 tempChessBoard.setPieceForCell(move.getDestRow() - 1, move.getDestCol(),

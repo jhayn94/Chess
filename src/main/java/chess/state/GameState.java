@@ -126,7 +126,6 @@ public abstract class GameState {
     protected void doAfterMoveChecks(final ChessBoardModel board, final Color movedPieceColor) {
         final Color opposingColor = Color.getOpposingColor(movedPieceColor);
         if (this.utils.isColorInCheckMate(board, opposingColor)) {
-            System.out.println("CHECKMATE");
             this.setKingInCheckmateStyle(board, opposingColor);
         } else if (this.utils.isColorInCheck(board, opposingColor)) {
             this.setKingCellStyle(board, opposingColor, ChessBoardCell.IN_CHECK_CELL_CSS_CLASS);

@@ -93,6 +93,25 @@ public class ChessModelUtils {
                 tempChessBoard.getMovedPieces().add(MovedPieces.TOP_RIGHT_ROOK);
             }
         }
+        final int lastRow = ChessBoardModel.BOARD_SIZE - 1;
+        for (int col = 0; col < ChessBoardModel.BOARD_SIZE; col++) {
+            final int topRow = Math.abs(board.getPieceForCell(0, col));
+            final Color topRowColor = board.getPieceColorForCell(0, col);
+            final int bottomRow = Math.abs(board.getPieceForCell(lastRow, col));
+            final Color bottomRowColor = board.getPieceColorForCell(lastRow, col);
+            if (topRow == ChessPiece.PieceType.PAWN.getPieceCode() &&
+                    ((board.isPlayerOneWhite() && Color.WHITE == topRowColor)
+                            || (!board.isPlayerOneWhite() && Color.BLACK == topRowColor))) {
+                tempChessBoard.setPieceForCell(0, col, ChessPiece.PieceType.QUEEN.getPieceCode(), topRowColor);
+            }
+            if (bottomRow == ChessPiece.PieceType.PAWN.getPieceCode() &&
+                    ((board.isPlayerOneWhite() && Color.BLACK == bottomRowColor)
+                            || (!board.isPlayerOneWhite() && Color.WHITE == topRowColor))) {
+                tempChessBoard.setPieceForCell(lastRow, col, ChessPiece.PieceType.QUEEN.getPieceCode(), topRowColor);
+            }
+        }
+
+
         tempChessBoard.setIsPlayer1sTurn(!tempChessBoard.isPlayer1sTurn());
         return tempChessBoard;
     }

@@ -130,7 +130,6 @@ public class ChessAI {
     }
 
     private int getQuickScoreForMove(final ChessBoardModel board) {
-
         int score = 0;
         for (int row = 0; row < ChessBoardModel.BOARD_SIZE; row++) {
             for (int col = 0; col < ChessBoardModel.BOARD_SIZE; col++) {

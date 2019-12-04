@@ -120,10 +120,30 @@ public abstract class GameState {
     /**
      * Does various after move checks, such as looking for check, checkmate and stalemate.
      *
-     * @param board              - chess board object.
+     * @param board           - chess board object.
      * @param movedPieceColor - color whose turn it just was.
      */
     protected void doAfterMoveChecks(final ChessBoardModel board, final Color movedPieceColor) {
+        final int lastRow = ChessBoardModel.BOARD_SIZE - 1;
+        for (int col = 0; col < ChessBoardModel.BOARD_SIZE; col++) {
+            final int topRow = Math.abs(board.getPieceForCell(0, col));
+            final Color topRowColor = board.getPieceColorForCell(0, col);
+            final int bottomRow = Math.abs(board.getPieceForCell(lastRow, col));
+            final Color bottomRowColor = board.getPieceColorForCell(lastRow, col);
+            if (topRow == ChessPiece.PieceType.PAWN.getPieceCode() &&
+                    ((board.isPlayerOneWhite() && Color.WHITE == topRowColor)
+                    || (!board.isPlayerOneWhite() && Color.BLACK == topRowColor))) {
+                this.clearCell(0, col, true);
+                this.updateBoardWithPiece(0, col, ChessPiece.PieceType.QUEEN, topRowColor);
+            }
+            if (bottomRow == ChessPiece.PieceType.PAWN.getPieceCode() &&
+                    ((board.isPlayerOneWhite() && Color.BLACK == bottomRowColor)
+                            || (!board.isPlayerOneWhite() && Color.WHITE == topRowColor))) {
+                this.clearCell(lastRow, col, true);
+                this.updateBoardWithPiece(lastRow, col, ChessPiece.PieceType.QUEEN, topRowColor);
+            }
+        }
+
         final Color opposingColor = Color.getOpposingColor(movedPieceColor);
         if (this.utils.isColorInCheckMate(board, opposingColor)) {
             this.setKingInCheckmateStyle(board, opposingColor);
